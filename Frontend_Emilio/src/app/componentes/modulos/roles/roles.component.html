@@ -1,1 +1,221 @@
-<p>roles works!</p>
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+                        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="right">
+                    <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="products" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Manage Products</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."  class="w-full sm:w-auto"/>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon></th>
+                        <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+                        <th>Image</th>
+                        <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
+                        <th pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
+                        <th pSortableColumn="rating">Reviews <p-sortIcon field="rating"></p-sortIcon></th>
+                        <th pSortableColumn="inventoryStatus">Status <p-sortIcon field="inventoryStatus"></p-sortIcon></th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="product"></p-tableCheckbox>
+                        </td>
+                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">Code</span>
+                            {{product.code || product.id}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Name</span>
+                            {{product.name}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">Image</span>
+                            <img [src]="'assets/demo/images/product/' + product.image" [alt]="product.name" width="100" class="shadow-4" />
+                        </td>
+                        <td style="width:14%; min-width:8rem;">
+                            <span class="p-column-title">Price</span>
+                            {{product.price | currency:'USD'}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Category</span>
+                            {{product.category}}
+                        </td>
+                        <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Reviews</span>
+                            <p-rating [ngModel]="product.rating" [readonly]="true" [cancel]="false"></p-rating>
+                        </td>
+                        <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Status</span>
+                            <span [class]="'product-badge status-' + (product.inventoryStatus ? product.inventoryStatus.toLowerCase() : '')">{{product.inventoryStatus}}</span>
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editProduct(product)"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteProduct(product)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- <p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Product Details" [modal]="true" class="p-fluid">
+            <ng-template pTemplate="content">
+
+                <div class="flex flex-col gap-6">
+
+                    <div>
+                        <label for="name" class="block font-bold mb-3">Nombre del Rol</label>
+                        <input type="text" pInputText id="name"  [(ngModel)]="name" required autofocus fluid />
+                    </div>
+
+
+                    <div class="fv-row mb-7">
+                        <label class="required fw-bold fs-6 mb-2">Selecciona los permisos:</label>
+
+                        <div class="table-responsive w-100">
+                            <table class="table table-head-custom table-vertical-center">
+                                <thead>
+                                    <tr class="text-left">
+                                        <th>ROL</th>
+                                        <th>PERMISOS</th>
+                                    </tr>
+                                </thead>
+                                <br>
+                                <tbody  >
+                                    <tr *ngFor="let permission of SIDEBAR">
+                                        <td>{{ permission.name }}</td><br>
+                                        <td>
+                                            <ng-container *ngFor="let perm of permission.permisos">
+                                                <div class="form-check form-check-sm form-check-custom form-check-solid py-1">
+                                                    <p-checkbox
+
+                                                      name="permisions"
+                                                      (click)="addPermission(perm.permiso)"
+                                                      value=""
+                                                      [(ngModel)]="selectedPermissions[perm.permiso]" />
+                                                    <label for="{{perm.permiso}}" class="ml-2">{{perm.name}}</label>
+
+                                                  </div>
+
+                                            </ng-container>
+                                            <br>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveProduct()"></button>
+            </ng-template>
+        </p-dialog> -->
+
+
+        <p-dialog [(visible)]="productDialog" [style]="{ width: '450px' }" header="Agregar Rol" [modal]="true">
+            <ng-template pTemplate="content">
+                <div class="field">
+                    <label for="name" class="block font-bold mb-2">Nombre del Rol</label>
+                    <input type="text" pInputText id="name" [(ngModel)]="name" required autofocus class="w-full" />
+                </div>
+                <div class="flex flex-col gap-4">
+
+                    <!-- Nombre del Rol -->
+
+
+                    <!-- Selección de Permisos -->
+                    <div class="field">
+                        <label class="block font-bold mb-2">Selecciona los permisos:</label>
+                        <div class="">
+                            <table class="w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left p-3">ROL</th>
+                                        <th class="text-left p-3">PERMISOS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let permission of SIDEBAR" class="border-bottom-1 surface-border">
+                                        <td class="p-3">{{ permission.name }}</td>
+                                        <td class="p-3">
+                                            <div class="flex flex-column gap-2">
+                                                <ng-container *ngFor="let perm of permission.permisos">
+                                                    <div class="flex align-items-center">
+                                                        <p-checkbox
+                                                            [binary]="true"
+                                                            name="permisions"
+                                                            [(ngModel)]="selectedPermissions[perm.permiso]"
+                                                            (onChange)="addPermission(perm.permiso)"
+                                                            [inputId]="perm.permiso"
+                                                        ></p-checkbox>
+                                                        <label [for]="perm.permiso" class="ml-2">{{ perm.name }}</label>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+
+            <!-- Footer del Diálogo -->
+            <ng-template pTemplate="footer">
+                <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+                <button pButton type="button" label="Registrar" icon="pi pi-check" (click)="store()"></button>
+            </ng-template>
+        </p-dialog>
+
+
+        <p-dialog  header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteProductsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>Are you sure you want to delete selected products?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductsDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>
