@@ -1,1 +1,59 @@
-<p>recordatorios works!</p>
+<div class="container">
+    <h2>Checkboxes con PrimeNG</h2>
+
+    <!-- Checkbox 1 -->
+    <div class="flex align-items-center">
+      <p-checkbox
+        name="option1"
+        [(ngModel)]="option1"
+        binary="false"
+        [label]="'Opción 1'">
+      </p-checkbox>
+      <span *ngIf="option1">✓ Seleccionado</span>
+    </div>
+
+    <!-- Checkbox 2 -->
+    <div class="flex align-items-center">
+      <p-checkbox
+        name="option2"
+        [(ngModel)]="option2"
+        binary="true"
+        [label]="'Opción 2'">
+      </p-checkbox>
+      <span *ngIf="option2">✓ Seleccionado</span>
+    </div>
+
+    <!-- Checkbox 3 -->
+    <div class="flex align-items-center">
+      <p-checkbox
+        name="option3"
+        [(ngModel)]="option3"
+        binary="true"
+        [label]="'Opción 3'">
+      </p-checkbox>
+      <span *ngIf="option3">✓ Seleccionado</span>
+    </div>
+
+    <!-- Checkbox 4 -->
+    <div class="flex align-items-center">
+      <p-checkbox
+        name="option4"
+        [(ngModel)]="option4"
+        binary="true"
+        [label]="'Opción 4'">
+      </p-checkbox>
+      <span *ngIf="option4">✓ Seleccionado</span>
+    </div>
+
+    <!-- Checkbox 5 -->
+    <div class="flex align-items-center">
+      <p-checkbox
+        name="option5"
+        [(ngModel)]="option5"
+        binary="true"
+        [label]="'Opción 5'">
+      </p-checkbox>
+      <span *ngIf="option5">✓ Seleccionado</span>
+    </div>
+
+  </div>

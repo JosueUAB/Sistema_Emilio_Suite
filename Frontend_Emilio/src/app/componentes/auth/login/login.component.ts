@@ -5,7 +5,9 @@ import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
+import { ToastModule } from 'primeng/toast';
 import { AuthService } from 'src/app/services/auth.service';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -15,11 +17,14 @@ import { AuthService } from 'src/app/services/auth.service';
     FormsModule,
     PasswordModule,
     InputTextModule,
-    ButtonModule
+    ButtonModule,
+    ToastModule
 
 
   ],
+
   templateUrl: './login.component.html',
+  providers: [MessageService],
 })
 export class LoginComponent {
 
@@ -32,23 +37,36 @@ export class LoginComponent {
     password: string = '';
     rememberMe: boolean = false;
 
-    constructor(private _authService: AuthService, private router: Router) {}
+    constructor(private _authService: AuthService, private router: Router,
+        private toast : MessageService,
+    ) {}
 
     onSignIn() {
         this._authService.acceso(this.email, this.password).subscribe({
           next: (data) => {
             console.log('Login successful', data);  // Imprime la respuesta completa
 
+
             if (data && data.access_token) {
+                this.toast.add({ severity: 'success', summary: 'Éxito', detail: 'Bienvenido al Sistema' });
               this.router.navigate(['']); // Redirigir al dashboard
             } else {
               console.error('No access token received or invalid data.');
+              this.toast.add({ severity: 'error', summary: 'Error', detail: 'Usuario o Contraseña Invalidos' });
             }
           },
+
           error: (err) => {
             console.error('Login failed', err);
+
+        //     this.toast.add({ severity: 'success', summary: 'Éxito', detail: 'Rol eliminado con éxito' });
+        //     this.listarRoles(); // Recargar los roles después de la eliminación
+        //   } else {
+        //     this.toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar el rol' });
           }
-        });
+
+        }
+    );
       }
 
 
@@ -97,6 +115,7 @@ export class LoginComponent {
                 if (this.rememberMe) {
                   localStorage.setItem('email', this.email);
                 }
+
 
                 // Redirigimos al dashboard o página principal
                 this.router.navigate(['/dashboard']);

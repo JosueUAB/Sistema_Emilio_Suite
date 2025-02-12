@@ -1,0 +1,37 @@
+<!-- edit-rol.component.html -->
+<p-dialog
+  [(visible)]="productDialog"
+  [style]="{ width: '450px' }"
+  header="Editar Rol"
+  [modal]="true"
+  [closable]="false"
+>
+  <ng-template pTemplate="content">
+    <div>
+      <label for="name">Nombre del Rol</label>
+      <input type="text" id="name" [(ngModel)]="roleName" />
+    </div>
+    <div>
+      <label>Permisos:</label>
+      <!-- Aquí puedes agregar los permisos seleccionados -->
+      <ng-container *ngFor="let perm of permission.permisos">
+        <div class="flex align-items-center">
+          <p-checkbox
+            [binary]="true"
+            [(ngModel)]="selectedPermissionsState[perm.permiso]"  
+            (onChange)="togglePermission($event, perm.permiso)"
+            [inputId]="perm.permiso">
+          </p-checkbox>
+
+          <label [for]="perm.permiso" class="ml-2">{{ perm.name }}</label>
+        </div>
+      </ng-container>
+
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+    <button pButton type="button" label="Guardar" icon="pi pi-check" (click)="updateRole()"></button>
+  </ng-template>
+</p-dialog>

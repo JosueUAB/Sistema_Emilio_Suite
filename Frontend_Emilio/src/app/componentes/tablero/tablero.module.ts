@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableroRoutingModule } from './tablero.routing';
 import { TableroComponent } from './tablero.component';
+import { ButtonModule } from 'primeng/button';
 
 
 
@@ -9,7 +10,8 @@ import { TableroComponent } from './tablero.component';
 
   imports: [
     CommonModule,
-    TableroRoutingModule
+    TableroRoutingModule,
+    ButtonModule
   ],
   declarations: [TableroComponent],
 })

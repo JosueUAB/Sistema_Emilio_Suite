@@ -1,12 +1,12 @@
 <div class="grid">
     <div class="col-12">
         <div class="card px-6 py-6">
+            <p-toast></p-toast> <!-- Aquí es donde se mostrarán las notificaciones -->
 
             <p-toolbar styleClass="mb-4">
                 <ng-template pTemplate="left">
                     <div class="my-2">
-                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
-                        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length"></button>
+                        <button pButton pRipple label="Agregar Rol" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
                     </div>
                 </ng-template>
 
@@ -16,141 +16,110 @@
                 </ng-template>
             </p-toolbar>
 
-            <p-table #dt [value]="products" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" selectionMode="multiple" [rowHover]="true" dataKey="id">
-                <ng-template pTemplate="caption">
-                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                        <h5 class="m-0">Manage Products</h5>
-                        <span class="block mt-2 md:mt-0 p-input-icon-left">
-                            <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."  class="w-full sm:w-auto"/>
-                        </span>
-                    </div>
-                </ng-template>
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
-                        <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon></th>
-                        <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-                        <th>Image</th>
-                        <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
-                        <th pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
-                        <th pSortableColumn="rating">Reviews <p-sortIcon field="rating"></p-sortIcon></th>
-                        <th pSortableColumn="inventoryStatus">Status <p-sortIcon field="inventoryStatus"></p-sortIcon></th>
-                        <th></th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-product>
-                    <tr>
-                        <td>
-                            <p-tableCheckbox [value]="product"></p-tableCheckbox>
-                        </td>
-                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">Code</span>
-                            {{product.code || product.id}}
-                        </td>
-                        <td style="width:14%; min-width:10rem;">
-                            <span class="p-column-title">Name</span>
-                            {{product.name}}
-                        </td>
-                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">Image</span>
-                            <img [src]="'assets/demo/images/product/' + product.image" [alt]="product.name" width="100" class="shadow-4" />
-                        </td>
-                        <td style="width:14%; min-width:8rem;">
-                            <span class="p-column-title">Price</span>
-                            {{product.price | currency:'USD'}}
-                        </td>
-                        <td style="width:14%; min-width:10rem;">
-                            <span class="p-column-title">Category</span>
-                            {{product.category}}
-                        </td>
-                        <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Reviews</span>
-                            <p-rating [ngModel]="product.rating" [readonly]="true" [cancel]="false"></p-rating>
-                        </td>
-                        <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Status</span>
-                            <span [class]="'product-badge status-' + (product.inventoryStatus ? product.inventoryStatus.toLowerCase() : '')">{{product.inventoryStatus}}</span>
-                        </td>
-                        <td>
-                            <div class="flex">
-                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editProduct(product)"></button>
-                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteProduct(product)"></button>
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
+
+
+            <p-table
+            #dt
+            [value]="ROLES.roles"
+            [columns]="cols"
+            responsiveLayout="scroll"
+            [rows]="10"
+            [globalFilterFields]="['name', 'permission_pluck']"
+            [paginator]="true"
+            [rowsPerPageOptions]="[10, 20, 30]"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            selectionMode="multiple"
+            [rowHover]="true"
+            dataKey="id"
+            [sortField]="'id'"
+            [sortOrder]="1"
+          >
+            <!-- Caption (cabecera) -->
+            <ng-template pTemplate="caption">
+              <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                <h5 class="m-0">Lista de Roles</h5>
+                <span class="block mt-2 md:mt-0 p-input-icon-left">
+                  <i class="pi pi-search"></i>
+                  <input
+                    pInputText
+                    type="text"
+                    (input)="dt.filterGlobal($event.target.value, 'contains')"
+                    placeholder="Buscar por nombre o permisos..."
+                    class="w-full sm:w-auto"
+                  />
+                </span>
+              </div>
+            </ng-template>
+
+            <!-- Encabezados de la tabla -->
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 3rem" pSortableColumn="id">
+                  ID
+                </th>
+                <th pSortableColumn="name">
+                  Rol <p-sortIcon field="name"></p-sortIcon>
+                </th>
+                <th pSortableColumn="permission_pluck">
+                  Permisos <p-sortIcon field="permission_pluck"></p-sortIcon>
+                </th>
+                <th>Fecha de Registro</th>
+                <th pSortableColumn="actions">
+                  Acciones <p-sortIcon field="actions"></p-sortIcon>
+                </th>
+              </tr>
+            </ng-template>
+
+            <!-- Cuerpo de la tabla -->
+            <ng-template pTemplate="body" let-role>
+              <tr>
+                <td style="width:14%; min-width:10rem;">
+                  <span class="p-column-title">Código</span>{{ role.id }}
+                </td>
+                <td>{{ role.name }}</td>
+                <td>
+                  <span *ngFor="let perm of role.permission_pluck" class="p-tag p-tag-rounded mr-1">
+                    {{ perm }}
+                  </span>
+                </td>
+                <td>{{ role.created_at | date: 'short' }}</td>
+                <td>
+                  <div class="flex">
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editRole(role.id) "></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="eliminarRol(role.id)"></button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+
+            <!-- Mensaje cuando no hay datos -->
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5">No se encontraron roles.</td>
+              </tr>
+            </ng-template>
+          </p-table>
         </div>
 
-        <!-- <p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Product Details" [modal]="true" class="p-fluid">
-            <ng-template pTemplate="content">
 
-                <div class="flex flex-col gap-6">
+        <p-dialog  [(visible)]="productDialog" [style]="{width: '450px'}" header="Agregar Un Rol" [modal]="true" class="p-fluid"   [closable]="false"
+        >
 
-                    <div>
-                        <label for="name" class="block font-bold mb-3">Nombre del Rol</label>
-                        <input type="text" pInputText id="name"  [(ngModel)]="name" required autofocus fluid />
-                    </div>
-
-
-                    <div class="fv-row mb-7">
-                        <label class="required fw-bold fs-6 mb-2">Selecciona los permisos:</label>
-
-                        <div class="table-responsive w-100">
-                            <table class="table table-head-custom table-vertical-center">
-                                <thead>
-                                    <tr class="text-left">
-                                        <th>ROL</th>
-                                        <th>PERMISOS</th>
-                                    </tr>
-                                </thead>
-                                <br>
-                                <tbody  >
-                                    <tr *ngFor="let permission of SIDEBAR">
-                                        <td>{{ permission.name }}</td><br>
-                                        <td>
-                                            <ng-container *ngFor="let perm of permission.permisos">
-                                                <div class="form-check form-check-sm form-check-custom form-check-solid py-1">
-                                                    <p-checkbox
-
-                                                      name="permisions"
-                                                      (click)="addPermission(perm.permiso)"
-                                                      value=""
-                                                      [(ngModel)]="selectedPermissions[perm.permiso]" />
-                                                    <label for="{{perm.permiso}}" class="ml-2">{{perm.name}}</label>
-
-                                                  </div>
-
-                                            </ng-container>
-                                            <br>
-
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
-
-            <ng-template pTemplate="footer">
-                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveProduct()"></button>
-            </ng-template>
-        </p-dialog> -->
-
-
-        <p-dialog [(visible)]="productDialog" [style]="{ width: '450px' }" header="Agregar Rol" [modal]="true">
-            <ng-template pTemplate="content">
-                <div class="field">
+            <ng-template pTemplate="content" id="form-modal"  class="form-modal">
+                <div [formGroup]="myGroup" flex align-items-center flex-wrap gap-2 mb-3>
                     <label for="name" class="block font-bold mb-2">Nombre del Rol</label>
-                    <input type="text" pInputText id="name" [(ngModel)]="name" required autofocus class="w-full" />
+                    <input type="text" pInputText id="name" formControlName="name"  autofocus class="w-full" (click)="showErrorViaToast()" />
+                    @if (myGroup.invalid  && myGroup.get('name').touched ) {
+
+
+                        <span class="text-error">
+                            * El Rol es Requerido
+                        </span>
+
+                    }
                 </div>
                 <div class="flex flex-col gap-4">
-
-                    <!-- Nombre del Rol -->
-
-
-                    <!-- Selección de Permisos -->
                     <div class="field">
                         <label class="block font-bold mb-2">Selecciona los permisos:</label>
                         <div class="">
@@ -161,6 +130,7 @@
                                         <th class="text-left p-3">PERMISOS</th>
                                     </tr>
                                 </thead>
+
                                 <tbody>
                                     <tr *ngFor="let permission of SIDEBAR" class="border-bottom-1 surface-border">
                                         <td class="p-3">{{ permission.name }}</td>
@@ -171,7 +141,7 @@
                                                         <p-checkbox
                                                             [binary]="true"
                                                             name="permisions"
-                                                            [(ngModel)]="selectedPermissions[perm.permiso]"
+
                                                             (onChange)="addPermission(perm.permiso)"
                                                             [inputId]="perm.permiso"
                                                         ></p-checkbox>
@@ -184,16 +154,21 @@
                                 </tbody>
                             </table>
                         </div>
+
                     </div>
                 </div>
+
             </ng-template>
 
-            <!-- Footer del Diálogo -->
+
+
             <ng-template pTemplate="footer">
                 <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-                <button pButton type="button" label="Registrar" icon="pi pi-check" (click)="store()"></button>
+                <button [disabled]="myGroup.invalid || permisions == 0 " pButton type="button" label="Registrar" icon="pi pi-check" (click)="store()"></button>
             </ng-template>
         </p-dialog>
+
+
 
 
         <p-dialog  header="Confirm" [modal]="true" [style]="{width:'450px'}">
@@ -219,3 +194,191 @@
         </p-dialog>
     </div>
 </div>
+
+<!-- <p-dialog [(visible)]="editDialog" [style]="{width: '450px'}" header="Editar Rol" [modal]="true" [closable]="false">
+    <ng-template pTemplate="content">
+      <div [formGroup]="editForm" class="form-modal">
+
+        <div class="field">
+          <label for="editName" class="block font-bold mb-2">Nombre del Rol</label>
+          <input id="editName" formControlName="name" type="text" pInputText class="w-full" />
+        </div>
+
+
+        <div class="field">
+          <label class="block font-bold mb-2">Selecciona los permisos:</label>
+          <div class="flex flex-column gap-2">
+            <ng-container *ngFor="let permission of SIDEBAR">
+              <div class="flex align-items-center" *ngFor="let perm of permission.permisos">
+                <p-checkbox
+                  [binary]="true"
+                  [checked]="selectedPermissions.includes(perm.permiso)"
+                  (onChange)="togglePermission(perm.permiso)"
+                  [inputId]="perm.permiso"
+                ></p-checkbox>
+                <label [for]="perm.permiso" class="ml-2">{{ perm.name }}</label>
+              </div>
+
+
+
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="closeEditDialog()"></button>
+      <button pButton type="button" label="Actualizar" icon="pi pi-check" [disabled]="editForm.invalid" class="p-button-text" (click)="updateRole()"></button>
+    </ng-template>
+  </p-dialog> -->
+
+
+  <!-- <p-dialog  [(visible)]="editDialog" [style]="{width: '450px'}" header="Editar Rol" [modal]="true" class="p-fluid"   [closable]="false"
+  >
+
+      <ng-template pTemplate="content" id="form-modal"  class="form-modal">
+          <div [formGroup]="editForm" flex align-items-center flex-wrap gap-2 mb-3>
+              <label for="name" class="block font-bold mb-2">Nombre del Rol</label>
+              <input id="editName" formControlName="name" type="text" pInputText class="w-full" />
+              @if (editForm.invalid  && editForm.get('name').touched ) {
+
+
+                  <span class="text-error">
+                      * El Rol es Requerido
+                  </span>
+
+              }
+          </div>
+          <div class="flex flex-col gap-4">
+              <div class="field">
+                  <label class="block font-bold mb-2">Selecciona los permisos:</label>
+                  <div class="">
+                      <table class="w-full">
+                          <thead>
+                              <tr>
+                                  <th class="text-left p-3">ROL</th>
+                                  <th class="text-left p-3">PERMISOS</th>
+                              </tr>
+                          </thead>
+
+                          <tbody>
+                              <tr *ngFor="let permission of SIDEBAR" class="border-bottom-1 surface-border">
+                                  <td class="p-3">{{ permission.name }}</td>
+                                  <td class="p-3">
+                                      <div class="flex flex-column gap-2">
+
+
+                                          <ng-container *ngFor="let perm of permission.permisos">
+                                            <div class="flex align-items-center">
+                                              <p-checkbox
+                                                [binary]="true"
+                                                [checked]="selectedPermissions.includes(perm.permiso)"
+                                                (onChange)="togglePermission(perm.permiso)"
+                                                [inputId]="perm.permiso"
+                                              ></p-checkbox>
+                                              <label [for]="perm.permiso" class="ml-2">{{ perm.name }}</label>
+                                            </div>
+                                          </ng-container>
+                                      </div>
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+
+              </div>
+          </div>
+
+      </ng-template>
+
+
+
+      <ng-template pTemplate="footer">
+          <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="closeEditDialog()"></button>
+          <button [disabled]="myGroup.invalid || permisions == 0 " pButton type="button" label="Registrar" icon="pi pi-check" (click)="store()"></button>
+      </ng-template>
+  </p-dialog> -->
+  <p-dialog [(visible)]="editDialog" [style]="{width: '450px'}" header="Editar Rol" [modal]="true" class="p-fluid" [closable]="false">
+    <ng-template pTemplate="content" id="form-modal" class="form-modal">
+      <div [formGroup]="editForm" flex align-items-center flex-wrap gap-2 mb-3>
+        <label for="editName" class="block font-bold mb-2">Nombre del Rol</label>
+        <input id="editName" formControlName="name" type="text" pInputText class="w-full" />
+
+        <span *ngIf="editForm.invalid && editForm.get('name').touched" class="text-error">
+          * El Rol es Requerido
+        </span>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div class="field">
+          <label class="block font-bold mb-2">Selecciona los permisos:</label>
+          <div class="">
+            <table class="w-full">
+              <thead>
+                <tr>
+                  <th class="text-left p-3">ROL</th>
+                  <th class="text-left p-3">PERMISOS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let permission of SIDEBAR" class="border-bottom-1 surface-border">
+                  <td class="p-3">{{ permission.name }}</td>
+                  <td class="p-3">
+                    <div class="flex flex-column gap-2">
+                      <!-- <ng-container *ngFor="let perm of permission.permisos">
+                        <div class="flex align-items-center">
+                            <p-checkbox
+                            [binary]="true"
+
+                            [checked]="selectedPermissions.includes(perm.permiso)"
+                            (onChange)="togglePermission($event, perm.permiso)"
+                            [inputId]="perm.permiso"
+                          ></p-checkbox>
+
+                          <label [for]="perm.permiso" class="ml-2">{{ perm.name }}</label>
+                        </div>
+                      </ng-container> -->
+
+                      <!-- <ng-container *ngFor="let perm of permission.permisos">
+                        <div class="flex align-items-center">
+                          <p-checkbox
+                            [binary]="true"
+                            [(ngModel)]="selectedPermissionsState[perm.permiso]"
+                            (onChange)="togglePermission($event, perm.permiso)"
+                            [inputId]="perm.permiso">
+                          </p-checkbox>
+
+                          <label [for]="perm.permiso" class="ml-2">{{ perm.name }}</label>
+                        </div>
+                      </ng-container> -->
+
+                      <ng-container *ngFor="let perm of permission.permisos">
+                        <div class="flex align-items-center">
+                          <p-checkbox
+                            [binary]="true"
+                            [(ngModel)]="selectedPermissionsState[perm.permiso]"
+                            (onChange)="togglePermission($event, perm.permiso)"
+                            [inputId]="perm.permiso">
+                          </p-checkbox>
+                          <label [for]="perm.permiso" class="ml-2">{{ perm.name }}</label>
+                        </div>
+                      </ng-container>
+
+
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="closeEditDialog()"></button>
+      <button [disabled]="editForm.invalid || selectedPermissions.length === 0" pButton type="button" label="Actualizar" icon="pi pi-check" (click)="updateRole()"></button>
+    </ng-template>
+  </p-dialog>

@@ -65,7 +65,28 @@ class RolePermissionController extends Controller
     */
    public function show(string $id)
    {
-       //
+        // Buscar el rol por su ID, junto con sus permisos
+    $role = Role::with("permissions")->find($id);
+
+    // Si no se encuentra el rol, devolver un mensaje de error
+    if (!$role) {
+        return response()->json([
+            'message' => 404,
+            'message_text' => 'El rol no existe',
+        ], 404);
+    }
+
+    // Si el rol existe, devolver la información del rol y sus permisos
+    return response()->json([
+        'message' => 200,
+        'role' => [
+            'id' => $role->id,
+            'name' => $role->name,
+            'permissions' => $role->permissions,
+            'permission_pluck' => $role->permissions->pluck('name'),
+            'created_format_at' => $role->created_at->format('Y-m-d h:i A'),
+        ],
+    ]);
    }
 
    /**
@@ -84,7 +105,8 @@ class RolePermissionController extends Controller
        $role->update($request->all());
        // [["id" => 1,"name" => "egreso"],["id" => 2,"name" => "ingreso"],["id" => 3,"name" => "close_caja"]]
        // ["egreso","ingreso","close_caja"]
-       $role->syncPermissions($request->permisions);
+       $role->syncPermissions($request->permissions); // Cambiar 'permisions' por 'permissions'
+
 
        return response()->json([
            "message" => 200,

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RolesRouterModule } from './roles.routing';
 import { RolesComponent } from './roles.component';
 import { TableroModule } from '../../tablero/tablero.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
@@ -19,6 +19,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
+import { MessagesModule } from 'primeng/messages';
+import { MessageModule } from 'primeng/message';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,17 @@ import { CheckboxModule } from 'primeng/checkbox';
         RadioButtonModule,
         InputNumberModule,
         DialogModule,
-        CheckboxModule
+        CheckboxModule,
+        MessagesModule,
+        InputTextModule,
+        MessagesModule,
+        MessageModule,
+        ReactiveFormsModule,
+        ToastModule,
+        
+
+
+
 
 
   ]

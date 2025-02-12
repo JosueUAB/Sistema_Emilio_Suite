@@ -1,0 +1,10 @@
+.swal-popup {
+    z-index: 99999999999999999999999999!important; /* Este valor debe ser mayor que el z-index del modal */
+  }
+  .text-error {
+    color: red; /* Color rojo para el texto */
+    font-size: 12px; /* Tamaño pequeño para el mensaje */
+    font-weight: 400; /* Peso normal para el texto */
+    margin-top: 4px; /* Espacio superior para separar del input */
+    display: inline-block; /* Mostrar el texto en línea */
+}
