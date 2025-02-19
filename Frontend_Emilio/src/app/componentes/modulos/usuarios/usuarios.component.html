@@ -1,1 +1,402 @@
-<p>usuarios works!</p>
+
+
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="Agregar Usuario" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="right">
+
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Buscar por nombre o email..." />
+                    </span>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="usuarios"
+             [paginator]="true" [rows]="10"
+            [globalFilterFields]="['name', 'email','rol.name','phone','n_document','created_format_at','id']"
+            [rowsPerPageOptions]="[10, 20, 30]"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                        <th>Avatar</th>
+                        <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="rol.name">Rol <p-sortIcon field="rol.name"></p-sortIcon></th>
+                        <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                        <th pSortableColumn="phone">Telefono <p-sortIcon field="phone"></p-sortIcon></th>
+                        <th pSortableColumn="n_document">Nº de Documento <p-sortIcon field="n_document"></p-sortIcon></th>
+                        <th pSortableColumn="created_format_at">Fecha de Registro <p-sortIcon field="created_format_at"></p-sortIcon></th>
+
+
+                        <th>Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-usuario>
+                    <tr>
+                        <td>{{ usuario.id }}</td>
+                        <td>
+                            <img *ngIf="usuario.avatar" [src]="usuario.avatar" alt="{{ usuario.name }}" style="width: 40px; height: 40px; border-radius: 50%;"/>
+                        </td>
+                        <td>{{ usuario.name }}</td>
+                        <td>{{ usuario.rol.name }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>{{ usuario.phone }}</td>
+
+                        <td>{{ usuario.n_document }}</td>
+
+                        <td>{{ usuario.created_format_at }}</td>
+
+
+
+                        <td>
+                            <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editarUsuario(usuario)"></button>
+                            <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="eliminarUsuario(usuario.id)"></button>
+                          </td>
+
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="6">No se encontraron usuarios.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+
+
+
+<p-dialog [(visible)]="guardarDialog" [style]="{width: '750px'}" header="Agregar/Editar Usuario" [modal]="true" class="p-fluid" [closable]="false">
+    <ng-template pTemplate="content">
+      <form [formGroup]="usuarioForm">
+
+        <!-- Nombre y Apellido -->
+        <div class="field grid">
+          <div class="col-6">
+            <label for="name" class="block font-bold mb-2">Nombre</label>
+            <input id="name" formControlName="name" type="text" pInputText class="w-full" placeholder="Nombre" />
+            <span *ngIf="usuarioForm.get('name').invalid && usuarioForm.get('name').touched" class="text-error">
+              * El Nombre es requerido
+            </span>
+          </div>
+          <div class="col-6">
+            <label for="surname" class="block font-bold mb-2">Apellido</label>
+            <input id="surname" formControlName="surname" type="text" pInputText class="w-full" placeholder="Apellido" />
+            <span *ngIf="usuarioForm.get('surname').invalid && usuarioForm.get('surname').touched" class="text-error">
+              * El Apellido es requerido
+            </span>
+          </div>
+        </div>
+
+        <!-- Email y Teléfono -->
+        <div class="field grid">
+          <div class="col-6">
+            <label for="email" class="block font-bold mb-2">Email</label>
+            <input id="email" formControlName="email" type="email" pInputText class="w-full" placeholder="example@gmail.com" />
+            <span *ngIf="usuarioForm.get('email').invalid && usuarioForm.get('email').touched" class="text-error">
+              * El Email es requerido y debe ser válido
+            </span>
+          </div>
+          <div class="col-6">
+            <label for="phone" class="block font-bold mb-2">Teléfono</label>
+            <input id="phone" formControlName="phone" type="number" pInputText class="w-full" placeholder="99999999" />
+            <span *ngIf="usuarioForm.get('phone').invalid && usuarioForm.get('phone').touched" class="text-error">
+              * El Teléfono es requerido
+            </span>
+          </div>
+        </div>
+
+
+
+
+
+
+        <!-- Verificación de la contraseña -->
+<div class="field grid">
+    <div class="col-6">
+      <label for="password" class="block font-bold mb-2">Contraseña</label>
+      <p-password [formControl]="usuarioForm.get('password')" [toggleMask]="true" placeholder="*******"
+      promptLabel="Ingrese su contraseña"
+      weakLabel="Devil"
+      mediumLabel="Medio"
+      strongLabel="Fuerte"></p-password>
+      <span *ngIf="usuarioForm.get('password').invalid && usuarioForm.get('password').touched" class="text-error">
+        * La Contraseña es requerida
+      </span>
+    </div>
+
+    <!-- Verificación de repetir contraseña -->
+    <div class="col-6">
+      <label for="password_repit" class="block font-bold mb-2">Repetir Contraseña</label>
+      <p-password [formControl]="usuarioForm.get('password_repit')" [toggleMask]="true" placeholder="*******"
+      promptLabel="Repita su contraseña"
+      weakLabel="Devil"
+      mediumLabel="Medio"
+      strongLabel="Fuerte"></p-password>
+      <span *ngIf="usuarioForm.get('password_repit').invalid && usuarioForm.get('password_repit').touched" class="text-error">
+        * Debes repetir la Contraseña
+      </span>
+
+      <!-- Validación de contraseñas no coincidentes -->
+      <span *ngIf="usuarioForm.get('password').touched && usuarioForm.get('password_repit').touched && usuarioForm.get('password').value !== usuarioForm.get('password_repit').value" class="text-error">
+        ** Las contraseñas no son iguales
+      </span>
+    </div>
+  </div>
+
+
+
+
+        <!-- Rol -->
+        <div class="field">
+          <label for="role_id" class="block font-bold mb-2">Rol</label>
+          <p-dropdown [options]="roles" formControlName="role_id" optionLabel="name" optionValue="id" placeholder="Selecciona un rol"></p-dropdown>
+          <span *ngIf="usuarioForm.get('role_id').invalid && usuarioForm.get('role_id').touched" class="text-error">
+            * El Rol es requerido
+          </span>
+        </div>
+
+        <!-- Género -->
+        <div class="field">
+          <label class="block font-bold mb-2">Género</label>
+          <div class="flex gap-3">
+            <p-radioButton name="gender" value="MASCULINO" formControlName="gender" label="Masculino"></p-radioButton>
+            <p-radioButton name="gender" value="FEMENINO" formControlName="gender" label="Femenino"></p-radioButton>
+          </div>
+          <span *ngIf="usuarioForm.get('gender').invalid && usuarioForm.get('gender').touched" class="text-error">
+            * El Género es requerido
+          </span>
+        </div>
+
+        <!-- Tipo de Documento y Número de Documento -->
+        <div class="field grid">
+          <div class="col-6">
+            <label for="type_document" class="block font-bold mb-2">Tipo de Documento</label>
+            <p-dropdown [options]="tiposDocumento" formControlName="type_document" placeholder="Selecciona un tipo"></p-dropdown>
+            <span *ngIf="usuarioForm.get('type_document').invalid && usuarioForm.get('type_document').touched" class="text-error">
+              * El Tipo de Documento es requerido
+            </span>
+          </div>
+          <div class="col-6">
+            <label for="n_document" class="block font-bold mb-2">N° de Documento</label>
+            <input id="n_document" formControlName="n_document" type="number" pInputText class="w-full" placeholder="99999999" />
+            <span *ngIf="usuarioForm.get('n_document').invalid && usuarioForm.get('n_document').touched" class="text-error">
+              * El Número de Documento es requerido
+            </span>
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="field">
+          <label for="address" class="block font-bold mb-2">Dirección</label>
+          <textarea id="address" formControlName="address" pInputTextarea class="w-full" rows="3"></textarea>
+          <span *ngIf="usuarioForm.get('address').invalid && usuarioForm.get('address').touched" class="text-error">
+            * La Dirección es requerida
+          </span>
+        </div>
+
+        <!-- Avatar -->
+        <div class="field">
+          <label for="avatar" class="block font-bold mb-2">Avatar</label>
+          <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" (onSelect)="onFileSelect($event)" chooseLabel="Seleccionar Imagen"></p-fileUpload>
+          <div *ngIf="imagenPrevisualiza" class="mt-3">
+            <img [src]="imagenPrevisualiza" style="height: 100px;" alt="Previsualización de la imagen" />
+          </div>
+          <span *ngIf="!imagenPrevisualiza && usuarioForm.get('avatar').touched" class="text-error">
+            * El Avatar es requerido
+          </span>
+        </div>
+
+        <!-- Contraseña y Repetir Contraseña -->
+
+        <!-- <div class="field grid">
+            <div class="col-6">
+                <p-password [(ngModel)]="usuarioForm.value.password" formControlName="password" [toggleMask]="true" placeholder="*******"></p-password>
+            <span *ngIf="usuarioForm.get('password').invalid && usuarioForm.get('password').touched" class="text-error">
+            * La Contraseña es requerida
+            </span>
+            </div>
+            <div class="col-6">
+                <p-password [(ngModel)]="usuarioForm.value.password_repit" formControlName="password_repit" [toggleMask]="true" placeholder="********"></p-password>
+                @if (usuarioForm.get('password_repit').invalid  && usuarioForm.get('password_repi').touched) {
+
+                <span  class="text-error">
+                    * Debes repetir la Contraseña
+                    </span>
+                }
+
+
+            </div>
+          </div> -->
+
+
+
+    </form>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+      <button pButton type="button" label="Guardar" icon="pi pi-check" class="p-button-text"
+        [disabled]="usuarioForm.invalid || !imagenPrevisualiza"
+        (click)="guardarUsuario()">
+      </button>
+    </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="editDialog" [style]="{width: '750px'}" header="Editar Usuario" [modal]="true" class="p-fluid" [closable]="false">
+    <ng-template pTemplate="content">
+      <form [formGroup]="editUsuarioForm">
+
+        <!-- Nombre y Apellido -->
+        <div class="field grid">
+          <div class="col-6">
+            <label for="name" class="block font-bold mb-2">Nombre</label>
+            <input id="name" formControlName="name" type="text" pInputText class="w-full" placeholder="Nombre" />
+            <span *ngIf="usuarioForm.get('name').invalid && usuarioForm.get('name').touched" class="text-error">
+              * El Nombre es requerido
+            </span>
+          </div>
+          <div class="col-6">
+            <label for="surname" class="block font-bold mb-2">Apellido</label>
+            <input id="surname" formControlName="surname" type="text" pInputText class="w-full" placeholder="Apellido" />
+            <span *ngIf="usuarioForm.get('surname').invalid && usuarioForm.get('surname').touched" class="text-error">
+              * El Apellido es requerido
+            </span>
+          </div>
+        </div>
+
+        <!-- Email y Teléfono -->
+        <div class="field grid">
+          <div class="col-6">
+            <label for="email" class="block font-bold mb-2">Email</label>
+            <input id="email" formControlName="email" type="email" pInputText class="w-full" placeholder="example@gmail.com" />
+            <span *ngIf="usuarioForm.get('email').invalid && usuarioForm.get('email').touched" class="text-error">
+              * El Email es requerido y debe ser válido
+            </span>
+          </div>
+          <div class="col-6">
+            <label for="phone" class="block font-bold mb-2">Teléfono</label>
+            <input id="phone" formControlName="phone" type="number" pInputText class="w-full" placeholder="99999999" />
+            <span *ngIf="usuarioForm.get('phone').invalid && usuarioForm.get('phone').touched" class="text-error">
+              * El Teléfono es requerido
+            </span>
+          </div>
+        </div>
+
+        <!-- Verificación de la contraseña (Solo en caso de edición) -->
+        <div class="field grid">
+          <div class="col-6">
+            <label for="password" class="block font-bold mb-2">Contraseña</label>
+            <p-password [formControl]="usuarioForm.get('password')" [toggleMask]="true" placeholder="*******"
+              promptLabel="Ingrese su contraseña"
+              weakLabel="Devil"
+              mediumLabel="Medio"
+              strongLabel="Fuerte"></p-password>
+            <span *ngIf="usuarioForm.get('password').invalid && usuarioForm.get('password').touched" class="text-error">
+              * La Contraseña es requerida
+            </span>
+          </div>
+
+          <!-- Verificación de repetir contraseña -->
+          <div class="col-6">
+            <label for="password_repit" class="block font-bold mb-2">Repetir Contraseña</label>
+            <p-password [formControl]="usuarioForm.get('password_repit')" [toggleMask]="true" placeholder="*******"
+              promptLabel="Repita su contraseña"
+              weakLabel="Devil"
+              mediumLabel="Medio"
+              strongLabel="Fuerte"></p-password>
+            <span *ngIf="usuarioForm.get('password_repit').invalid && usuarioForm.get('password_repit').touched" class="text-error">
+              * Debes repetir la Contraseña
+            </span>
+
+            <!-- Validación de contraseñas no coincidentes -->
+            <span *ngIf="usuarioForm.get('password').touched && usuarioForm.get('password_repit').touched && usuarioForm.get('password').value !== usuarioForm.get('password_repit').value" class="text-error">
+              ** Las contraseñas no son iguales
+            </span>
+          </div>
+        </div>
+
+        <!-- Rol -->
+        <div class="field">
+          <label for="role_id" class="block font-bold mb-2">Rol</label>
+          <p-dropdown [options]="roles" formControlName="role_id" optionLabel="name" optionValue="id" placeholder="Selecciona un rol"></p-dropdown>
+          <span *ngIf="usuarioForm.get('role_id').invalid && usuarioForm.get('role_id').touched" class="text-error">
+            * El Rol es requerido
+          </span>
+        </div>
+
+        <!-- Género -->
+        <div class="field">
+          <label class="block font-bold mb-2">Género</label>
+          <div class="flex gap-3">
+            <p-radioButton name="gender" value="MASCULINO" formControlName="gender" label="Masculino"></p-radioButton>
+            <p-radioButton name="gender" value="FEMENINO" formControlName="gender" label="Femenino"></p-radioButton>
+          </div>
+          <span *ngIf="usuarioForm.get('gender').invalid && usuarioForm.get('gender').touched" class="text-error">
+            * El Género es requerido
+          </span>
+        </div>
+
+        <!-- Tipo de Documento y Número de Documento -->
+        <div class="field grid">
+          <div class="col-6">
+            <label for="type_document" class="block font-bold mb-2">Tipo de Documento</label>
+            <p-dropdown [options]="tiposDocumento" formControlName="type_document" placeholder="Selecciona un tipo"></p-dropdown>
+            <span *ngIf="usuarioForm.get('type_document').invalid && usuarioForm.get('type_document').touched" class="text-error">
+              * El Tipo de Documento es requerido
+            </span>
+          </div>
+          <div class="col-6">
+            <label for="n_document" class="block font-bold mb-2">N° de Documento</label>
+            <input id="n_document" formControlName="n_document" type="number" pInputText class="w-full" placeholder="99999999" />
+            <span *ngIf="usuarioForm.get('n_document').invalid && usuarioForm.get('n_document').touched" class="text-error">
+              * El Número de Documento es requerido
+            </span>
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="field">
+          <label for="address" class="block font-bold mb-2">Dirección</label>
+          <textarea id="address" formControlName="address" pInputTextarea class="w-full" rows="3"></textarea>
+          <span *ngIf="usuarioForm.get('address').invalid && usuarioForm.get('address').touched" class="text-error">
+            * La Dirección es requerida
+          </span>
+        </div>
+
+        <!-- Avatar -->
+        <div class="field">
+          <label for="avatar" class="block font-bold mb-2">Avatar</label>
+          <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" (onSelect)="onFileSelect($event)" chooseLabel="Seleccionar Imagen"></p-fileUpload>
+          <div *ngIf="imagenPrevisualiza" class="mt-3">
+            <img [src]="imagenPrevisualiza" style="height: 100px;" alt="Previsualización de la imagen" />
+          </div>
+          <span *ngIf="!imagenPrevisualiza && usuarioForm.get('avatar').touched" class="text-error">
+            * El Avatar es requerido
+          </span>
+        </div>
+
+      </form>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="hideEditDialog()"></button>
+      <button pButton type="button" label="Guardar" icon="pi pi-check" class="p-button-text"
+
+        (click)="guardarUsuarioEditado()">
+      </button>
+    </ng-template>
+  </p-dialog>

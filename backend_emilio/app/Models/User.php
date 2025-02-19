@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Models;
-use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Role;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -23,6 +24,14 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'surname',
+        'phone',
+        'role_id',
+        'type_document',
+        'n_document',
+        'gender',
+        'address',
+        'avatar',
     ];
 
     /**
@@ -33,6 +42,8 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
         'remember_token',
+
+
     ];
 
     /**
@@ -48,6 +59,9 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTIdentifier()
     {
         return $this->getKey();
+    }
+    public function role(){
+        return $this->belongsTo(Role::class);
     }
 
 

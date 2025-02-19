@@ -12,3 +12,11 @@ $gutter: 1rem; //for primeflex grid system
 @import "assets/demo/styles/flags/flags.css";
 @import "assets/demo/styles/badges.scss";
 @import "assets/demo/styles/code.scss";
+
+.text-error {
+    color: red; /* Color rojo para el texto */
+    font-size: 12px; /* Tamaño pequeño para el mensaje */
+    font-weight: 400; /* Peso normal para el texto */
+    margin-top: 4px; /* Espacio superior para separar del input */
+    display: inline-block; /* Mostrar el texto en línea */
+}

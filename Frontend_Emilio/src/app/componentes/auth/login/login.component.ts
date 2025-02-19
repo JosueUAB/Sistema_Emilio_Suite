@@ -8,6 +8,7 @@ import { PasswordModule } from 'primeng/password';
 import { ToastModule } from 'primeng/toast';
 import { AuthService } from 'src/app/services/auth.service';
 import { MessageService } from 'primeng/api';
+import mensaje from 'sweetalert2'
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -49,6 +50,15 @@ export class LoginComponent {
 
             if (data && data.access_token) {
                 this.toast.add({ severity: 'success', summary: 'Éxito', detail: 'Bienvenido al Sistema' });
+                mensaje.fire({
+                    title: "Bienvenido al Sistema",
+                    icon: "success",
+                    draggable: true,
+                    timer: 1000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                  });
+
               this.router.navigate(['']); // Redirigir al dashboard
             } else {
               console.error('No access token received or invalid data.');
@@ -71,28 +81,6 @@ export class LoginComponent {
 
 
 
-    // onSubmit() {
-    //   if (this.email && this.password) {
-    //     this.authService.acceso(this.email, this.password).subscribe({
-    //       next: (response: any) => {
-    //         // Guardamos el token en sessionStorage si la autenticación es exitosa
-    //         if (response && response.token) {
-    //           sessionStorage.setItem('token', response.token);
-    //           if (this.rememberMe) {
-    //             localStorage.setItem('email', this.email); // Guardar email si "remember me" está activado
-    //           }
-    //           this.router.navigate(['/dashboard']); // Redirige al dashboard o página de inicio
-    //         }
-    //       },
-    //       error: (err) => {
-    //         console.error('Error during login:', err);
-    //         alert('Login failed, please check your credentials.');
-    //       }
-    //     });
-    //   } else {
-    //     alert('Please fill in all fields.');
-    //   }
-    // }
     onSubmit() {
         if (this.email && this.password) {
           this._authService.acceso(this.email, this.password).subscribe({
