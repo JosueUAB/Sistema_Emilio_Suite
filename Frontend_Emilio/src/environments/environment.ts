@@ -13,6 +13,9 @@ export const environment = {
   URL_fRONTEND:'http://127.0.0.1:4200',
   token: 'token',
 
+  logo_white:'https://cdn-icons-png.flaticon.com/512/6195/6195460.png',
+  logo_dark:'https://cdn-icons-png.flaticon.com/512/6195/6195460.png',
+
 }
 
 

@@ -1,6 +1,10 @@
 <div class="layout-topbar">
     <a class="layout-topbar-logo" routerLink="">
-        <img src="assets/layout/images/{{layoutService.config().colorScheme === 'light' ? 'logo-dark' : 'logo-white'}}.svg" alt="logo">
+        <!-- <img src="assets/layout/images/{{layoutService.config().colorScheme === 'light' ? 'logo-dark' : 'logo-white'}}.svg" alt="logo"> -->
+        <img
+        [src]="layoutService.config().colorScheme === 'light' ? private_logo_dark : private_logo_dark"
+        alt="logo">
+
         <span>{{titulo_aplicacion}}</span>
     </a>
 
@@ -12,18 +16,59 @@
         <i class="pi pi-ellipsis-v"></i>
     </button>
 
+
     <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
+
+        <!-- Primeros tres botones -->
         <button class="p-link layout-topbar-button">
             <i class="pi pi-calendar"></i>
             <span>Calendar</span>
         </button>
-        <button class="p-link layout-topbar-button">
-            <i class="pi pi-user"></i>
-            <span>Profile</span>
+        <button class="p-link layout-topbar-button" (click)="menu.toggle($event)">
+            <!-- Reemplazamos el ícono con una imagen más grande -->
+            <img src="{{avatar}}" alt="Menu" style="width: 40px; height: 40px; border-radius: 50%;"/>
+            <span>Menu</span>
         </button>
-        <button class="p-link layout-topbar-button" [routerLink]="'/documentation'">
-            <i class="pi pi-cog"></i>
-            <span>Settings</span>
+
+        <button class="p-link layout-topbar-button" (click)="cerrarSesion()">
+            <i class="pi pi-sign-out"></i>
+            <span>Salir</span>
         </button>
+
+        <!-- p-menu para opciones -->
+        <p-menu #menu [model]="valores" [popup]="true" appendTo="body" styleClass="w-full md:w-15rem">
+            <ng-template pTemplate="start">
+                <span class="inline-flex align-items-center gap-1 px-2 py-2">
+                    <svg width="33" height="35" viewBox="0 0 33 35" fill="none" xmlns="http://www.w3.org/2000/svg" class="block mx-auto">
+                        <path d="M15.1934 0V0V0L0.0391235 5.38288L2.35052 25.3417L15.1934 32.427V32.427V32.427L28.0364 25.3417L30.3478 5.38288L15.1934 0Z" fill="var(--primary-color)" />
+                    </svg>
+                    <span class="font-medium text-xl font-semibold"> Bienvenido : <span class="text-primary">{{fullname }}</span></span>
+                </span>
+            </ng-template>
+
+            <ng-template pTemplate="submenuheader" let-item>
+                <span class="text-primary font-bold">{{ item.label }}</span>
+            </ng-template>
+
+            <ng-template pTemplate="item" let-item>
+                <a pRipple class="flex align-items-center p-menuitem-link">
+                    <span [class]="item.icon"></span>
+                    <span class="ml-2">{{ item.label }}</span>
+                </a>
+            </ng-template>
+
+            <ng-template pTemplate="end">
+                <button pRipple class="relative overflow-hidden w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
+                    <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" class="mr-2" shape="circle" />
+                    <span class="inline-flex flex-column">
+                        <span class="font-bold">{{email}}</span>
+                        <span class="text-sm">{{role}}</span>
+                    </span>
+                </button>
+            </ng-template>
+        </p-menu>
     </div>
+
+
+
 </div>

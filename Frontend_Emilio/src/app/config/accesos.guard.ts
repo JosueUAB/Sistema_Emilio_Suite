@@ -7,37 +7,6 @@ export class AuthGuard {
     router: any;
 
     constructor(private  _authservice: AuthService){}
-
-
-
-    // canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    //     const currentUser = this._authservice.obtenerUsuario();
-    //     const currentUserToken = this._authservice.obtenerToken();
-
-    //     // Si no hay un usuario o un token, cerrar sesión y redirigir al login
-    //     if (!currentUser || !currentUserToken) {
-    //         this._authservice.cerrarSesion();
-    //         return false;  // Esto evita la navegación a la ruta protegida
-    //     }
-
-    //     let token = currentUserToken;  // Usamos el token obtenido del servicio
-    //     if (!token) {
-    //         // Si el token es null o no existe, cerrar sesión
-    //         this._authservice.cerrarSesion();
-    //         return false;  // Evitar navegación
-    //     }
-
-    //     let expiresIn = (JSON.parse(atob(token.split('.')[1]))).exp;
-
-    //     // Verificar si el token ha expirado
-    //     if (Math.floor(new Date().getTime() / 1000) >= expiresIn) {
-    //         // Si ha expirado, cerrar sesión
-    //         this._authservice.cerrarSesion();
-    //         return false;  // Evitar navegación
-    //     }
-
-    //     return true;  // Permitir la navegación si todo es correcto
-    // }
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         const currentUser = this._authservice.obtenerUsuario();
         const currentUserToken = this._authservice.obtenerToken();

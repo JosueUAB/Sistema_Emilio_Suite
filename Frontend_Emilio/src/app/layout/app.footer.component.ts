@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
     templateUrl: './app.footer.component.html'
 })
 export class AppFooterComponent {
-
+    private_logo_dark:string=environment.logo_dark;
     footer_dev:string= environment.app_footer;
     constructor(public layoutService: LayoutService) { }
 }
