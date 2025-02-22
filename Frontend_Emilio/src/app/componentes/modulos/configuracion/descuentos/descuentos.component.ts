@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DatePipe } from '@angular/common';
+
 
 import { MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
 import { DescuentoService } from '../services/descuentos.service';
+import { PrimeNGConfig } from 'primeng/api';  // Importar PrimeNGConfig
 
 @Component({
   selector: 'app-descuentos',
   templateUrl: './descuentos.component.html',
-  providers: [MessageService]
+  providers: [MessageService,DatePipe]
 })
 export class DescuentosComponent implements OnInit {
 
@@ -19,11 +22,14 @@ export class DescuentosComponent implements OnInit {
   descuentoForm: FormGroup;
   editDialog: boolean = false; // Para controlar la visibilidad del modal de edición
   descuentoSeleccionado: any = null; // Para almacenar el descuento seleccionado para editar
-
+    es:any;
   constructor(
     private _DescuentoService: DescuentoService,
     private fb: FormBuilder,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private primengConfig: PrimeNGConfig,
+    private datePipe: DatePipe
+
   ) {
     this.descuentoForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -31,11 +37,35 @@ export class DescuentosComponent implements OnInit {
       fecha_inicio: ['', Validators.required],
       fecha_fin: ['', Validators.required]
     });
+   
+
+
   }
 
   ngOnInit(): void {
     this.listarDescuentos();
+
+    this.primengConfig.setTranslation({
+        firstDayOfWeek: 0,
+        dayNames: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+        dayNamesShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+        dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
+        monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        monthNamesShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+        today: 'Hoy',
+        clear: 'Limpiar',
+        dateFormat: 'dd/mm/yy',
+        weekHeader: 'Sg'
+      });
+    
+
+
+
+
+
+  
   }
+
 
   // Listar descuentos
   listarDescuentos() {
@@ -64,10 +94,26 @@ export class DescuentosComponent implements OnInit {
     if (this.descuentoForm.invalid) {
       return;
     }
-
+  
     const descuentoData = this.descuentoForm.value;
-
-    this._DescuentoService.registrarDescuento(descuentoData).subscribe(
+  
+    // Convertir las fechas al formato 'YYYY-MM-DD'
+    const fechaInicio = this.datePipe.transform(descuentoData.fecha_inicio, 'yyyy-MM-dd');
+    const fechaFin = this.datePipe.transform(descuentoData.fecha_fin, 'yyyy-MM-dd');
+  
+    // Asegurarse de que el porcentaje sea un string con dos decimales
+    const porcentaje = parseFloat(descuentoData.porcentaje).toFixed(2);
+  
+    const dataToSend = {
+      ...descuentoData,
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
+      porcentaje: porcentaje
+    };
+  
+    console.log('Datos a enviar: ', dataToSend);
+  
+    this._DescuentoService.registrarDescuento(dataToSend).subscribe(
       response => {
         Swal.fire({
           icon: 'success',
@@ -98,6 +144,7 @@ export class DescuentosComponent implements OnInit {
       }
     );
   }
+  
 
   // Función para editar un descuento
   editarDescuento(descuento: any) {

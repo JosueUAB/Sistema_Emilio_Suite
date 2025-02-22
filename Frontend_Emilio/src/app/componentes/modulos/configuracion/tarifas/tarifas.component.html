@@ -1,6 +1,6 @@
 <div class="grid p-fluid">
     <p-toast></p-toast>
-    <div class="col-12 lg:col-6">
+    <div class="col-12 lg:col-4">
       <div class="card shadow-2 p-4">
         <h5 class="text-xl font-bold mb-4">Ingresar Nueva Tarifa</h5>
 
@@ -28,7 +28,7 @@
 </div>
 
     <!-- Tabla de Tarifas -->
-    <div class="col-12 lg:col-6">
+    <div class="col-12 lg:col-8">
       <div class="card shadow-2 p-4">
         <h5 class="text-xl font-bold mb-4">Lista de Tarifas</h5>
 
@@ -44,7 +44,7 @@
         </p-toolbar>
 
         <!-- Tabla con las tarifas -->
-        <p-table #dt [value]="tarifas" [paginator]="true" [rows]="3" [rowsPerPageOptions]="[3, 5, 10, 20]" [globalFilterFields]="['nombre', 'precio_base']" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+        <p-table #dt [value]="tarifas" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[ 5, 10, 20,30]" [globalFilterFields]="['nombre', 'precio_base']" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
             
           <!-- Cabecera de la tabla -->
           <ng-template pTemplate="header">
@@ -113,8 +113,8 @@
     </ng-template>
     
     <ng-template pTemplate="footer">
-      <p-button label="Cerrar" icon="pi pi-times" [outlined]="true" severity="danger"  (click)="cancelarEdicion()"></p-button>
-      <p-button  label="Guardar" icon="pi pi-check"  [outlined]="true" severity="success"
+      <p-button label="Cerrar" icon="pi pi-times" [rounded]="true" severity="danger"  (click)="cancelarEdicion()"></p-button>
+      <p-button  label="Actualizar" icon="pi pi-check"  [rounded]="true" severity="success"
         [disabled]="tarifaForm.invalid"
         (click)="guardarTarifaActualizada()">
       </p-button>

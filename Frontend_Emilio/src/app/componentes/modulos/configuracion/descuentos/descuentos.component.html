@@ -24,16 +24,20 @@
   
           <div class="field mb-4">
             <span class="p-float-label">
-              <input id="fecha_inicio" formControlName="fecha_inicio" type="date" pInputText class="w-full" />
-              <label for="fecha_inicio" class="font-semibold">Fecha de Inicio</label>
-            </span>
+                <p-calendar formControlName="fecha_inicio" 
+                id="fecha_inicio" 
+                inputId="fecha_inicio" />
+            <label for="fecha_inicio">Fecha Inicio</label>
+              </span>
           </div>
   
           <div class="field mb-4">
             <span class="p-float-label">
-              <input id="fecha_fin" formControlName="fecha_fin" type="date" pInputText class="w-full" />
-              <label for="fecha_fin" class="font-semibold">Fecha de Fin</label>
-            </span>
+                <p-calendar formControlName="fecha_fin" 
+                id="fecha_fin" 
+                inputId="fecha_fin" />
+            <label for="fecha_fin">Fecha Fin</label>
+              </span>
           </div>
   
           <p-button label="Guardar Descuento" icon="pi pi-check" severity="success" type="submit" [disabled]="descuentoForm.invalid" (click)="guardarDescuento()"></p-button>
@@ -56,7 +60,7 @@
           </ng-template>
         </p-toolbar>
   
-        <p-table #dt [value]="descuentos" [paginator]="true" [rows]="3" [rowsPerPageOptions]="[3, 5, 10, 20]" [globalFilterFields]="['nombre', 'porcentaje','id','fecha_fin','fecha_inicio']">
+        <p-table #dt [value]="descuentos" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 20]" [globalFilterFields]="['nombre', 'porcentaje','id','fecha_fin','fecha_inicio']">
           <ng-template pTemplate="header">
             <tr>
               <th pSortableColumn="N">Nº <p-sortIcon field="N"></p-sortIcon></th>

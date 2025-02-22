@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from 'src/app/services/auth.service';
+
 
 @Component({
   selector: 'app-configuracion',
@@ -12,7 +12,7 @@ export class ConfiguracionComponent {
 
 
 
-    constructor(private _authservice:AuthService)
+    constructor()
     {
 
     }
@@ -20,13 +20,8 @@ export class ConfiguracionComponent {
 
     ngOnInit(): void {
 
-        this.usuarioname = this._authservice.getUser();
 
-        if(this.usuarioname)
-        {
-            console.log(this.usuarioname.fullname)
-        }
-
+      
 
     }
 

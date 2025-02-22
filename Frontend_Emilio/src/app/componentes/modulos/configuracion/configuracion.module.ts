@@ -14,10 +14,13 @@ import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DescuentosComponent } from './descuentos/descuentos.component';
+import { CalendarModule } from 'primeng/calendar';
+import { TipoHabitacionComponent } from './tipo-habitacion/tipo-habitacion.component';
 @NgModule({
   declarations: [ConfiguracionComponent,
     TarifasComponent,
-    DescuentosComponent
+    DescuentosComponent,
+    TipoHabitacionComponent
   ],
   imports: [
     CommonModule,
@@ -36,6 +39,9 @@ import { DescuentosComponent } from './descuentos/descuentos.component';
     DialogModule,
     InputTextareaModule,
     ButtonModule,
+    CalendarModule,
+    
+    
     
 
   ]

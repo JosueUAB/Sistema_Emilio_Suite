@@ -55,10 +55,10 @@ class tipo_habitacionController extends Controller
             if ($e->getCode() == 23000) {
                 return response()->json([
                     'message' => 'El nombre de la habitación ya existe.',
-                    'error_code' => 409, // Conflicto de recursos
-                    'msg' => 409,
+                    'error_code' => 403, // Conflicto de recursos
+                    'msg' => 403,
                     'error_details' => 'Ya existe un tipo de habitación con ese nombre en la base de datos.'
-                ], 409); // Error de conflicto (409)
+                ], 403); // Error de conflicto (409)
             }
 
             // Si es otro tipo de error, se captura y se devuelve el error genérico
@@ -122,6 +122,21 @@ class tipo_habitacionController extends Controller
                 return !is_null($value);
             });
 
+            // Verificar si el nombre de habitación ya existe (excepto el actual)
+            if (isset($data['nombre'])) {
+                $existingTipoHabitacion = tipo_habitacion::where('nombre', $data['nombre'])
+                    ->where('id', '!=', $id) // Excluir el tipo de habitación actual
+                    ->first();
+
+                if ($existingTipoHabitacion) {
+                    return response()->json([
+                        'message' => 'El nombre de la habitación ya existe. Por favor elige otro.',
+                        'msg' => 403,
+                        'error_code' => 403
+                    ], 403);
+                }
+            }
+
             // Si no hay datos para actualizar, se retorna una respuesta indicando que no se enviaron cambios
             if (empty($data)) {
                 return response()->json([
@@ -147,6 +162,7 @@ class tipo_habitacionController extends Controller
             ], 500); // Error al actualizar
         }
     }
+
 
 
     /**
