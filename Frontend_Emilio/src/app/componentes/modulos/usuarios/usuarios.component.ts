@@ -31,6 +31,7 @@ export class UsuariosComponent implements OnInit {
     private usuariosService: UsuariosService,
     private _roleservice: RolesService,
     private fb: FormBuilder,
+    private fc: FormBuilder,
     private messageService: MessageService,
     private authService: AuthService
   ) {
@@ -48,7 +49,7 @@ export class UsuariosComponent implements OnInit {
       password_repit: ['', Validators.required],
       avatar: [null]
     });
-    this.editUsuarioForm = this.fb.group({
+    this.editUsuarioForm = this.fc.group({
       name: ['', Validators.required],
       surname: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],

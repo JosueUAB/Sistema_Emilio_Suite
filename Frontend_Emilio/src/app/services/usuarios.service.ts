@@ -83,32 +83,6 @@ export class UsuariosService {
     }
   }
 
-  // actualizarUsuario(id: number, data: any): Observable<any> {
-  //   this.isLoadingSubject.next(true); // Indicar que la solicitud está en progreso
-  //   const token = this.authservice.obtenerToken();
-
-  //   if (!token) {
-  //     console.error('Token no disponible');
-  //     this.isLoadingSubject.next(false); // Indicar que la solicitud ha terminado
-  //     return throwError(() => new Error('Token no disponible'));
-  //   }
-
-  //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  //   const url = `${this.rutaApi}/${id}`; // Construye la URL
-
-  //   console.log('URL de la solicitud:', url); // Verifica la URL en la consola
-
-  //   return this.http.put(url, data, { headers }).pipe(
-  //     catchError((error: HttpErrorResponse) => {
-  //       console.error('Error en la solicitud:', error);
-  //       return throwError(() => ({
-  //         success: false,
-  //         message: error.message || 'Error en la solicitud al servidor',
-  //       }));
-  //     }),
-  //     finalize(() => this.isLoadingSubject.next(false)) // Indicar que la solicitud ha terminado
-  //   );
-  // }
 
  // Actualizar usuario utilizando el método POST
  actualizarUsuario(id: number, data: any): Observable<any> {
@@ -150,30 +124,6 @@ export class UsuariosService {
 
 
 
-
-
-  // actualizarUsuario(id: number, data: FormData): Observable<any> {
-  //   this.isLoadingSubject.next(true);
-  //   const token = this.authservice.obtenerToken();
-
-  //   if (token) {
-  //     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  //     return this.http.put(`${this.rutaApi}/${id}`, data, { headers }).pipe(
-  //       finalize(() => this.isLoadingSubject.next(false)),
-  //       catchError((error) => {
-  //         console.error('Error en la solicitud', error);
-  //         return of({ success: false, message: error.message || 'Ha ocurrido un error inesperado' });
-  //       }),
-  //       map(response => {
-  //         return { success: true, user: response };
-  //       })
-  //     );
-  //   } else {
-  //     console.log('Token no disponible');
-  //     this.isLoadingSubject.next(false);
-  //     return of({ success: false, message: 'Token no disponible' });
-  //   }
-  // }
 
   // Eliminar usuario
   eliminarUsuario(id: number): Observable<any> {

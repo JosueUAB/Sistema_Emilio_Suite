@@ -10,6 +10,8 @@ import { AuthService } from 'src/app/services/auth.service';
 export class ConfiguracionComponent {
     usuarioname:any;
 
+
+
     constructor(private _authservice:AuthService)
     {
 
@@ -25,6 +27,10 @@ export class ConfiguracionComponent {
             console.log(this.usuarioname.fullname)
         }
 
+
     }
+
+
+
 
 }

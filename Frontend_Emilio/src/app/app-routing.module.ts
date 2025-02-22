@@ -4,6 +4,7 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
 import { LoginComponent } from './componentes/auth/login/login.component';
 import { NotfoundComponent } from './layout/notfound/notfound.component';
 import { AuthGuard } from './config/accesos.guard';
+import { NoAutorizadoComponent } from './componentes/modulos/no-autorizado/no-autorizado.component';
 
 @NgModule({
     imports: [
@@ -31,8 +32,10 @@ import { AuthGuard } from './config/accesos.guard';
             },
             // { path: 'auth', loadChildren: () => import('./demo/components/auth/auth.module').then(m => m.AuthModule) },
             // { path: 'landing', loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule) },
+            {path: 'unauthorized',component:  NoAutorizadoComponent},
             { path: 'notfound', component: NotfoundComponent  },
             { path: '**', redirectTo: '/notfound' },
+
         ], { scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled', onSameUrlNavigation: 'reload' })
     ],
     exports: [RouterModule]

@@ -67,7 +67,7 @@ export class AppTopBarComponent {
           this.email = user.email;
           this.avatar = user.avatar;
           this.role = user.role_name;
-          console.log(this.avatar)
+         
         }
       }
 

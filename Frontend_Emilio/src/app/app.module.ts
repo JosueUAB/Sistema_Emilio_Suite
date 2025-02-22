@@ -6,13 +6,16 @@ import { AppLayoutModule } from './layout/app.layout.module';
 import { NotfoundComponent } from './layout/notfound/notfound.component';
 
 
+
 @NgModule({
     declarations: [
         AppComponent,NotfoundComponent
     ],
     imports: [
         AppRoutingModule,
-        AppLayoutModule
+        AppLayoutModule,
+        
+
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },

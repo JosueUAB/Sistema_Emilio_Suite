@@ -1,0 +1,123 @@
+<div class="grid p-fluid">
+    <p-toast></p-toast>
+    <div class="col-12 lg:col-6">
+      <div class="card shadow-2 p-4">
+        <h5 class="text-xl font-bold mb-4">Ingresar Nueva Tarifa</h5>
+
+        <form [formGroup]="tarifaForm">
+          <div class="field mb-4">
+            <span class="p-float-label">
+              <input id="name" formControlName="nombre" type="text" pInputText class="w-full" placeholder="Nombre de la Tarifa" />
+              <label for="name" class="font-semibold">Nombre de la Tarifa</label>
+            </span>
+            <small *ngIf="tarifaForm.get('nombre').invalid && tarifaForm.get('nombre').touched" class="p-error">El nombre es obligatorio</small>
+          </div>
+
+          <div class="field mb-4">
+            <span class="p-float-label">
+              <input id="precio_base" formControlName="precio_base" type="number" pInputText class="w-full" placeholder="Precio Base" />
+              <label for="precio_base" class="font-semibold">Precio Base Bs</label>
+            </span>
+            <small *ngIf="tarifaForm.get('precio_base').invalid && tarifaForm.get('precio_base').touched" class="p-error">El precio es obligatorio</small>
+          </div>
+
+         
+          <p-button label="Guardar Tarifa" icon="pi pi-check" severity="success" type="submit" [disabled]="tarifaForm.invalid"  class="w-full" (click)="guardarTarifa()"></p-button>
+        </form>
+      </div>
+</div>
+
+    <!-- Tabla de Tarifas -->
+    <div class="col-12 lg:col-6">
+      <div class="card shadow-2 p-4">
+        <h5 class="text-xl font-bold mb-4">Lista de Tarifas</h5>
+
+        <!-- Barra de herramientas -->
+        <p-toolbar class="mb-4">
+          <h5 class="font-semibold">Buscar Tarifas</h5>
+          <ng-template pTemplate="right">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Buscar por nombre o precio..." class="p-inputtext-sm" />
+            </span>
+          </ng-template>
+        </p-toolbar>
+
+        <!-- Tabla con las tarifas -->
+        <p-table #dt [value]="tarifas" [paginator]="true" [rows]="3" [rowsPerPageOptions]="[3, 5, 10, 20]" [globalFilterFields]="['nombre', 'precio_base']" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+            
+          <!-- Cabecera de la tabla -->
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="N">Nº <p-sortIcon field="N"></p-sortIcon></th>
+              <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+              <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
+              <th pSortableColumn="precio_base">Precio Base <p-sortIcon field="precio_base"></p-sortIcon></th>
+              <th>Acciones</th>
+            </tr>
+          </ng-template>
+
+          <!-- Cuerpo de la tabla -->
+          <ng-template pTemplate="body" let-tarifa let-i="rowIndex">
+            <tr>
+              <td>{{ i + 1 }}</td>
+              <td>{{ tarifa.id }}</td>
+              <td>{{ tarifa.nombre }}</td>
+              <td>Bs {{ tarifa.precio_base }}</td>
+              <td>
+                <!-- Botón de editar -->
+                <p-button icon="pi pi-pencil" [rounded]="true" severity="success" (click)="editarTarifa(tarifa)"></p-button>
+                <!-- Botón de eliminar -->
+                <p-button icon="pi pi-trash" [rounded]="true" severity="danger" (click)="eliminarTarifa(tarifa.id)"></p-button>
+              </td>
+            </tr>
+          </ng-template>
+
+          <!-- Mensaje cuando no hay datos -->
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5">No se encontraron tarifas.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <p-dialog [(visible)]="editDialog" [style]="{width: '500px', margin: '0 auto'}" header="Editar Tarifa" [modal]="true" class="p-fluid" [closable]="false">
+    <ng-template pTemplate="content">
+      <form [formGroup]="tarifaForm">
+    
+        <!-- Nombre -->
+        <div class="field">
+          <label for="nombre" class="block font-bold mb-2">Nombre</label>
+          <input id="nombre" formControlName="nombre" type="text" pInputText class="w-full" placeholder="Nombre de la tarifa" />
+          <span *ngIf="tarifaForm.get('nombre').invalid && tarifaForm.get('nombre').touched" class="text-error">
+            * El nombre de la tarifa es requerido
+          </span>
+        </div>
+  
+        <!-- Precio Base -->
+        <div class="field">
+          <label for="precio_base" class="block font-bold mb-2">Precio Base</label>
+          <input id="precio_base" formControlName="precio_base" type="number" pInputText class="w-full" placeholder="Precio Base" />
+          <span *ngIf="tarifaForm.get('precio_base').invalid && tarifaForm.get('precio_base').touched" class="text-error">
+            * El precio base es requerido
+          </span>
+        </div>
+    
+      </form>
+    </ng-template>
+    
+    <ng-template pTemplate="footer">
+      <p-button label="Cerrar" icon="pi pi-times" [outlined]="true" severity="danger"  (click)="cancelarEdicion()"></p-button>
+      <p-button  label="Guardar" icon="pi pi-check"  [outlined]="true" severity="success"
+        [disabled]="tarifaForm.invalid"
+        (click)="guardarTarifaActualizada()">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+  

@@ -1,0 +1,134 @@
+<div class="grid p-fluid">
+    <p-toast></p-toast>
+  
+    <!-- Formulario de nuevo descuento -->
+    <div class="col-12 lg:col-4">
+      <div class="card shadow-2 p-4">
+        <h5 class="text-xl font-bold mb-4">Ingresar Nuevo Descuento</h5>
+        <form [formGroup]="descuentoForm">
+          <div class="field mb-4">
+            <span class="p-float-label">
+              <input id="nombre" formControlName="nombre" type="text" pInputText class="w-full" placeholder="Nombre del Descuento" />
+              <label for="nombre" class="font-semibold">Nombre del Descuento</label>
+            </span>
+            <small *ngIf="descuentoForm.get('nombre').invalid && descuentoForm.get('nombre').touched" class="p-error">El nombre es obligatorio</small>
+          </div>
+  
+          <div class="field mb-4">
+            <span class="p-float-label">
+              <input id="porcentaje" formControlName="porcentaje" type="number" pInputText class="w-full" placeholder="Porcentaje" />
+              <label for="porcentaje" class="font-semibold">Porcentaje</label>
+            </span>
+            <small *ngIf="descuentoForm.get('porcentaje').invalid && descuentoForm.get('porcentaje').touched" class="p-error">El porcentaje es obligatorio</small>
+          </div>
+  
+          <div class="field mb-4">
+            <span class="p-float-label">
+              <input id="fecha_inicio" formControlName="fecha_inicio" type="date" pInputText class="w-full" />
+              <label for="fecha_inicio" class="font-semibold">Fecha de Inicio</label>
+            </span>
+          </div>
+  
+          <div class="field mb-4">
+            <span class="p-float-label">
+              <input id="fecha_fin" formControlName="fecha_fin" type="date" pInputText class="w-full" />
+              <label for="fecha_fin" class="font-semibold">Fecha de Fin</label>
+            </span>
+          </div>
+  
+          <p-button label="Guardar Descuento" icon="pi pi-check" severity="success" type="submit" [disabled]="descuentoForm.invalid" (click)="guardarDescuento()"></p-button>
+        </form>
+      </div>
+    </div>
+  
+    <!-- Tabla de descuentos -->
+    <div class="col-12 lg:col-8">
+      <div class="card shadow-2 p-4">
+        <h5 class="text-xl font-bold mb-4">Lista de Descuentos</h5>
+  
+        <p-toolbar class="mb-4">
+          <h5 class="font-semibold">Buscar Descuentos</h5>
+          <ng-template pTemplate="right">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Buscar por nombre o porcentaje..." class="p-inputtext-sm" />
+            </span>
+          </ng-template>
+        </p-toolbar>
+  
+        <p-table #dt [value]="descuentos" [paginator]="true" [rows]="3" [rowsPerPageOptions]="[3, 5, 10, 20]" [globalFilterFields]="['nombre', 'porcentaje','id','fecha_fin','fecha_inicio']">
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="N">Nº <p-sortIcon field="N"></p-sortIcon></th>
+              <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+              <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
+              <th pSortableColumn="porcentaje">Porcentaje <p-sortIcon field="porcentaje"></p-sortIcon></th>
+              <th pSortableColumn="fecha_inicio">Fecha Inicio <p-sortIcon field="fecha_inicio"></p-sortIcon></th>
+              <th pSortableColumn="fecha_fin">Fecha Fin <p-sortIcon field="fecha_fin"></p-sortIcon></th>
+              <th>Acciones</th>
+            </tr>
+          </ng-template>
+  
+          <ng-template pTemplate="body" let-descuento let-i="rowIndex">
+            <tr>
+              <td>{{ i + 1 }}</td>
+              <td>{{ descuento.id }}</td>
+              <td>{{ descuento.nombre }}</td>
+              <td>{{ descuento.porcentaje }}%</td>
+              <td>{{ descuento.fecha_inicio}}</td>
+              <td>{{ descuento.fecha_fin }}</td>
+              <td>
+                <p-button icon="pi pi-pencil" [rounded]="true" severity="success"  (click)="editarDescuento(descuento)"></p-button>
+                <p-button icon="pi pi-trash" [rounded]="true" severity="danger" (click)="eliminarDescuento(descuento.id)"></p-button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+  
+
+
+  <!-- Modal para editar descuento -->
+<p-dialog header="Editar Descuento" [(visible)]="editDialog" [style]="{width: '500px', margin: '0 auto'}"  [responsive]="true" [closable]="false">
+    <form [formGroup]="descuentoForm">
+      <div class="field mb-4">
+        <span class="p-float-label">
+          <input id="nombre" formControlName="nombre" type="text" pInputText class="w-full" placeholder="Nombre del Descuento" />
+          <label for="nombre" class="font-semibold">Nombre del Descuento</label>
+        </span>
+        <small *ngIf="descuentoForm.get('nombre').invalid && descuentoForm.get('nombre').touched" class="p-error">El nombre es obligatorio</small>
+      </div>
+  
+      <div class="field mb-4">
+        <span class="p-float-label">
+          <input id="porcentaje" formControlName="porcentaje" type="number" pInputText class="w-full" placeholder="Porcentaje" />
+          <label for="porcentaje" class="font-semibold">Porcentaje</label>
+        </span>
+        <small *ngIf="descuentoForm.get('porcentaje').invalid && descuentoForm.get('porcentaje').touched" class="p-error">El porcentaje es obligatorio</small>
+      </div>
+  
+      <div class="field mb-4">
+        <span class="p-float-label">
+          <input id="fecha_inicio" formControlName="fecha_inicio" type="date" pInputText class="w-full" />
+          <label for="fecha_inicio" class="font-semibold">Fecha de Inicio</label>
+        </span>
+      </div>
+  
+      <div class="field mb-4">
+        <span class="p-float-label">
+          <input id="fecha_fin" formControlName="fecha_fin" type="date" pInputText class="w-full" />
+          <label for="fecha_fin" class="font-semibold">Fecha de Fin</label>
+        </span>
+      </div>
+
+      
+  
+      <p-footer>
+       
+        <p-button label="Actualizar" icon="pi pi-check" [rounded]="true" severity="success"  [disabled]="descuentoForm.invalid" (click)="guardarDescuentoActualizado()"></p-button>
+        <p-button label="Cancelar" icon="pi pi-times" [rounded]="true" severity="danger"  (click)="cancelarEdicion()">     </p-button>
+      </p-footer>
+    </form>
+  </p-dialog>
