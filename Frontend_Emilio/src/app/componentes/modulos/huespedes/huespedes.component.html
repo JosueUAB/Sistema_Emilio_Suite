@@ -1,1 +1,371 @@
-<p>huespedes works!</p>
+<div class="grid">
+    <p-toast></p-toast>
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            <p-confirmDialog />
+
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="right">
+                    <div class="my-2">
+                        <button pButton pRipple label="Agregar Huésped" icon="pi pi-plus" class="p-button-success mr-2" (click)="ModalHuesped()"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="left">
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Buscar por nombre o documento..." />
+                    </span>
+                </ng-template>
+            </p-toolbar>
+                        <p-table #dt [value]="huespedes"
+                    [paginator]="true" [rows]="10"
+                    [globalFilterFields]="['id','nombre', 'tipo_de_documento', 'numero_documento', 'telefono', 'procedencia','estado']"
+                    [rowsPerPageOptions]="[10, 20, 30]">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="n">Nº <p-sortIcon field="n"></p-sortIcon></th>
+                    <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                    <th pSortableColumn="nombre">Nombres y Apellidos <p-sortIcon field="nombre"></p-sortIcon></th>
+                    <th pSortableColumn="tipo_de_documento">Documento <p-sortIcon field="tipo_de_documento"></p-sortIcon></th>
+                    <th pSortableColumn="numero_documento">Nº de Documento <p-sortIcon field="numero_documento"></p-sortIcon></th>
+                    <th pSortableColumn="telefono">Telefono <p-sortIcon field="telefono"></p-sortIcon></th>
+                    <th pSortableColumn="procedencia">Procedencia <p-sortIcon field="procedencia"></p-sortIcon></th>
+                    <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+                    <th>Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-huesped let-i="rowIndex">
+                <tr>
+                    <td>{{i+1}}</td>
+                    <td>{{huesped.id}}</td>
+                    <td>
+                        <strong>{{huesped.nombre}}</strong> <br />
+                        <span>{{huesped.apellido}}</span>
+                    </td>
+                    <td>{{huesped.tipo_de_documento}}</td>
+                    <td>{{huesped.numero_documento}}</td>
+                    <td>{{huesped.telefono}}</td>
+                    <td>{{huesped.procedencia}}</td>
+                    <td>
+
+
+                    @if (huesped.estado==='activo') {
+                        <p-badge value=""  severity="success" value="online"  />
+                    }@else { <p-badge value=""  severity="danger" value="offline" />
+
+                    }
+
+                    </td>
+                    <td class="">
+                        <p-button icon="pi pi-eye" [rounded]="true" severity="warning" (click)="verificarformulario()" > </p-button>
+                        <!-- Botón de editar -->
+                        <p-button icon="pi pi-pencil" (click)="EditarHuesped(huesped.id)" [rounded]="true" severity="success"  > </p-button>
+                        <!-- Botón de eliminar -->
+                        <p-button (click)="eliminarHuesped(huesped.id)" icon="pi pi-trash" [rounded]="true" severity="danger"  />
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6">No se encontraron huéspedes.</td>
+                </tr>
+            </ng-template>
+            </p-table>
+
+
+
+
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<p-dialog header="Registrar Huesped" [(visible)]="modal" [style]="{ width: '45rem' }">
+    <ng-template pTemplate="content">
+        <form [formGroup]="huespedForm">
+            <div class="field grid">
+                <!-- Tipo de Huesped -->
+                <div class="col-6 justify-content-center">
+                    <label for="tipo_de_huesped" class="block font-bold mb-2">Tipo de Huesped</label>
+                    <p-dropdown
+                        [options]="['natural', 'empresa']"
+                        formControlName="tipo_de_huesped"
+                        placeholder="Seleccione Tipo de Huesped"
+                        [style]="{ width: '100%' }" class="dropdown-fixed-size">
+                    </p-dropdown>
+                    <span *ngIf="huespedForm.get('tipo_de_huesped').invalid && huespedForm.get('tipo_de_huesped').touched" class="text-error">
+                        * El Tipo de Huesped es requerido
+                    </span>
+                </div>
+
+                <!-- Tipo de Documento -->
+                <div class="col-6">
+                    <label for="tipo_de_documento" class="block font-bold mb-2">Tipo de Documento</label>
+                    <p-dropdown
+                        [options]="['ci', 'pasaporte', 'carnet_de_extranjero', 'nit']"
+                        formControlName="tipo_de_documento"
+                        placeholder="Seleccione Tipo de Documento"
+                        [style]="{ width: '100%' }" class="dropdown-fixed-size">
+                    </p-dropdown>
+                    <span *ngIf="huespedForm.get('tipo_de_documento').invalid && huespedForm.get('tipo_de_documento').touched" class="text-error">
+                        * El Tipo de Documento es requerido
+                    </span>
+                </div>
+            </div>
+
+            <!-- Número de Documento -->
+            <div class="field">
+                <label for="numero_documento" class="block font-bold mb-2">Número de Documento</label>
+                <input id="numero_documento" formControlName="numero_documento" type="text" pInputText class="w-full" placeholder="123456789" />
+                <span *ngIf="huespedForm.get('numero_documento').invalid && huespedForm.get('numero_documento').touched" class="text-error">
+                    * El Número de Documento es requerido
+                </span>
+            </div>
+
+            <!-- Nombre y Apellido -->
+            <div class="field grid">
+                <div class="col-6">
+                    <label for="nombre" class="block font-bold mb-2">Nombre</label>
+                    <input id="nombre" formControlName="nombre" type="text" pInputText class="w-full" placeholder="Nombre" />
+                    <span *ngIf="huespedForm.get('nombre').invalid && huespedForm.get('nombre').touched" class="text-error">
+                        * El Nombre es requerido
+                    </span>
+                </div>
+                <div class="col-6">
+                    <label for="apellido" class="block font-bold mb-2">Apellido</label>
+                    <input id="apellido" formControlName="apellido" type="text" pInputText class="w-full" placeholder="Apellido" />
+                    <span *ngIf="huespedForm.get('apellido').invalid && huespedForm.get('apellido').touched" class="text-error">
+                        * El Apellido es requerido
+                    </span>
+                </div>
+            </div>
+            <!-- Nacionalidad Procedencia -->
+            <div class="field grid">
+                <div class="col-6">
+                    <label for="nacionalidad" class="block font-bold mb-2">Nacionalidad</label>
+                    <input id="nacionalidad" formControlName="nacionalidad" type="text" pInputText class="w-full" placeholder="nacionalidad" />
+                    <span *ngIf="huespedForm.get('nacionalidad').invalid && huespedForm.get('nacionalidad').touched" class="text-error">
+                        *La Nacionalidad es requerido
+                    </span>
+                </div>
+                <div class="col-6">
+                    <label for="procedencia" class="block font-bold mb-2">Procedencia</label>
+                    <input id="procedencia" formControlName="procedencia" type="text" pInputText class="w-full" placeholder="procedencia" />
+                    <span *ngIf="huespedForm.get('procedencia').invalid && huespedForm.get('procedencia').touched" class="text-error">
+                        * La procedencia es requerido
+                    </span>
+                </div>
+            </div>
+
+
+            <!-- Fecha de Nacimiento -->
+            <div class="field grid">
+                <div class="col-12 md:col-6">
+                    <label for="fecha_de_nacimiento" class="block font-bold mb-2">Fecha de Nacimiento</label>
+                    <p-calendar
+                        [readonlyInput]="true"
+                        [showIcon]="true"
+                        id="fecha_de_nacimiento"
+                        placeholder="Seleccione La Fecha de Nacimiento"
+                        formControlName="fecha_de_nacimiento"
+                        class="w-full"
+                    ></p-calendar>
+                    <span *ngIf="huespedForm.get('fecha_de_nacimiento').invalid && huespedForm.get('fecha_de_nacimiento').touched" class="text-error">
+                        * La Fecha de Nacimiento es requerida
+                    </span>
+                </div>
+
+                <!-- Estado Civil -->
+                <div class="col-12 md:col-6">
+                    <label for="estado_civil" class="block font-bold mb-2">Estado Civil</label>
+                    <p-dropdown
+                        [options]="['soltero', 'casado', 'divorciado', 'viudo']"
+                        formControlName="estado_civil"
+                        placeholder="Selecciona el Estado Civil ..."
+                        [style]="{ width: '100%' }" class="dropdown-fixed-size"
+                        class="w-full dropdown-fixed-size">
+                    </p-dropdown>
+                    <span *ngIf="huespedForm.get('estado_civil').invalid && huespedForm.get('estado_civil').touched" class="text-error">
+                        * El Estado Civil es requerido
+                    </span>
+                </div>
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="field">
+                <label for="correo" class="block font-bold mb-2">Correo Electrónico</label>
+                <input id="correo" formControlName="correo" type="email" pInputText class="w-full" placeholder="ejemplo@gmail.com" />
+                <span *ngIf="huespedForm.get('correo').invalid && huespedForm.get('correo').touched" class="text-error">
+                    * El Correo Electrónico es requerido y debe ser válido
+                </span>
+            </div>
+
+            <!-- Dirección -->
+            <div class="field">
+                <label for="direccion" class="block font-bold mb-2">Dirección</label>
+                <input id="direccion" formControlName="direccion" type="text" pInputText class="w-full" placeholder="Dirección del huésped" />
+                <span *ngIf="huespedForm.get('direccion').invalid && huespedForm.get('direccion').touched" class="text-error">
+                    * La Dirección es requerida
+                </span>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="field">
+                <label for="telefono" class="block font-bold mb-2">Teléfono</label>
+                <input id="telefono" formControlName="telefono" type="text" pInputText class="w-full" placeholder="123-456-7890" (click)="verificarformulario()" />
+                <span *ngIf="huespedForm.get('telefono').invalid && huespedForm.get('telefono').touched" class="text-error">
+                    * El Teléfono es requerido
+                </span>
+            </div>
+
+        </form>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="CerrarModal()"></button>
+        <button pButton type="button" label="Guardar" icon="pi pi-check" class="p-button-text"
+            [disabled]="huespedForm.invalid"
+            (click)="guardarHuesped()">
+        </button>
+    </ng-template>
+</p-dialog>
+
+
+
+<p-dialog header="Editar Huésped" [(visible)]="editDialog" [style]="{ width: '45rem' }">
+    <ng-template pTemplate="content">
+      <form [formGroup]="huespedFormEdit">
+        <div class="field grid">
+          <!-- Tipo de Huesped -->
+          <div class="col-6 justify-content-center">
+            <label for="tipo_de_huesped" class="block font-bold mb-2">Tipo de Huesped</label>
+            <p-dropdown
+              [options]="['natural', 'empresa']"
+              formControlName="tipo_de_huesped"
+              placeholder="Seleccione Tipo de Huesped"
+              [style]="{ width: '100%' }" class="dropdown-fixed-size">
+            </p-dropdown>
+            <span *ngIf="huespedFormEdit.get('tipo_de_huesped').invalid && huespedFormEdit.get('tipo_de_huesped').touched" class="text-error">
+              * El Tipo de Huesped es requerido
+            </span>
+          </div>
+
+          <!-- Tipo de Documento -->
+          <div class="col-6">
+            <label for="tipo_de_documento" class="block font-bold mb-2">Tipo de Documento</label>
+            <p-dropdown
+              [options]="['ci', 'pasaporte', 'carnet_de_extranjero', 'nit']"
+              formControlName="tipo_de_documento"
+              placeholder="Seleccione Tipo de Documento"
+              [style]="{ width: '100%' }" class="dropdown-fixed-size">
+            </p-dropdown>
+            <span *ngIf="huespedFormEdit.get('tipo_de_documento').invalid && huespedFormEdit.get('tipo_de_documento').touched" class="text-error">
+              * El Tipo de Documento es requerido
+            </span>
+          </div>
+        </div>
+
+        <!-- Número de Documento -->
+        <div class="field">
+          <label for="numero_documento" class="block font-bold mb-2">Número de Documento</label>
+          <input id="numero_documento" formControlName="numero_documento" type="text" pInputText class="w-full" placeholder="123456789" />
+          <span *ngIf="huespedFormEdit.get('numero_documento').invalid && huespedFormEdit.get('numero_documento').touched" class="text-error">
+            * El Número de Documento es requerido
+          </span>
+        </div>
+
+        <!-- Nombre y Apellido -->
+        <div class="field grid">
+          <div class="col-6">
+            <label for="nombre" class="block font-bold mb-2">Nombre</label>
+            <input id="nombre" formControlName="nombre" type="text" pInputText class="w-full" placeholder="Nombre" />
+            <span *ngIf="huespedFormEdit.get('nombre').invalid && huespedFormEdit.get('nombre').touched" class="text-error">
+              * El Nombre es requerido
+            </span>
+          </div>
+          <div class="col-6">
+            <label for="apellido" class="block font-bold mb-2">Apellido</label>
+            <input id="apellido" formControlName="apellido" type="text" pInputText class="w-full" placeholder="Apellido" />
+            <span *ngIf="huespedFormEdit.get('apellido').invalid && huespedFormEdit.get('apellido').touched" class="text-error">
+              * El Apellido es requerido
+            </span>
+          </div>
+        </div>
+
+        <!-- Fecha de Nacimiento -->
+        <div class="field grid">
+          <div class="col-12 md:col-6">
+            <label for="fecha_de_nacimiento" class="block font-bold mb-2">Fecha de Nacimiento</label>
+            <p-calendar
+              [readonlyInput]="true"
+              [showIcon]="true"
+              id="fecha_de_nacimiento"
+              placeholder="Seleccione La Fecha de Nacimiento"
+              formControlName="fecha_de_nacimiento"
+              class="w-full"
+            ></p-calendar>
+            <span *ngIf="huespedFormEdit.get('fecha_de_nacimiento').invalid && huespedFormEdit.get('fecha_de_nacimiento').touched" class="text-error">
+              * La Fecha de Nacimiento es requerida
+            </span>
+          </div>
+
+          <!-- Estado Civil -->
+          <div class="col-12 md:col-6">
+            <label for="estado_civil" class="block font-bold mb-2">Estado Civil</label>
+            <p-dropdown
+              [options]="['soltero', 'casado', 'divorciado', 'viudo']"
+              formControlName="estado_civil"
+              placeholder="Selecciona el Estado Civil ..."
+              [style]="{ width: '100%' }" class="dropdown-fixed-size">
+            </p-dropdown>
+            <span *ngIf="huespedFormEdit.get('estado_civil').invalid && huespedFormEdit.get('estado_civil').touched" class="text-error">
+              * El Estado Civil es requerido
+            </span>
+          </div>
+        </div>
+
+        <!-- Correo Electrónico -->
+        <div class="field">
+          <label for="correo" class="block font-bold mb-2">Correo Electrónico</label>
+          <input id="correo" formControlName="correo" type="email" pInputText class="w-full" placeholder="ejemplo@gmail.com" />
+          <span *ngIf="huespedFormEdit.get('correo').invalid && huespedFormEdit.get('correo').touched" class="text-error">
+            * El Correo Electrónico es requerido y debe ser válido
+          </span>
+        </div>
+
+        <!-- Dirección -->
+        <div class="field">
+          <label for="direccion" class="block font-bold mb-2">Dirección</label>
+          <input id="direccion" formControlName="direccion" type="text" pInputText class="w-full" placeholder="Dirección del huésped" />
+          <span *ngIf="huespedFormEdit.get('direccion').invalid && huespedFormEdit.get('direccion').touched" class="text-error">
+            * La Dirección es requerida
+          </span>
+        </div>
+
+        <!-- Teléfono -->
+        <div class="field">
+          <label for="telefono" class="block font-bold mb-2">Teléfono</label>
+          <input id="telefono" formControlName="telefono" type="text" pInputText class="w-full" placeholder="123-456-7890" />
+          <span *ngIf="huespedFormEdit.get('telefono').invalid && huespedFormEdit.get('telefono').touched" class="text-error">
+            * El Teléfono es requerido
+          </span>
+        </div>
+
+      </form>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="CerrarModal()"></button>
+      <button pButton type="button" label="Guardar Cambios" icon="pi pi-check" class="p-button-text"
+        [disabled]="huespedFormEdit.invalid"
+        (click)="guardarHuespedEdit()">
+      </button>
+    </ng-template>
+  </p-dialog>

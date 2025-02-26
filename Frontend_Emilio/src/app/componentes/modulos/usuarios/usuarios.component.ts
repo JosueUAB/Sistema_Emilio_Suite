@@ -238,59 +238,6 @@ eliminarUsuario(id: number): void {
 }
 
 
-// guardarUsuarioEditado(): void {
-//   const data = { ...this.editUsuarioForm.value };
-
-//   // Crear FormData para incluir la imagen si es que existe
-//   const formData = new FormData();
-
-//   // Si hay una imagen seleccionada, agregarla al FormData
-//   if (this.file) {
-//     formData.append("imagen", this.file, this.file.name);  // Aquí se agrega la imagen
-//   } else if (this.imagenPrevisualiza) {
-//     // Si la imagen previsualizada es base64 (string)
-//     if (typeof this.imagenPrevisualiza === 'string') {
-//       // Agregar la imagen base64 directamente al FormData
-//       formData.append("imagen", this.imagenPrevisualiza); // Ya no convertimos a Blob
-//     }
-//   }
-
-//   // Agregar los demás datos al FormData, excluyendo la imagen ya agregada
-//   Object.keys(data).forEach(key => {
-//     if (data[key] !== null && data[key] !== undefined && key !== 'avatar') { // Excluimos avatar para no añadirlo dos veces
-//       formData.append(key, data[key]);
-//     }
-//   });
-
-//   console.log("Form Data que se está enviando:", formData);
-
-
-
-//   this.usuariosService.actualizarUsuario(this.selectedUsuario.id, formData).subscribe(
-//     (response) => {
-//       console.log("Respuesta del servidor:", response); // Muestra toda la respuesta del servidor
-
-//       // Verifica si el campo 'message' en la respuesta tiene un valor esperado
-//       if (response.message_text && response.message_text === 'USUARIO ACTUALIZADO EXITOSAMENTE') {
-//         // Si el mensaje es correcto, muestra el Toast de éxito
-//         this.messageService.add({ severity: 'success', summary: 'Éxito', detail: response.message_text });
-//         this.listarUsuarios(); // Recargar la lista de usuarios
-//         this.hideEditDialog(); // Cerrar el diálogo de edición
-//       } else {
-//         // Si la respuesta no es lo que esperas, muestra un mensaje de error
-//         this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message_text || 'Error al actualizar el usuario' });
-//       }
-//     },
-//     (error) => {
-//       // Maneja cualquier error de conexión o respuesta inesperada
-//       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error en la solicitud al servidor' });
-//       console.error('Error en la solicitud:', error);
-//     }
-//   );
-
-
-// }
-
 
 guardarUsuarioEditado(): void {
   const data = { ...this.editUsuarioForm.value };
