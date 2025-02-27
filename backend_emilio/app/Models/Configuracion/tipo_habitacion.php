@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models\Configuracion;
+
+use App\Models\habitaciones;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,5 +33,11 @@ class tipo_habitacion extends Model
 
         $this -> attributes["updated_at"] = Carbon::now();
 
+    }
+
+    // Relación inversa con Habitacion
+    public function habitaciones()
+    {
+        return $this->hasMany(habitaciones::class, 'id');
     }
 }

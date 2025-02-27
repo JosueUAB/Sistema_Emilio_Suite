@@ -245,41 +245,6 @@ verificarformulario(){
     });
   }
 
-
-
-//   guardarHuespedEdit() {
-//     if (this.huespedFormEdit.invalid) {
-//       return;  // Do nothing if the form is invalid
-//     }
-
-//     const updatedHuespedData = this.huespedFormEdit.value;
-
-//     // Convert the updated birth date to the required format
-//     const updatedFechaNacimiento = this.datePipe.transform(updatedHuespedData.fecha_de_nacimiento, 'yyyy-MM-dd');
-
-//     // Prepare the data to send to the service
-//     const dataToUpdate = {
-//       ...updatedHuespedData,
-//       fecha_de_nacimiento: updatedFechaNacimiento,
-//       id: this.HuespedSeleccionado // Include the ID of the guest to update
-//     };
-
-//     console.log('Datos a actualizar:', dataToUpdate);
-
-//     this._huespedService.actualizarHuesped(this.HuespedSeleccionado, dataToUpdate).subscribe(
-//       response => {
-//         // Reload the guests list and close the dialog
-//         this.getHuespedes();
-//         this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'El huésped ha sido actualizado correctamente.' });
-//         this.editDialog = false;  // Close the dialog
-//       },
-//       error => {
-//         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Hubo un error al actualizar el huésped.' });
-//         console.log('Error al actualizar el huésped:', error);
-//       }
-//     );
-//   }
-
 guardarHuespedEdit() {
     if (this.huespedFormEdit.invalid) {
       return;  // No hacer nada si el formulario es inválido

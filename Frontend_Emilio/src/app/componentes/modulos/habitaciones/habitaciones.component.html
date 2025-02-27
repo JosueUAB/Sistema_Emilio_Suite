@@ -1,1 +1,484 @@
-<p>habitaciones works!</p>
+<div class="grid">
+    <p-toast></p-toast>
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            <p-confirmDialog />
+
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="right">
+                    <div class="my-2">
+                        <button pButton pRipple label="Registrar Habitacion" icon="pi pi-plus" class="p-button-success mr-2" (click)="HabitacionDialog=true"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="left">
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Buscar por nombre o documento..." />
+                    </span>
+                </ng-template>
+            </p-toolbar>
+                    <p-table #dt [value]="habitaciones"
+                    [paginator]="true" [rows]="10"
+                    [globalFilterFields]="['id','numero', 'tipo_habitacion.nombre', 'cantidad_camas', 'limite_personas', 'costo','estado']"
+                    [rowsPerPageOptions]="[10, 20, 30]">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="n">Nº <p-sortIcon field="n"></p-sortIcon></th>
+                    <th pSortableColumn="numero">Numero <p-sortIcon field="numero"></p-sortIcon></th>
+                    <th pSortableColumn="tipo_habitacion.nombre">Tipo <p-sortIcon field="tipo_habitacion.nombre"></p-sortIcon></th>
+                    <th pSortableColumn="cantidad_camas">Cantidad de Camas <p-sortIcon field="cantidad_camas"></p-sortIcon></th>
+                    <th pSortableColumn="limite_personas">Limite de Personas <p-sortIcon field="limite_personas"></p-sortIcon></th>
+                    <th pSortableColumn="servicios">Servicios<p-sortIcon field="servicios"></p-sortIcon></th>
+                    <th pSortableColumn="costo">Costo <p-sortIcon field="costo"></p-sortIcon></th>
+                    <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+                    <th>Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-habitacion let-i="rowIndex">
+                <tr>
+                    <td>{{i+1}}</td>
+
+                    <td>
+                        <strong>{{habitacion.numero}}</strong> <br />
+
+                    </td>
+                    <td>{{habitacion.tipo_habitacion.nombre}}</td>
+                    <td>{{habitacion.cantidad_camas}}</td>
+                    <td>{{habitacion.limite_personas}}</td>
+                    <td>
+                        @if (habitacion.tv) {
+
+                            <p-button  icon="fas fa-tv"  [rounded]="true" [outlined]="true" />
+                        }
+                        @if (habitacion.tv ===0) {
+                            <p-button  icon="fas fa-tv"  [rounded]="true" [outlined]="true" [disabled]="true" />
+
+                        }
+                        @if (habitacion.ducha) {
+                            <p-button   icon="fas fa-shower" [rounded]="true" severity="secondary" [outlined]="true" />
+
+                        }
+                        @if (habitacion.ducha===0) {
+                            <p-button   icon="fas fa-shower" [rounded]="true" severity="secondary" [outlined]="true"  [disabled]="true" />
+
+                        }
+                        @if (habitacion.banio) {
+                            <p-button icon="fas fa-toilet" [rounded]="true" severity="help" [outlined]="true" />
+
+                        }
+                        @if (habitacion.banio===0) {
+                            <p-button icon="fas fa-toilet" [rounded]="true" severity="help" [outlined]="true" [disabled]="true"/>
+                        }
+
+
+
+
+                    </td>
+                    <td>{{habitacion.costo}}</td>
+
+                    <td>
+
+
+                    @if (habitacion.estado==='disponible') {
+                        <p-badge value=""  severity="success" value="disponible"  />
+                    }
+                    @if (habitacion.estado==='mantenimiento') {
+
+                        <p-badge value=""  severity="info" value="mantenimiento"  />
+                    }
+                    @if (habitacion.estado==='limpieza') {
+
+                        <p-badge value=""  severity="Contrast" value="limpieza"  />
+                    }
+                    @if (habitacion.estado==='ocupado') {
+
+                        <p-badge value=""  severity="danger" value="ocupado"  />
+                    }
+                    @if (habitacion.estado==='reservado') {
+
+                        <p-badge value=""  severity="warning" value="reservado"  />
+                    }
+
+
+
+                    </td>
+                    <td class="">
+                        <p-button icon="pi pi-eye" [rounded]="true" severity="warning" (click)="verificarformulario()" > </p-button>
+                        <!-- Botón de editar -->
+                        <p-button icon="pi pi-pencil" (click)="ObtenerHabitacionID(habitacion.id)" [rounded]="true" severity="success"  > </p-button>
+                        <!-- Botón de eliminar -->
+                        <p-button (click)="eliminarHabitacion(habitacion.id)" icon="pi pi-trash" [rounded]="true" severity="danger"  />
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6">No se encontraron huéspedes.</td>
+                </tr>
+            </ng-template>
+            </p-table>
+
+
+
+
+
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    <p-dialog
+    [(visible)]="HabitacionDialog"
+    [style]="{ width: '550px' }"
+    header="Registrar Habitación"
+    [modal]="true"
+    [responsive]="true"
+    styleClass="p-fluid">
+
+    <ng-template pTemplate="content">
+        <form [formGroup]="habitacionesForm" >
+
+
+            <div class="p-formgrid grid">
+				<div class="field col">
+					<label class="font-semibold">Numero de Piso</label>
+					<p-inputNumber formControlName="numero_piso" [showButtons]="true" placeholder="ingrese el numero de piso "  [min]="1" [max]="20">
+                    </p-inputNumber>
+                    @if (habitacionesForm.get('numero_piso').invalid && habitacionesForm.get('numero_piso').touched) {
+                        <small class="p-error">** El Numero de Piso es Obligatorio</small>
+
+                    }
+				</div>
+				<div class="field col">
+					<label class="font-semibold">Numero de Habitacion</label>
+					<p-inputNumber formControlName="numero" [showButtons]="true" [min]="1" [max]="200" placeholder="Numero de Habitacion">
+                    </p-inputNumber>
+                    @if (habitacionesForm.get('numero').invalid && habitacionesForm.get('numero').touched) {
+                        <small class="p-error">** El Numero de Habitacion es Obligatorio</small>
+
+                    }
+				</div>
+			</div>
+
+            <!-- Tipo de Habitación -->
+            <div class="field">
+                <label class="font-semibold">Tipo de Habitación</label>
+                <p-dropdown
+                    id="tipo_id"
+                    formControlName="tipo_id"
+                    [options]="tiposHabitacion"
+                    optionLabel="nombre"
+                    optionValue="id"
+
+                    placeholder="Seleccione Tipo"
+                   >
+                </p-dropdown>
+                @if (habitacionesForm.get('tipo_id').invalid && habitacionesForm.get('tipo_id').touched) {
+                    <small class="p-error">** Seleccione Almenos un tipo de Habitacion </small>
+
+                }
+            </div>
+
+            <div class="p-formgrid grid">
+				<div class="field col">
+					<label class="font-semibold">Cantidad de Camas</label>
+					<p-inputNumber formControlName="cantidad_camas" [showButtons]="true" [min]="1" [max]="20">
+                    </p-inputNumber>
+                    @if (habitacionesForm.get('cantidad_camas').invalid && habitacionesForm.get('cantidad_camas').touched) {
+                        <small class="p-error">** La cantidad de camas es un campo requerido </small>
+
+                    }
+				</div>
+				<div class="field col">
+					<label class="font-semibold">Limite de Personas</label>
+					<p-inputNumber formControlName="limite_personas" [showButtons]="true" [min]="1" [max]="20">
+                    </p-inputNumber>
+                    @if (habitacionesForm.get('limite_personas').invalid && habitacionesForm.get('limite_personas').touched) {
+                        <small class="p-error">** El limite de personas es un campo requerido </small>
+
+                    }
+				</div>
+			</div>
+            <!-- Descripción -->
+            <div class="field">
+                <span class="">
+                    <label class="font-semibold">Descripción</label>
+                    <textarea formControlName="descripcion" id="descripcion" formControlName="descripcion" pInputText class="w-full" placeholder=" " rows="4"></textarea>
+
+                </span>
+                @if (habitacionesForm.get('descripcion').invalid && habitacionesForm.get('descripcion').touched) {
+                    <small class="p-error">** La descripcion es Obligatoria </small>
+
+                }
+
+            </div>
+
+            <!-- Costo -->
+            <div class="field">
+                <label class="font-semibold">Costo</label>
+                <p-inputGroup class="w-full">
+                    <p-inputGroupAddon>
+                        <i class="pi pi-tags" style="line-height: 1.25"></i>
+                    </p-inputGroupAddon>
+
+                   <p-inputNumber formControlName="costo" [showButtons]="true"  mode="currency"  [min]="1" [max]="2000" [step]="0.1"   [minFractionDigits]="2"
+                   currency="BOB"
+                   locale="es-BO">
+                    </p-inputNumber>
+
+
+                </p-inputGroup>
+                @if (habitacionesForm.get('costo').invalid && habitacionesForm.get('costo').touched) {
+                    <small class="p-error">** El COSTO DE LA HABITACION ES OBLIGATORIA **</small>
+
+                }
+
+            </div>
+
+
+
+            <div class="field  ">
+                <label class="font-semibold">Servicios</label>
+                <div class=" flex align-items-center justify-content-center " >
+                    <div class="col-12 md:col-3 ">
+                        <div class="field-checkbox">
+                            <p-inputSwitch formControlName="tv" ></p-inputSwitch>
+                            <label for="ny">TV</label>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-3 ">
+                        <div class="field-checkbox">
+                            <p-inputSwitch formControlName="ducha" ></p-inputSwitch>
+                            <label for="sf">Ducha</label>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-3 ">
+                        <div class="field-checkbox">
+                            <p-inputSwitch formControlName="banio" ></p-inputSwitch>
+                            <label for="la">banio</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Estado -->
+            <div class="field">
+                <label  class="font-semibold">Estado</label>
+                <p-dropdown
+                label="disponible"
+
+
+                    [options]="['disponible','mantenimiento','limpieza','ocupado','reservado']"
+                    formControlName="estado"
+                    placeholder="Seleccione Estado"
+                    >
+                </p-dropdown>
+
+            </div>
+
+            <p-footer  class="field" >
+
+                <div class=" flex align-items-center justify-content-center " >
+                    <div class="col-12 md:col-6 ">
+
+                        <p-button label="Cerrar" icon="pi pi-check"  severity="danger" (click)="CerrarModalGuardar()"  ></p-button>
+                    </div>
+                    <div class="col-12 md:col-6 ">
+
+                        <p-button label="Guardar" icon="pi pi-check"  severity="success"  [disabled]="habitacionesForm.invalid"  (click)="RegistrarHabitacion()"></p-button>
+
+                    </div>
+
+                </div>
+
+
+
+              </p-footer>
+        </form>
+    </ng-template>
+</p-dialog>
+
+
+
+<p-dialog
+[(visible)]="HabitacionDialogEdit"
+[style]="{ width: '550px' }"
+header="Editar Registro de Habitación"
+[modal]="true"
+[responsive]="true"
+styleClass="p-fluid">
+
+<ng-template pTemplate="content">
+    <form [formGroup]="habitacionesEditForm" >
+
+
+        <div class="p-formgrid grid">
+            <div class="field col">
+                <label class="font-semibold">Numero de Piso</label>
+                <p-inputNumber formControlName="numero_piso" [showButtons]="true" placeholder="ingrese el numero de piso "  [min]="1" [max]="20">
+                </p-inputNumber>
+                @if (habitacionesEditForm.get('numero_piso').invalid && habitacionesEditForm.get('numero_piso').touched) {
+                    <small class="p-error">** El Numero de Piso es Obligatorio</small>
+
+                }
+            </div>
+            <div class="field col">
+                <label class="font-semibold">Numero de Habitacion</label>
+                <p-inputNumber formControlName="numero" [showButtons]="true" [min]="1" [max]="200" placeholder="Numero de Habitacion">
+                </p-inputNumber>
+                @if (habitacionesEditForm.get('numero').invalid && habitacionesEditForm.get('numero').touched) {
+                    <small class="p-error">** El Numero de Habitacion es Obligatorio</small>
+
+                }
+            </div>
+        </div>
+
+        <!-- Tipo de Habitación -->
+        <div class="field">
+            <label class="font-semibold">Tipo de Habitación</label>
+            <p-dropdown
+                id="tipo_id"
+                formControlName="tipo_id"
+                [options]="tiposHabitacion"
+                optionLabel="nombre"
+                optionValue="id"
+
+                placeholder="Seleccione Tipo"
+               >
+            </p-dropdown>
+            @if (habitacionesEditForm.get('tipo_id').invalid && habitacionesEditForm.get('tipo_id').touched) {
+                <small class="p-error">** Seleccione Almenos un tipo de Habitacion </small>
+
+            }
+        </div>
+
+        <div class="p-formgrid grid">
+            <div class="field col">
+                <label class="font-semibold">Cantidad de Camas</label>
+                <p-inputNumber formControlName="cantidad_camas" [showButtons]="true" [min]="1" [max]="20">
+                </p-inputNumber>
+                @if (habitacionesEditForm.get('cantidad_camas').invalid && habitacionesEditForm.get('cantidad_camas').touched) {
+                    <small class="p-error">** La cantidad de camas es un campo requerido </small>
+
+                }
+            </div>
+            <div class="field col">
+                <label class="font-semibold">Limite de Personas</label>
+                <p-inputNumber formControlName="limite_personas" [showButtons]="true" [min]="1" [max]="20">
+                </p-inputNumber>
+                @if (habitacionesEditForm.get('limite_personas').invalid && habitacionesEditForm.get('limite_personas').touched) {
+                    <small class="p-error">** El limite de personas es un campo requerido </small>
+
+                }
+            </div>
+        </div>
+        <!-- Descripción -->
+        <div class="field">
+            <span class="">
+                <label class="font-semibold">Descripción</label>
+                <textarea formControlName="descripcion" id="descripcion" formControlName="descripcion" pInputText class="w-full" placeholder=" " rows="4"></textarea>
+
+            </span>
+            @if (habitacionesEditForm.get('descripcion').invalid && habitacionesEditForm.get('descripcion').touched) {
+                <small class="p-error">** La descripcion es Obligatoria </small>
+
+            }
+
+        </div>
+
+        <!-- Costo -->
+        <div class="field">
+            <label class="font-semibold">Costo</label>
+            <p-inputGroup class="w-full">
+                <p-inputGroupAddon>
+                    <i class="pi pi-tags" style="line-height: 1.25"></i>
+                </p-inputGroupAddon>
+
+               <p-inputNumber formControlName="costo" [showButtons]="true"  mode="currency"  [min]="1" [max]="2000" [step]="0.1"   [minFractionDigits]="2"
+               currency="BOB"
+               locale="es-BO">
+                </p-inputNumber>
+
+
+            </p-inputGroup>
+            @if (habitacionesEditForm.get('costo').invalid && habitacionesEditForm.get('costo').touched) {
+                <small class="p-error">** El COSTO DE LA HABITACION ES OBLIGATORIA **</small>
+
+            }
+
+        </div>
+
+
+
+        <div class="field  ">
+            <label class="font-semibold">Servicios</label>
+            <div class=" flex align-items-center justify-content-center " >
+                <div class="col-12 md:col-3 ">
+                    <div class="field-checkbox">
+                        <p-inputSwitch formControlName="tv" ></p-inputSwitch>
+                        <label for="ny">TV</label>
+                    </div>
+                </div>
+                <div class="col-12 md:col-3 ">
+                    <div class="field-checkbox">
+                        <p-inputSwitch formControlName="ducha" ></p-inputSwitch>
+                        <label for="sf">Ducha</label>
+                    </div>
+                </div>
+                <div class="col-12 md:col-3 ">
+                    <div class="field-checkbox">
+
+
+                        <p-inputSwitch formControlName="banio" ></p-inputSwitch>
+                        <label for="la">banio</label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Estado -->
+        <div class="field">
+            <label  class="font-semibold">Estado</label>
+            <p-dropdown
+
+
+                [options]="['disponible','mantenimiento','limpieza','ocupado','reservado']"
+                formControlName="estado"
+                placeholder="Seleccione Estado"
+                [showClear]="true">
+            </p-dropdown>
+
+        </div>
+
+        <p-footer  class="field" >
+
+            <div class=" flex align-items-center justify-content-center " >
+                <div class="col-12 md:col-6 ">
+
+                    <p-button label="Cerrar" icon="pi pi-check"  severity="danger" (click)="HabitacionDialogEdit=false"  ></p-button>
+                </div>
+                <div class="col-12 md:col-6 ">
+
+                    <p-button label="Actualizar" icon="pi pi-check"  severity="success"  [disabled]="habitacionesEditForm.invalid"  (click)="actualizarHabitacion()"></p-button>
+
+                </div>
+
+            </div>
+
+
+
+          </p-footer>
+    </form>
+</ng-template>
+</p-dialog>

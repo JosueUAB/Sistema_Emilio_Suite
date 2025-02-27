@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Configuracion\descuentoController;
 use App\Http\Controllers\Configuracion\tarifaController;
 use App\Http\Controllers\Configuracion\tipo_habitacionController;
+use App\Http\Controllers\HabitacionesController;
 use App\Http\Controllers\HuespedController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\UserAccessController;
@@ -58,5 +59,7 @@ Route::group([
     //**modulos */
 
     Route::resource("huesped",HuespedController::class);
+
+    Route::resource("habitacion",HabitacionesController::class);
 
 });
