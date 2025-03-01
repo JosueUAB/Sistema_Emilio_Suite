@@ -14,6 +14,8 @@ class HabitacionesController extends Controller
     public function index()
     {
 
+        
+
         $habitaciones = habitaciones::with('tipoHabitacion')
                                      ->orderBy('numero', 'asc')
                                      ->get();

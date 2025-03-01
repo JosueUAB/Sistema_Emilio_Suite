@@ -1,1 +1,1239 @@
-<p>reservas works!</p>
+
+
+  <div class="p-grid p-fluid p-nogutter p-ai-center" style="gap: 1rem; padding: 1rem;">
+    <div class="grid formgrid">
+
+
+        <!-- Filtro por número de piso -->
+        <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+            <label for="numeroPiso" class="p-d-block p-mb-1">Filtrar por piso:</label>
+            <p-dropdown
+            [showClear]="true"
+            [options]="numerosPiso"
+            [(ngModel)]="selectedPiso"
+            (onChange)="filtrarHabitaciones()"
+            placeholder="Selecciona un piso"
+            appendTo="body"
+            ></p-dropdown>
+        </div>
+
+         <!-- Filtro por número de habitación -->
+         <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+                <label for="numero" class="p-d-block p-mb-1">Buscar por número:</label>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input
+                    pInputText
+                    type="number"
+                    [(ngModel)]="numeroHabitacion"
+                    (input)="filtrarHabitaciones()"
+                    placeholder="Buscar Nº habitacion" />
+
+
+
+                </span>
+        </div>
+
+        <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+            <label for="estado" class="p-d-block p-mb-1">Filtrar por estado:</label>
+            <p-multiSelect
+                [options]="estados"
+                [(ngModel)]="selectedEstados"
+                optionLabel="label"
+                optionValue="value"
+                (onChange)="filtrarHabitaciones()"
+                placeholder="Seleccione uno o varios estados"
+                appendTo="body"
+                styleClass="p-inputtext-sm">
+                <ng-template let-option pTemplate="item">
+                    <div class="inline-block vertical-align-middle">
+                        <span>{{ option.label }}</span>
+                    </div>
+                </ng-template>
+            </p-multiSelect>
+        </div>
+
+
+  <!-- Filtro por tipo de habitación -->
+  <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+    <label for="tipoHabitacion" class="p-d-block p-mb-1">Filtrar por tipo de habitación:</label>
+    <p-dropdown
+    [showClear]="true"
+      [options]="tiposHabitacion"
+      [(ngModel)]="selectedTipoHabitacion"
+      (onChange)="filtrarHabitaciones()"
+      placeholder="Selecciona un tipo"
+      appendTo="body"
+    ></p-dropdown>
+  </div>
+
+
+
+
+        <!-- Filtro por cantidad de camas -->
+        <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
+            <label for="camas" class="p-d-block p-mb-1">Buscar por camas:</label>
+
+                <span class="p-input-icon-left">
+                    <i class="fas fa-procedures "></i>
+                    <input
+                    pInputText
+                    type="number"
+                    [(ngModel)]="cantidadCamas"
+                    (input)="filtrarHabitaciones()"
+                    placeholder="Filtrar por Nº Camas" />
+                </span>
+        </div> -->
+
+
+
+
+
+
+    </div>
+</div>
+
+
+
+<div class="p-grid p-fluid p-nogutter p-ai-center" style="gap: 1rem; padding: 1rem;">
+    <div class="grid formgrid">
+
+
+
+
+
+        <!-- Filtro por cantidad de camas -->
+        <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
+            <label for="camas" class="p-d-block p-mb-1">Buscar por camas:</label>
+
+                <span class="p-input-icon-left">
+                    <i class="fas fa-procedures "></i>
+                    <input
+                    pInputText
+                    type="number"
+                    [(ngModel)]="cantidadCamas"
+                    (input)="filtrarHabitaciones()"
+                    placeholder="Filtrar por Nº Camas" />
+                </span>
+        </div> -->
+        <!-- Filtro por cantidad de camas -->
+<div class="col-12 mb-2 lg:col-3 lg:mb-0">
+    <label for="camas" class="p-d-block p-mb-1">Buscar por camas:</label>
+    <p-inputGroup class="w-full">
+        <p-inputGroupAddon>
+            <i class="fas fa-procedures" style="line-height: 1.25"></i>
+        </p-inputGroupAddon>
+        <p-inputNumber
+            [showButtons]="true"
+            [(ngModel)]="cantidadCamas"
+            (onInput)="filtrarHabitaciones()"
+            [min]="1" [max]="100" [step]="1"
+            [minFractionDigits]="0" [maxFractionDigits]="0"
+            placeholder="Filtrar por Nº Camas">
+        </p-inputNumber>
+    </p-inputGroup>
+</div>
+
+<!-- Filtro por máximo de personas -->
+<div class="col-12 mb-2 lg:col-3 lg:mb-0">
+    <label for="personas" class="p-d-block p-mb-1">Máximo de personas:</label>
+    <p-inputGroup class="w-full">
+        <p-inputGroupAddon>
+            <i class="fas fa-users" style="line-height: 1.25"></i>
+        </p-inputGroupAddon>
+        <p-inputNumber
+            [showButtons]="true"
+            [(ngModel)]="maxPersonas"
+            (onInput)="filtrarHabitaciones()"
+            [min]="1" [max]="20" [step]="1"
+            [minFractionDigits]="0" [maxFractionDigits]="0"
+            placeholder="iltrar por Nº Personas">
+        </p-inputNumber>
+    </p-inputGroup>
+</div>
+
+
+        <!-- Filtro por máximo de personas -->
+        <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
+            <label for="personas" class="p-d-block p-mb-1">máximo de personas:</label>
+
+                <span class="p-input-icon-left">
+                    <i class="fas fa-users "></i>
+                    <input
+                    pInputText
+                    type="number"
+                    [(ngModel)]="maxPersonas"
+                    (input)="filtrarHabitaciones()"
+                    placeholder="Filtrar por Nº Personas" />
+                </span>
+        </div> -->
+
+        <!-- Filtro por precio mínimo -->
+        <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+            <label for="precioMinimo" class="p-d-block p-mb-1">Precio mínimo:</label>
+            <p-inputGroup class="w-full">
+                <p-inputGroupAddon>
+                    <i class="fas fa-money-bill" style="line-height: 1.25"></i>
+                </p-inputGroupAddon>
+                <p-inputNumber
+                [showButtons]="true"
+                    [(ngModel)]="precioMinimo"
+                    (onInput)="filtrarHabitaciones()"
+                    [min]="1" [max]="10000" [step]="1"
+                    [minFractionDigits]="2" [maxFractionDigits]="2"
+                    currency="BOB" locale="es-BO"
+                    placeholder="Precio Mínimo">
+                </p-inputNumber>
+            </p-inputGroup>
+        </div>
+
+        <!-- Filtro por precio máximo -->
+        <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+            <label for="precioMaximo" class="p-d-block p-mb-1">Precio máximo:</label>
+            <p-inputGroup class="w-full">
+                <p-inputGroupAddon>
+                    <i class="fas fa-money-bill" style="line-height: 1.25"></i>
+                </p-inputGroupAddon>
+                <p-inputNumber
+                [showButtons]="true"
+                    [(ngModel)]="precioMaximo"
+                    (onInput)="filtrarHabitaciones()"
+                    [min]="1" [max]="10000" [step]="1"
+                    [minFractionDigits]="2" [maxFractionDigits]="2"
+                    currency="BOB" locale="es-BO"
+                    placeholder="Precio Máximo">
+                </p-inputNumber>
+            </p-inputGroup>
+        </div>
+
+  <!-- Filtro por precio mínimo -->
+        <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
+            <label for="precioMinimo" class="p-d-block p-mb-1">precio mínimo:</label>
+
+                <span class="p-input-icon-left">
+                    <i class="fas fa-money-bill "></i>
+                    <input
+                    pInputText
+                    type="number"
+                    [(ngModel)]="precioMinimo"
+                    (input)="filtrarHabitaciones()"
+                    placeholder="Precio Minimo" />
+                </span>
+        </div> -->
+
+          <!-- Filtro por precio máximo -->
+          <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
+            <label for="precioMaximo" class="p-d-block p-mb-1">precio máximo:</label>
+
+
+                <span class="p-input-icon-left">
+                    <i class="fas fa-money-bill "></i>
+                    <input
+                    pInputText
+                    type="number"
+                    [(ngModel)]="precioMaximo"
+                    (input)="filtrarHabitaciones()"
+                    placeholder="Precio Maximo" />
+                </span>
+        </div> -->
+        <!-- Filtro por número de piso -->
+
+    </div>
+</div>
+
+
+
+
+
+
+  <!-- Lista de habitaciones filtradas -->
+  <div class="grid">
+
+
+    @if (listaHabitacionesFiltradas.length===0) {
+        <div class="col-12 mt-8 mb-8 p-2 md:p-8">
+            <div class="flex flex-column justify-content-center align-items-center text-center px-3 py-3 md:py-0">
+                <p class="text-2xl mt-4"
+                   [ngClass]="{
+                        'text-white': _layoutService.config().colorScheme === 'dark',
+                        'text-gray-900': _layoutService.config().colorScheme === 'light'
+                    }"
+                    style="max-width:800px;">
+                    “No se Encontraron Coincidencias”
+                </p>
+            </div>
+        </div>
+
+
+
+
+
+
+    }
+    @for (lista of listaHabitacionesFiltradas; track $index) {
+        @switch (lista.estado) {
+            @case ('disponible') {
+
+                <div class="col-12 lg:col-6 xl:col-3">
+                    <!-- Disponible (bg-green-700) -->
+                    <div class="card mb-0 bg-green-700">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <h2 class="font-medium text-4xl text-green-50">Habitación {{lista.numero}}</h2>
+                                <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                    <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                                </span>
+                            </div>
+                            <div class="flex align-items-center justify-content-center border-round bg-green-200" style="width: 3rem; height: 3rem;">
+                                <i class="pi pi-check text-2xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <p class="text-green-50">{{lista.descripcion}}</p>
+
+                        <!-- Redesigned Section: Number of Beds and Max People -->
+                        <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-green-600">
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-procedures text-white"></i>
+                                <span class="font-medium text-xl text-white"> Camas:</span>
+                                <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                            </div>
+
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-users text-2xl text-white"></i>
+                                <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                                <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                            </div>
+                        </div><br>
+
+                        <div class="p-d-flex p-ai-center mb-3">
+                            @if( lista.tv===1){
+                                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                            }
+                            @if(lista.ducha===1){
+                                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                            }
+                            @if (lista.banio===1) {
+                                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                            }
+                            <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                        </div>
+
+                        <div class="flex justify-content-between align-items-center mt-3">
+                            <div class="flex flex-column border-round bg-green-600">
+                                <span class="text-green-50 text-3xl font-bold">Bs. {{lista.costo}}</span>
+                            </div>
+
+                            <div class="flex flex-column">
+                                <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                                <span class="text-green-50">{{lista.estado}}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                            <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                        </div>
+                    </div>
+                </div>
+            }
+            @case ('ocupado') {
+                <div class="col-12 lg:col-6 xl:col-3">
+                    <!-- Ocupado (bg-red-500) -->
+                    <div class="card mb-0 bg-red-500">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <h2 class="font-medium text-4xl text-white">Habitación {{lista.numero}}</h2>
+                                <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                    <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                                </span>
+                            </div>
+                            <div class="flex align-items-center justify-content-center border-round bg-red-200" style="width: 3rem; height: 3rem;">
+                                <i class="pi pi-times text-2xl text-red-600"></i>
+                            </div>
+                        </div>
+                        <p class="text-white">{{lista.descripcion}}</p>
+
+                        <!-- Redesigned Section: Number of Beds and Max People -->
+                        <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-red-600">
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-procedures text-white"></i>
+                                <span class="font-medium text-xl text-white"> Camas:</span>
+                                <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                            </div>
+
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-users text-2xl text-white"></i>
+                                <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                                <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                            </div>
+                        </div><br>
+
+                        <div class="p-d-flex p-ai-center mb-3">
+                            @if( lista.tv===1){
+                                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                            }
+                            @if(lista.ducha===1){
+                                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                            }
+                            @if (lista.banio===1) {
+                                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                            }
+                            <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                        </div>
+
+                        <div class="flex justify-content-between align-items-center mt-3">
+                            <div class="flex flex-column border-round bg-red-600">
+                                <span class="text-white text-3xl font-bold">Bs. {{lista.costo}}</span>
+                            </div>
+
+                            <div class="flex flex-column">
+                                <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                                <span class="text-white">{{lista.estado}}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                            <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+            @case ('reservado') {
+                <div class="col-12 lg:col-6 xl:col-3">
+                    <!-- Reservado (bg-yellow-500) -->
+                    <div class="card mb-0" style="background-color: #FF9800;">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <h2 class="font-medium text-4xl text-white">Habitación {{lista.numero}}</h2>
+                                <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                    <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                                </span>
+                            </div>
+                            <div class="flex align-items-center justify-content-center border-round bg-yellow-200" style="width: 3rem; height: 3rem;">
+                                <i class="pi pi-calendar text-2xl text-yellow-600"></i>
+                            </div>
+                        </div>
+                        <p class="text-white">{{lista.descripcion}}</p>
+
+                        <!-- Redesigned Section: Number of Beds and Max People -->
+                        <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-yellow-600">
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-procedures text-white"></i>
+                                <span class="font-medium text-xl text-white"> Camas:</span>
+                                <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                            </div>
+
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-users text-2xl text-white"></i>
+                                <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                                <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                            </div>
+                        </div><br>
+
+                        <div class="p-d-flex p-ai-center mb-3">
+                            @if( lista.tv===1){
+                                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                            }
+                            @if(lista.ducha===1){
+                                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                            }
+                            @if (lista.banio===1) {
+                                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                            }
+                            <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                        </div>
+
+                        <div class="flex justify-content-between align-items-center mt-3">
+                            <div class="flex flex-column border-round bg-yellow-600">
+                                <span class="text-white text-3xl font-bold">Bs. {{lista.costo}}</span>
+                            </div>
+
+                            <div class="flex flex-column">
+                                <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                                <span class="text-white">{{lista.estado}}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                            <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @case ('mantenimiento') {
+                <div class="col-12 lg:col-6 xl:col-3">
+                    <!-- Mantenimiento (bg-bluegray-500) -->
+                    <div class="card mb-0 bg-bluegray-500">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <h2 class="font-medium text-4xl text-white">Habitación {{lista.numero}}</h2>
+                                <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                    <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                                </span>
+                            </div>
+                            <div class="flex align-items-center justify-content-center border-round bg-bluegray-200" style="width: 3rem; height: 3rem;">
+                                <i class="pi pi-cog text-2xl text-bluegray-600"></i>
+                            </div>
+                        </div>
+                         <p class="text-white">Habitación en proceso de Mantenimiento.</p>
+
+                        <!-- Redesigned Section: Number of Beds and Max People -->
+                        <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-bluegray-600">
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-procedures text-white"></i>
+                                <span class="font-medium text-xl text-white"> Camas:</span>
+                                <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                            </div>
+
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-users text-2xl text-white"></i>
+                                <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                                <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                            </div>
+                        </div><br>
+
+                        <div class="p-d-flex p-ai-center mb-3">
+                            @if( lista.tv===1){
+                                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                            }
+                            @if(lista.ducha===1){
+                                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                            }
+                            @if (lista.banio===1) {
+                                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                            }
+                            <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                        </div>
+
+                        <div class="flex justify-content-between align-items-center mt-3">
+                            <div class="flex flex-column border-round bg-bluegray-600">
+                                <span class="text-white text-3xl font-bold">Bs. {{lista.costo}}</span>
+                            </div>
+
+                            <div class="flex flex-column">
+                                <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                                <span class="text-white">{{lista.estado}}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                            <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                        </div>
+                    </div>
+                </div>
+
+            }
+            @case ('limpieza') {
+                <div class="col-12 lg:col-6 xl:col-3">
+                    <!-- Limpieza (bg-pink-500) -->
+                    <div class="card mb-0 bg-pink-500">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <h2 class="font-medium text-4xl text-white">Habitación {{lista.numero}}</h2>
+                                <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                    <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                                </span>
+                            </div>
+                            <div class="flex align-items-center justify-content-center border-round bg-pink-200" style="width: 3rem; height: 3rem;">
+                                <i class="pi pi-broom text-2xl text-pink-600"></i>
+                            </div>
+                        </div>
+                        <p class="text-white">Habitación en proceso de limpieza.</p>
+
+                        <!-- Redesigned Section: Number of Beds and Max People -->
+                        <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-pink-600">
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-procedures text-white"></i>
+                                <span class="font-medium text-xl text-white"> Camas:</span>
+                                <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                            </div>
+
+                            <div class="flex flex-column align-items-center">
+                                <i class="fas fa-users text-2xl text-white"></i>
+                                <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                                <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                            </div>
+                        </div><br>
+
+                        <div class="p-d-flex p-ai-center mb-3">
+                            @if( lista.tv===1){
+                                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                            }
+                            @if(lista.ducha===1){
+                                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                            }
+                            @if (lista.banio===1) {
+                                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                            }
+                            <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                        </div>
+
+                        <div class="flex justify-content-between align-items-center mt-3">
+                            <div class="flex flex-column border-round bg-pink-600">
+                                <span class="text-white text-3xl font-bold">Bs. {{lista.costo}}</span>
+                            </div>
+
+                            <div class="flex flex-column">
+                                <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                                <span class="text-white">Limpieza</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                            <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                        </div>
+                    </div>
+                </div>
+
+            }
+           }
+
+    }
+  </div>
+
+
+  
+
+
+
+
+
+
+
+<!--
+<div class="grid">
+    @for ( lista of listaHabitaciones; track $index) {
+       @switch (lista.estado) {
+        @case ('disponible') {
+
+            <div class="col-12 lg:col-6 xl:col-3">
+
+                <div class="card mb-0 bg-green-700">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <h2 class="font-medium text-4xl text-green-50">Habitación {{lista.numero}}</h2>
+                            <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                            </span>
+                        </div>
+                        <div class="flex align-items-center justify-content-center border-round bg-green-200" style="width: 3rem; height: 3rem;">
+                            <i class="pi pi-check text-2xl text-green-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-green-50">{{lista.descripcion}}</p>
+
+
+                    <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-green-600">
+                        <div class="flex flex-column align-items-center">
+                            <i class="fas fa-procedures text-white"></i>
+                            <span class="font-medium text-xl text-white"> Camas:</span>
+                            <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                        </div>
+
+                        <div class="flex flex-column align-items-center">
+                            <i class="fas fa-users text-2xl text-white"></i>
+                            <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                            <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                        </div>
+                    </div><br>
+
+                    <div class="p-d-flex p-ai-center mb-3">
+                        @if( lista.tv===1){
+                            <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                        }
+                        @if(lista.ducha===1){
+                            <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                        }
+                        @if (lista.banio===1) {
+                            <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                        }
+                        <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                    </div>
+
+                    <div class="flex justify-content-between align-items-center mt-3">
+                        <div class="flex flex-column border-round bg-green-600">
+                            <span class="text-green-50 text-3xl font-bold">Bs. {{lista.costo}}</span>
+                        </div>
+
+                        <div class="flex flex-column">
+                            <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                            <span class="text-green-50">{{lista.estado}}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                        <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                    </div>
+                </div>
+            </div>
+        }
+        @case ('ocupado') {
+            <div class="col-12 lg:col-6 xl:col-3">
+
+                <div class="card mb-0 bg-red-500">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <h2 class="font-medium text-4xl text-white">Habitación {{lista.numero}}</h2>
+                            <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                            </span>
+                        </div>
+                        <div class="flex align-items-center justify-content-center border-round bg-red-200" style="width: 3rem; height: 3rem;">
+                            <i class="pi pi-times text-2xl text-red-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-white">{{lista.descripcion}}</p>
+
+
+                    <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-red-600">
+                        <div class="flex flex-column align-items-center">
+                            <i class="fas fa-procedures text-white"></i>
+                            <span class="font-medium text-xl text-white"> Camas:</span>
+                            <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                        </div>
+
+                        <div class="flex flex-column align-items-center">
+                            <i class="pi pi-users text-2xl text-white"></i>
+                            <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                            <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                        </div>
+                    </div><br>
+
+                    <div class="p-d-flex p-ai-center mb-3">
+                        @if( lista.tv===1){
+                            <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                        }
+                        @if(lista.ducha===1){
+                            <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                        }
+                        @if (lista.banio===1) {
+                            <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                        }
+                        <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                    </div>
+
+                    <div class="flex justify-content-between align-items-center mt-3">
+                        <div class="flex flex-column border-round bg-red-600">
+                            <span class="text-white text-3xl font-bold">Bs. {{lista.costo}}</span>
+                        </div>
+
+                        <div class="flex flex-column">
+                            <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                            <span class="text-white">{{lista.estado}}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                        <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                    </div>
+                </div>
+            </div>
+
+        }
+
+        @case ('reservado') {
+            <div class="col-12 lg:col-6 xl:col-3">
+
+                <div class="card mb-0" style="background-color: #FF9800;">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <h2 class="font-medium text-4xl text-white">Habitación {{lista.numero}}</h2>
+                            <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                            </span>
+                        </div>
+                        <div class="flex align-items-center justify-content-center border-round bg-yellow-200" style="width: 3rem; height: 3rem;">
+                            <i class="pi pi-calendar text-2xl text-yellow-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-white">{{lista.descripcion}}</p>
+
+
+                    <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-yellow-600">
+                        <div class="flex flex-column align-items-center">
+                            <i class="fas fa-procedures text-white"></i>
+                            <span class="font-medium text-xl text-white"> Camas:</span>
+                            <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                        </div>
+
+                        <div class="flex flex-column align-items-center">
+                            <i class="pi pi-users text-2xl text-white"></i>
+                            <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                            <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                        </div>
+                    </div><br>
+
+                    <div class="p-d-flex p-ai-center mb-3">
+                        @if( lista.tv===1){
+                            <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                        }
+                        @if(lista.ducha===1){
+                            <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                        }
+                        @if (lista.banio===1) {
+                            <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                        }
+                        <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                    </div>
+
+                    <div class="flex justify-content-between align-items-center mt-3">
+                        <div class="flex flex-column border-round bg-yellow-600">
+                            <span class="text-white text-3xl font-bold">Bs. {{lista.costo}}</span>
+                        </div>
+
+                        <div class="flex flex-column">
+                            <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                            <span class="text-white">{{lista.estado}}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                        <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @case ('mantenimiento') {
+            <div class="col-12 lg:col-6 xl:col-3">
+
+                <div class="card mb-0 bg-bluegray-500">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <h2 class="font-medium text-4xl text-white">Habitación {{lista.numero}}</h2>
+                            <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                            </span>
+                        </div>
+                        <div class="flex align-items-center justify-content-center border-round bg-bluegray-200" style="width: 3rem; height: 3rem;">
+                            <i class="pi pi-cog text-2xl text-bluegray-600"></i>
+                        </div>
+                    </div>
+                     <p class="text-white">Habitación en proceso de Mantenimiento.</p>
+
+
+                    <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-bluegray-600">
+                        <div class="flex flex-column align-items-center">
+                            <i class="fas fa-procedures text-white"></i>
+                            <span class="font-medium text-xl text-white"> Camas:</span>
+                            <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                        </div>
+
+                        <div class="flex flex-column align-items-center">
+                            <i class="pi pi-users text-2xl text-white"></i>
+                            <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                            <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                        </div>
+                    </div><br>
+
+                    <div class="p-d-flex p-ai-center mb-3">
+                        @if( lista.tv===1){
+                            <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                        }
+                        @if(lista.ducha===1){
+                            <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                        }
+                        @if (lista.banio===1) {
+                            <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                        }
+                        <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                    </div>
+
+                    <div class="flex justify-content-between align-items-center mt-3">
+                        <div class="flex flex-column border-round bg-bluegray-600">
+                            <span class="text-white text-3xl font-bold">Bs. {{lista.costo}}</span>
+                        </div>
+
+                        <div class="flex flex-column">
+                            <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                            <span class="text-white">{{lista.estado}}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                        <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                    </div>
+                </div>
+            </div>
+
+        }
+        @case ('limpieza') {
+            <div class="col-12 lg:col-6 xl:col-3">
+
+                <div class="card mb-0 bg-pink-500">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <h2 class="font-medium text-4xl text-white">Habitación {{lista.numero}}</h2>
+                            <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                                <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                            </span>
+                        </div>
+                        <div class="flex align-items-center justify-content-center border-round bg-pink-200" style="width: 3rem; height: 3rem;">
+                            <i class="pi pi-broom text-2xl text-pink-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-white">Habitación en proceso de limpieza.</p>
+
+
+                    <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-pink-600">
+                        <div class="flex flex-column align-items-center">
+                            <i class="fas fa-procedures text-white"></i>
+                            <span class="font-medium text-xl text-white"> Camas:</span>
+                            <span class="text-white font-bold">{{lista.cantidad_camas}}</span>
+                        </div>
+
+                        <div class="flex flex-column align-items-center">
+                            <i class="pi pi-users text-2xl text-white"></i>
+                            <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                            <span class="text-white font-bold">{{lista.limite_personas}}</span>
+                        </div>
+                    </div><br>
+
+                    <div class="p-d-flex p-ai-center mb-3">
+                        @if( lista.tv===1){
+                            <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                        }
+                        @if(lista.ducha===1){
+                            <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                        }
+                        @if (lista.banio===1) {
+                            <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+
+                        }
+                        <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+                    </div>
+
+                    <div class="flex justify-content-between align-items-center mt-3">
+                        <div class="flex flex-column border-round bg-pink-600">
+                            <span class="text-white text-3xl font-bold">Bs. {{lista.costo}}</span>
+                        </div>
+
+                        <div class="flex flex-column">
+                            <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                            <span class="text-white">Limpieza</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                        <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                    </div>
+                </div>
+            </div>
+
+        }
+       }
+    }
+</div> -->
+
+
+
+
+  <!-- <div class="col-12 lg:col-6 xl:col-3">
+
+        <div class="card mb-0 bg-green-700">
+            <div class="flex justify-content-between mb-3">
+                <div>
+                    <h2 class="font-medium text-4xl text-green-50">Habitación 101</h2>
+                    <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                        <p-tag severity="warning" value="Simple" />
+                    </span>
+                </div>
+                <div class="flex align-items-center justify-content-center border-round bg-green-200" style="width: 3rem; height: 3rem;">
+                    <i class="pi pi-check text-2xl text-green-600"></i>
+                </div>
+            </div>
+            <p class="text-green-50">Habitación amplia con buena vista.</p>
+
+
+            <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-green-600">
+                <div class="flex flex-column align-items-center">
+                    <i class="fas fa-procedures text-white"></i>
+                    <span class="font-medium text-xl text-white"> Camas:</span>
+                    <span class="text-white font-bold">2</span>
+                </div>
+
+                <div class="flex flex-column align-items-center">
+                    <i class="pi pi-users text-2xl text-white"></i>
+                    <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                    <span class="text-white font-bold">4</span>
+                </div>
+            </div><br>
+
+            <div class="p-d-flex p-ai-center mb-3">
+                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+                <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+            </div>
+
+            <div class="flex justify-content-between align-items-center mt-3">
+                <div class="flex flex-column border-round bg-green-600">
+                    <span class="text-green-50 text-3xl font-bold">Bs. 120</span>
+                </div>
+
+                <div class="flex flex-column">
+                    <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                    <span class="text-green-50">Disponible</span>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 lg:col-6 xl:col-3">
+
+        <div class="card mb-0 bg-red-500">
+            <div class="flex justify-content-between mb-3">
+                <div>
+                    <h2 class="font-medium text-4xl text-white">Habitación 102</h2>
+                    <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                        <p-tag severity="warning" value="Doble" />
+                    </span>
+                </div>
+                <div class="flex align-items-center justify-content-center border-round bg-red-200" style="width: 3rem; height: 3rem;">
+                    <i class="pi pi-times text-2xl text-red-600"></i>
+                </div>
+            </div>
+            <p class="text-white">Habitación ocupada por un cliente.</p>
+
+
+            <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-red-600">
+                <div class="flex flex-column align-items-center">
+                    <i class="fas fa-procedures text-white"></i>
+                    <span class="font-medium text-xl text-white"> Camas:</span>
+                    <span class="text-white font-bold">2</span>
+                </div>
+
+                <div class="flex flex-column align-items-center">
+                    <i class="pi pi-users text-2xl text-white"></i>
+                    <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                    <span class="text-white font-bold">4</span>
+                </div>
+            </div><br>
+
+            <div class="p-d-flex p-ai-center mb-3">
+                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+                <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+            </div>
+
+            <div class="flex justify-content-between align-items-center mt-3">
+                <div class="flex flex-column border-round bg-red-600">
+                    <span class="text-white text-3xl font-bold">Bs. 150</span>
+                </div>
+
+                <div class="flex flex-column">
+                    <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                    <span class="text-white">Ocupada</span>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 lg:col-6 xl:col-3">
+
+        <div class="card mb-0" style="background-color: #FF9800;">
+            <div class="flex justify-content-between mb-3">
+                <div>
+                    <h2 class="font-medium text-4xl text-white">Habitación 103</h2>
+                    <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                        <p-tag severity="warning" value="Familiar" />
+                    </span>
+                </div>
+                <div class="flex align-items-center justify-content-center border-round bg-yellow-200" style="width: 3rem; height: 3rem;">
+                    <i class="pi pi-calendar text-2xl text-yellow-600"></i>
+                </div>
+            </div>
+            <p class="text-white">Habitación reservada para la próxima semana.</p>
+
+
+            <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-yellow-600">
+                <div class="flex flex-column align-items-center">
+                    <i class="fas fa-procedures text-white"></i>
+                    <span class="font-medium text-xl text-white"> Camas:</span>
+                    <span class="text-white font-bold">3</span>
+                </div>
+
+                <div class="flex flex-column align-items-center">
+                    <i class="pi pi-users text-2xl text-white"></i>
+                    <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                    <span class="text-white font-bold">5</span>
+                </div>
+            </div><br>
+
+            <div class="p-d-flex p-ai-center mb-3">
+                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+                <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+            </div>
+
+            <div class="flex justify-content-between align-items-center mt-3">
+                <div class="flex flex-column border-round bg-yellow-600">
+                    <span class="text-white text-3xl font-bold">Bs. 180</span>
+                </div>
+
+                <div class="flex flex-column">
+                    <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                    <span class="text-white">Reservada</span>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 lg:col-6 xl:col-3">
+
+        <div class="card mb-0 bg-bluegray-500">
+            <div class="flex justify-content-between mb-3">
+                <div>
+                    <h2 class="font-medium text-4xl text-white">Habitación 104</h2>
+                    <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                        <p-tag severity="warning" value="Triple" />
+                    </span>
+                </div>
+                <div class="flex align-items-center justify-content-center border-round bg-bluegray-200" style="width: 3rem; height: 3rem;">
+                    <i class="pi pi-cog text-2xl text-bluegray-600"></i>
+                </div>
+            </div>
+            <p class="text-white">Habitación en mantenimiento.</p>
+
+
+            <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-bluegray-600">
+                <div class="flex flex-column align-items-center">
+                    <i class="fas fa-procedures text-white"></i>
+                    <span class="font-medium text-xl text-white"> Camas:</span>
+                    <span class="text-white font-bold">3</span>
+                </div>
+
+                <div class="flex flex-column align-items-center">
+                    <i class="pi pi-users text-2xl text-white"></i>
+                    <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                    <span class="text-white font-bold">6</span>
+                </div>
+            </div><br>
+
+            <div class="p-d-flex p-ai-center mb-3">
+                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+                <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+            </div>
+
+            <div class="flex justify-content-between align-items-center mt-3">
+                <div class="flex flex-column border-round bg-bluegray-600">
+                    <span class="text-white text-3xl font-bold">Bs. 200</span>
+                </div>
+
+                <div class="flex flex-column">
+                    <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                    <span class="text-white">Mantenimiento</span>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 lg:col-6 xl:col-3">
+
+        <div class="card mb-0 bg-pink-500">
+            <div class="flex justify-content-between mb-3">
+                <div>
+                    <h2 class="font-medium text-4xl text-white">Habitación 105</h2>
+                    <span class="font-medium text-xl font-semibold text-gray-900">Tipo:
+                        <p-tag severity="warning" value="Suite" />
+                    </span>
+                </div>
+                <div class="flex align-items-center justify-content-center border-round bg-pink-200" style="width: 3rem; height: 3rem;">
+                    <i class="pi pi-broom text-2xl text-pink-600"></i>
+                </div>
+            </div>
+            <p class="text-white">Habitación en proceso de limpieza.</p>
+
+
+            <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-pink-600">
+                <div class="flex flex-column align-items-center">
+                    <i class="fas fa-procedures text-white"></i>
+                    <span class="font-medium text-xl text-white"> Camas:</span>
+                    <span class="text-white font-bold">4</span>
+                </div>
+
+                <div class="flex flex-column align-items-center">
+                    <i class="pi pi-users text-2xl text-white"></i>
+                    <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                    <span class="text-white font-bold">6</span>
+                </div>
+            </div><br>
+
+            <div class="p-d-flex p-ai-center mb-3">
+                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+                <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+            </div>
+
+            <div class="flex justify-content-between align-items-center mt-3">
+                <div class="flex flex-column border-round bg-pink-600">
+                    <span class="text-white text-3xl font-bold">Bs. 160</span>
+                </div>
+
+                <div class="flex flex-column">
+                    <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                    <span class="text-white">Limpieza</span>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+            </div>
+        </div>
+    </div> -->
+
+
+
+
+
+
+
+
+
+
