@@ -331,7 +331,7 @@
                         </div>
 
                         <div class="mt-3">
-                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                            <p-button label="Reservar" (click)="ObtenerHabitacionID(lista.id)" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
                             <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
                         </div>
                     </div>
@@ -395,7 +395,8 @@
                         </div>
 
                         <div class="mt-3">
-                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                                                        <p-button label="Reservar" (click)="ObtenerHabitacionID(lista.id)" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+
                             <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
                         </div>
                     </div>
@@ -461,7 +462,8 @@
                         </div>
 
                         <div class="mt-3">
-                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                                                        <p-button label="Reservar" (click)="ObtenerHabitacionID(lista.id)" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+
                             <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
                         </div>
                     </div>
@@ -526,7 +528,8 @@
                         </div>
 
                         <div class="mt-3">
-                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                                                        <p-button label="Reservar" (click)="ObtenerHabitacionID(lista.id)" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+
                             <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
                         </div>
                     </div>
@@ -591,7 +594,8 @@
                         </div>
 
                         <div class="mt-3">
-                            <p-button label="Reservar" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+                                                        <p-button label="Reservar" (click)="ObtenerHabitacionID(lista.id)" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
+
                             <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
                         </div>
                     </div>
@@ -604,7 +608,287 @@
   </div>
 
 
-  
+  <p-dialog
+  header="Check In de Habitacion"
+  [modal]="true"
+  [(visible)]="ModalReservar"
+  [style]="{ width: '70rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+  <div class="grid">
+
+    <div class="col-12 lg:col-6">
+        <div class="col-12 lg:col-12">
+            <div class="card">
+              <h3 class="card-header">Detalles de la Habitación</h3>
+              <div class="card-body">
+
+                @if (!habitacion) {
+                    <p>No se ha seleccionado una habitación.</p>
+                }
+                @if (habitacion) {
+
+                  <div class="col-md-6">
+                    <p><strong>Número de Habitación:</strong> {{ habitacion.numero }}</p>
+                  </div>
+
+
+                  <div class="col-md-6">
+                    <p><strong>Piso:</strong> {{ habitacion.numero_piso }}</p>
+                  </div>
+
+
+                  <div class="col-md-6">
+                    <p><strong>Tipo de Habitación:</strong> {{ habitacion.tipo_habitacion?.nombre }}</p>
+                    <small>{{ habitacion.tipo_habitacion?.descripcion }}</small>
+                  </div>
+
+
+                  <div class="col-md-6">
+                    <p><strong>Cantidad de Camas:</strong> {{ habitacion.cantidad_camas }}</p>
+                  </div>
+
+
+                  <div class="col-md-6">
+                    <p><strong>Límite de Personas:</strong> {{ habitacion.limite_personas }}</p>
+                  </div>
+
+
+                  <div class="col-12">
+                    <p><strong>Descripción:</strong> {{ habitacion.descripcion }}</p>
+                  </div>
+
+
+                  <div class="col-md-6">
+                    <p><strong>Costo por Noche:</strong> ${{ habitacion.costo }}</p>
+                  </div>
+
+
+                  <div class="col-md-6">
+                    <p><strong>Servicios:</strong></p>
+                    <ul>
+                      <li *ngIf="habitacion.tv">TV disponible</li>
+                      <li *ngIf="habitacion.ducha">Ducha disponible</li>
+                      <li *ngIf="habitacion.banio">Baño privado</li>
+                    </ul>
+                  </div>
+
+
+                  <div class="col-md-6">
+                    <p><strong>Estado:</strong> {{ habitacion.estado === 'limpieza' ? 'En Limpieza' : 'Disponible' }}</p>
+                  </div>
+
+                }
+
+
+
+
+
+
+
+
+
+
+              </div>
+            </div>
+          </div>
+
+      </div>
+
+
+
+
+      <div class="col-12 lg:col-6">
+        <div class="col-12 lg:col-12">
+            <div class="card">
+              <h3 class="card-header">Datos del Huesped</h3>
+              <div class="card-body">
+
+                <!-- <p-autoComplete
+                [(ngModel)]="selectedHuesped"
+                [dropdown]="true"
+                [suggestions]="filteredHuespedes"
+                (completeMethod)="filterHuespedes($event)"
+                optionLabel="displayLabel"
+                placeholder="Selecciona un huésped"
+                [minLength]="3"
+                [size]="30"
+                (onSelect)="onHuespedSelect($event)">
+            </p-autoComplete> -->
+            <!-- <p-autoComplete
+            [(ngModel)]="selectedHuesped"
+            [dropdown]="true"
+            [suggestions]="filteredHuespedes"
+            (completeMethod)="filterHuespedes($event)"
+            optionLabel="displayLabel"
+            placeholder="Selecciona un huésped"
+            [minLength]="3"
+            [size]="30">
+                </p-autoComplete> -->
+                <form (ngSubmit)="MostrarDatosHuesped()" #huespedForm="ngForm">
+                    <p-autoComplete
+                      [(ngModel)]="selectedHuesped"
+                      [dropdown]="true"
+                      [suggestions]="filteredHuespedes"
+                      (completeMethod)="filterHuespedes($event)"
+                      optionLabel="displayLabel"
+                      placeholder="Selecciona un huésped"
+                      [minLength]="3"
+                      [size]="30"
+                      name="huesped"
+                      required
+                      (onSelect)="onHuespedSelect($event)"
+                    ></p-autoComplete>
+                  </form>
+                  <p-card header="Datos del Huésped" *ngIf="selectedHuesped">
+                    <div class="p-grid p-fluid">
+                      <!-- Nombre y Apellido -->
+                      <div class="p-col-12 p-md-6">
+                        <p><strong>Nombre:</strong> {{ selectedHuesped.nombre }} {{ selectedHuesped.apellido }}</p>
+                      </div>
+                      <!-- Número de Documento -->
+                      <div class="p-col-12 p-md-6">
+                        <p><strong>Número de Documento:</strong> {{ selectedHuesped.numero_documento }}</p>
+                      </div>
+                      <!-- Correo -->
+                      <div class="p-col-12 p-md-6">
+                        <p><strong>Correo:</strong> {{ selectedHuesped.correo }}</p>
+                      </div>
+                      <!-- Dirección -->
+                      <div class="p-col-12 p-md-6">
+                        <p><strong>Dirección:</strong> {{ selectedHuesped.direccion }}</p>
+                      </div>
+                      <!-- Fecha de Nacimiento -->
+                      <div class="p-col-12 p-md-6">
+                        <p><strong>Fecha de Nacimiento:</strong> {{ selectedHuesped.fecha_de_nacimiento | date }}</p>
+                      </div>
+                      <!-- Estado Civil -->
+                      <div class="p-col-12 p-md-6">
+                        <p><strong>Estado Civil:</strong> {{ selectedHuesped.estado_civil }}</p>
+                      </div>
+                      <!-- Nacionalidad -->
+                      <div class="p-col-12 p-md-6">
+                        <p><strong>Nacionalidad:</strong> {{ selectedHuesped.nacionalidad }}</p>
+                      </div>
+                      <!-- Procedencia -->
+                      <div class="p-col-12 p-md-6">
+                        <p><strong>Procedencia:</strong> {{ selectedHuesped.procedencia }}</p>
+                      </div>
+                    </div>
+                  </p-card>
+                  <p-card *ngIf="!selectedHuesped" class="p-mt-4">
+                    <div class="p-text-center">
+                      <p class="text-muted">Por favor, selecciona un huésped para ver sus datos.</p>
+                    </div>
+                  </p-card>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </div>
+            </div>
+          </div>
+
+      </div>
+
+
+
+    <div class="col-12 lg:col-4">
+        <div class="card p-fluid">
+            <h5>Detalles de la Habitación</h5>
+
+            <div class="grid">
+                <div class="col-12 lg:col-6 card p-fluid">
+                    <h1>hola</h1>
+
+
+                </div>
+                <div class="col-12 lg:col-6 card p-fluid">
+                    <h1>hola</h1>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="p-grid">
+        <div class="p-col-12 p-md-6">
+
+
+
+        </div>
+      </div>
+
+
+    <div class="col-12 lg:col-6">
+        <div class="col-12 lg:col-12">
+            <div class="card">
+              <h3 class="card-header">Datos del Huesped</h3>
+              <div class="card-body">
+
+              </div>
+            </div>
+          </div>
+
+    </div>
+
+
+
+
+
+
+    <div class="col-12 lg:col-6">
+        <div class="card p-fluid">
+            <h5>Confirmation</h5>
+
+            <div class="grid">
+                <div class="col-12 lg:col-6 ">
+                    <button type="text" pButton icon="pi pi-trash" label="Delete" class="p-button-danger" style="width:auto;"></button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-12 lg:col-12">
+
+
+        <div class="card">
+            <h5>Sidebar</h5>
+
+                <h3 style="font-weight:normal">Full Screen Sidebar</h3>
+
+
+            <div class="flex flex-wrap gap-2">
+                <button pButton type="button"  icon="pi pi-arrow-right" class="p-button-warning"></button>
+                <button pButton type="button"  icon="pi pi-arrow-left" class="p-button-warning"></button>
+                <button pButton type="button"  icon="pi pi-arrow-down" class="p-button-warning"></button>
+                <button pButton type="button"  icon="pi pi-arrow-up" class="p-button-warning"></button>
+                <button pButton type="button"  icon="pi pi-external-link" class="p-button-warning"></button>
+            </div>
+        </div>
+    </div>
+  </div>
+</p-dialog>
+
+
+
+
+
+
 
 
 

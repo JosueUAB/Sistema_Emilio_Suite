@@ -33,12 +33,13 @@ import { InputNumberModule } from "primeng/inputnumber";
 
  // Importa FormsModule
 import { MultiSelectModule } from 'primeng/multiselect';  // Importa MultiSelectModule
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 
 
 @NgModule({
   declarations: [
-    ReservasComponent
+    ReservasComponent,
   ],
   imports: [
     CommonModule,
@@ -72,7 +73,8 @@ import { MultiSelectModule } from 'primeng/multiselect';  // Importa MultiSelect
     InputGroupAddonModule,
     InputSwitchModule,
     InputNumberModule,
-    MultiSelectModule
+    MultiSelectModule,
+    AutoCompleteModule,
   ]
 })
 export class ReservasModule { }
