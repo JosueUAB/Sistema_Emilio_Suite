@@ -35,6 +35,7 @@ import { InputNumberModule } from "primeng/inputnumber";
 import { MultiSelectModule } from 'primeng/multiselect';  // Importa MultiSelectModule
 import { AutoCompleteModule } from 'primeng/autocomplete';
 
+import { MessagesModule } from 'primeng/messages';
 
 
 @NgModule({
@@ -75,6 +76,9 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     InputNumberModule,
     MultiSelectModule,
     AutoCompleteModule,
+    MessagesModule
+
+
   ]
 })
 export class ReservasModule { }

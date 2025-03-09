@@ -4,10 +4,12 @@ import { HabitacionesService } from '../habitaciones/service/habitaciones.servic
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { DialogService } from 'primeng/dynamicdialog';  // Asegúrate de tener este servicio importado
 import { NotfoundComponent } from 'src/app/layout/notfound/notfound.component';
-import { MessageService } from 'primeng/api';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HuespedService } from '../huespedes/services/huesped.service';
-
+import { DescuentoService } from '../configuracion/services/descuentos.service';
+import { Message } from 'primeng/api';
+import { ReservasService } from './service/reservas.service';
 @Component({
   selector: 'app-reservas',
   templateUrl: './reservas.component.html',
@@ -22,6 +24,7 @@ export class ReservasComponent implements OnInit {
   selectedTipoHabitacion: number | null = null; // Para el filtro por tipo de habitación
   ModalReservar:boolean = false;
   selectedHuespedCodigo:any;
+  reservaForm: FormGroup;
   estados: any[] = [
     { label: 'Disponible', value: 'disponible' },
     { label: 'Ocupado', value: 'ocupado' },
@@ -48,13 +51,29 @@ export class ReservasComponent implements OnInit {
   selectedHuespedID:any;
   selectedHabitacionId:number;
   habitacionesEditForm:FormGroup;
+  descuentos: any = [];
+  filteredDescuentos: any[] = [];
+   isLoading: boolean;
+  search: string = '';
+  page:number=1;
+  duracionEstancia: number = 0;
+  costoTotal: number = 0;
 
+  messages: Message[] = [];
+  reservas: any[] = [];
+  isLoadingReserva = false;
+  errorMessage: string = '';
   constructor(private _HabitacionesService: HabitacionesService,
                 public _layoutService: LayoutService,
+                private _DescuentoService: DescuentoService,
                 private _DialogService : DialogService,
                 private messageService: MessageService,
                 private fb : FormBuilder,
                 private _HuespedService: HuespedService,
+                private primengConfig: PrimeNGConfig,
+
+                private _reservaService: ReservasService,
+
   ) {
 
 
@@ -73,11 +92,36 @@ export class ReservasComponent implements OnInit {
 
         });
 
+      this.primengConfig.setTranslation({
+        firstDayOfWeek: 0,
+        dayNames: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+        dayNamesShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+        dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
+        monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        monthNamesShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+        today: 'Hoy',
+        clear: 'Limpiar',
+        dateFormat: 'dd/mm/yy',
+        weekHeader: 'Sg'
+      });
+
+      this.reservaForm = this.fb.group({
+        habitacion_id: ['', Validators.required],
+        huesped_id: ['', Validators.required],
+        descuento_id: [''],
+        fecha_inicio: ['', Validators.required],
+        fecha_fin: ['', Validators.required],
+        metodo_de_pago: ['', Validators.required],
+        monto_pagado: ['', [Validators.required, Validators.min(0)]],
+      });
+
   }
 
   ngOnInit(): void {
     this.GetHabitaciones();
     this.getHuespedes();
+    this.listarDescuentos();
+    this.GetReservas();
   }
 
   GetHabitaciones() {
@@ -111,6 +155,27 @@ export class ReservasComponent implements OnInit {
       }
     );
   }
+  listarDescuentos() {
+    this.isLoading = true;
+    this._DescuentoService.listarDescuentos(this.page, this.search).subscribe(
+      data => {
+        if (Array.isArray(data)) {
+          this.descuentos = data;
+          console.log(this.descuentos);
+        } else {
+          console.error('La respuesta no es un arreglo');
+          this.descuentos = [];
+        }
+        this.isLoading = false;
+      },
+      error => {
+        console.error('Error:', error);
+        this.isLoading = false;
+        this.descuentos = [];
+      }
+    );
+  }
+
 
   filtrarHabitaciones() {
     this.listaHabitacionesFiltradas = this.listaHabitaciones.filter(habitacion => {
@@ -150,6 +215,9 @@ export class ReservasComponent implements OnInit {
         if (data && data.habitacion) {
           console.log('datos del usuario : ', data);
           this.habitacion = data.habitacion; // Guardamos la habitación
+          this.reservaForm.patchValue({
+            habitacion_id:this.habitacion.id
+          });
           this.ModalReservar = true;
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la habitación.' });
@@ -212,8 +280,12 @@ filterHuespedes(event: any) {
     console.log('Huésped seleccionado:', selectedHuesped);
 
     // Si necesitas solo el 'id' del huésped seleccionado, lo almacenamos
-    
+
     this.selectedHuespedID= selectedHuesped.id;
+    this.reservaForm.patchValue({
+        huesped_id:selectedHuesped.id
+
+    });
 
 
     console.log( 'El  ID dl huesped seleccionado es : ', this.selectedHuespedID)
@@ -241,7 +313,137 @@ filterHuespedes(event: any) {
 
     this.ModalReservar = true;
 }
+calcularDuracionYCosto(coste:number) {
+    const fechaInicio = this.reservaForm.get('fecha_inicio')?.value;
+    const fechaFin = this.reservaForm.get('fecha_fin')?.value;
 
+    if (fechaInicio && fechaFin) {
+      const inicio = new Date(fechaInicio);
+      const fin = new Date(fechaFin);
+
+      // Calcular la diferencia en milisegundos y convertirla a días
+      const diferenciaMs = fin.getTime() - inicio.getTime();
+      this.duracionEstancia = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
+
+      // Calcular el costo total
+      const habitacion = this.listaHabitaciones.find(
+        (h) => h.id === this.reservaForm.get('habitacion_id')?.value
+      );
+console.log(coste)
+
+        this.costoTotal = coste * this.duracionEstancia;
+
+
+
+
+
+    }
+  }
+
+
+  filterDescuentos(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredDescuentos = this.descuentos.filter(descuento =>
+      descuento.nombre.toLowerCase().includes(query)
+    ).map(descuento => ({
+      ...descuento,
+      displayLabel: `${descuento.nombre} | ${descuento.porcentaje}%`
+    }));
+  }
+
+  onDescuentoSelect(descuento: any) {
+    // Aquí puedes hacer lo que necesites con el descuento seleccionado
+    console.log('Descuento seleccionado:', descuento);
+    console.log('Descuento id selec:', descuento.value.id);
+    // Por ejemplo, puedes asignar el ID del descuento al formulario
+    this.reservaForm.patchValue({
+        descuento_id: descuento.value.id // Asigna el ID del descuento al formulario
+    });
+  }
+
+
+  GetReservas(): void {
+    this.isLoadingReserva = true;
+    this._reservaService.obtenerReservas().subscribe({
+      next: (response) => {
+        if (response && response.reservas) {
+
+          this.reservas = response.reservas;
+          console.log('las reservas son : ',this.reservas)
+        }
+      },
+      error: (error) => {
+        this.errorMessage = error.message || 'Ocurrió un error al cargar las reservas';
+      },
+      complete: () => {
+        this.isLoadingReserva = false;
+      },
+    });
+    }
+
+
+    guardarReserva() {
+        if (this.reservaForm.valid) {
+            console.log('formulario enviado : ', this.reservaForm.value)
+          this.isLoadingReserva = true;
+
+          // Obtener los datos del formulario
+          const formData = this.reservaForm.value;
+
+          // Realizar el parseo de las fechas aquí antes de enviarlas al servicio
+          const parsedData = this.parsearFechas(formData);
+
+          // Llamamos al servicio para registrar la reserva
+          this._reservaService.registrarReserva(parsedData).subscribe({
+            next: (response) => {
+              if (response && response.reserva) {
+                this.CerrarModalGuardar();
+                console.log('Reserva guardada exitosamente:', response.reserva);
+              }
+            },
+            error: (error) => {
+              this.errorMessage = error.mensaje || 'Ocurrió un error al guardar la reserva';
+              console.error(this.errorMessage);
+            },
+            complete: () => {
+              this.isLoadingReserva = false;
+            },
+          });
+        } else {
+          console.log('Formulario inválido');
+        }
+      }
+
+      // Método para parsear las fechas antes de enviarlas
+      private parsearFechas(data: any) {
+        // Convertir las fechas de formato Date a formato 'YYYY-MM-DD'
+        const fechaInicio = new Date(data.fecha_inicio);
+        const fechaFin = new Date(data.fecha_fin);
+
+        // Asegurarnos de que el formato sea 'YYYY-MM-DD'
+        const formattedFechaInicio = `${fechaInicio.getFullYear()}-${(fechaInicio.getMonth() + 1).toString().padStart(2, '0')}-${fechaInicio.getDate().toString().padStart(2, '0')}`;
+        const formattedFechaFin = `${fechaFin.getFullYear()}-${(fechaFin.getMonth() + 1).toString().padStart(2, '0')}-${fechaFin.getDate().toString().padStart(2, '0')}`;
+
+        // Retornar los datos con las fechas formateadas
+        return {
+          ...data,
+          fecha_inicio: formattedFechaInicio,
+          fecha_fin: formattedFechaFin,
+        };
+      }
+
+      CerrarModalGuardar(){
+        this.ModalReservar=false;
+        this.reservaForm.reset();
+        this.selectedHuesped=[];
+        this.GetHabitaciones();
+        this.filteredDescuentos = [];
+      }
+
+
+  mostrar(){
+    console.log(this.reservaForm.value)
+  }
 
 
 
