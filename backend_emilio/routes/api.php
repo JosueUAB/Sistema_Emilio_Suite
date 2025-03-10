@@ -62,6 +62,9 @@ Route::group([
     Route::resource("huesped",HuespedController::class);
 
     Route::resource("habitacion",HabitacionesController::class);
-    Route::resource("reserva",ReservaController::class);
-
+    Route::resource("reserva", ReservaController::class);
+    // !Rutas adicionales
+    Route::post('reserva/checkin/{id}', [ReservaController::class, 'checkin']);
+    Route::post('reserva/checkin-directo', [ReservaController::class, 'checkinDirecto']);
+    Route::post('reserva/checkout/{id}', [ReservaController::class, 'checkout']);
 });

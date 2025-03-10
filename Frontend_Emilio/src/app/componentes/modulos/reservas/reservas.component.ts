@@ -369,6 +369,7 @@ console.log(coste)
         if (response && response.reservas) {
 
           this.reservas = response.reservas;
+          console.log('all ',response)
           console.log('las reservas son : ',this.reservas)
         }
       },
@@ -384,35 +385,35 @@ console.log(coste)
 
     guardarReserva() {
         if (this.reservaForm.valid) {
-            console.log('formulario enviado : ', this.reservaForm.value)
-          this.isLoadingReserva = true;
+            console.log('Formulario enviado:', this.reservaForm.value);
+            this.isLoadingReserva = true;
 
-          // Obtener los datos del formulario
-          const formData = this.reservaForm.value;
+            // Obtener los datos del formulario
+            const formData = this.reservaForm.value;
 
-          // Realizar el parseo de las fechas aquí antes de enviarlas al servicio
-          const parsedData = this.parsearFechas(formData);
+            // Realizar el parseo de las fechas aquí antes de enviarlas al servicio
+            const parsedData = this.parsearFechas(formData);
 
-          // Llamamos al servicio para registrar la reserva
-          this._reservaService.registrarReserva(parsedData).subscribe({
-            next: (response) => {
-              if (response && response.reserva) {
-                this.CerrarModalGuardar();
-                console.log('Reserva guardada exitosamente:', response.reserva);
-              }
-            },
-            error: (error) => {
-              this.errorMessage = error.mensaje || 'Ocurrió un error al guardar la reserva';
-              console.error(this.errorMessage);
-            },
-            complete: () => {
-              this.isLoadingReserva = false;
-            },
-          });
+            // Llamamos al servicio para registrar la reserva
+            this._reservaService.registrarReserva(parsedData).subscribe({
+                next: (response) => {
+                    if (response && response.reserva) {
+                        this.CerrarModalGuardar();
+                        console.log('Reserva guardada exitosamente:', response.reserva);
+                    }
+                },
+                error: (error) => {
+                    this.errorMessage = error.mensaje || 'Ocurrió un error al guardar la reserva';
+                    console.error(this.errorMessage);
+                },
+                complete: () => {
+                    this.isLoadingReserva = false;
+                },
+            });
         } else {
-          console.log('Formulario inválido');
+            console.log('Formulario inválido');
         }
-      }
+    }
 
       // Método para parsear las fechas antes de enviarlas
       private parsearFechas(data: any) {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import { catchError, finalize, map, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -53,23 +53,49 @@ export class ReservasService {
   }
 
   // Crear una nueva reserva
-  registrarReserva(data: any): Observable<any> {
+//   registrarReserva(data: any): Observable<any> {
+//     this.isLoadingSubject.next(true);
+//     const token = this.authservice.obtenerToken();
+
+//     if (token) {
+//         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+//         return this.http.post<any>(this.rutaApi, data, { headers }).pipe(
+//             tap(response => {
+//                 console.log('Respuesta del servidor:', response);
+//             }),
+//             finalize(() => this.isLoadingSubject.next(false)),
+//             catchError((error) => this.manejarError(error, 'Error al crear la reserva'))
+//         );
+//     } else {
+//         console.log('Token no disponible');
+//         this.isLoadingSubject.next(false);
+//         return of(null);
+//     }
+// }
+registrarReserva(data: any): Observable<any> {
     this.isLoadingSubject.next(true);
     const token = this.authservice.obtenerToken();
 
     if (token) {
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      return this.http.post<any>(this.rutaApi, data, { headers }).pipe(
-        finalize(() => this.isLoadingSubject.next(false)),
-        catchError((error) => this.manejarError(error, 'Error al crear la reserva'))
-      );
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        return this.http.post<any>(this.rutaApi, data, { headers }).pipe(
+            map(response => {
+                // Asegúrate de que la respuesta tenga la estructura esperada
+                if (response && response.status && response.detalles_pago) {
+                    return response;
+                } else {
+                    throw new Error('Respuesta del servidor no válida');
+                }
+            }),
+            finalize(() => this.isLoadingSubject.next(false)),
+            catchError((error) => this.manejarError(error, 'Error al crear la reserva'))
+        );
     } else {
-      console.log('Token no disponible');
-      this.isLoadingSubject.next(false);
-      return of(null);
+        console.log('Token no disponible');
+        this.isLoadingSubject.next(false);
+        return of(null);
     }
-  }
-
+}
   // Actualizar una reserva
   actualizarReserva(id: number, data: any): Observable<any> {
     this.isLoadingSubject.next(true);
