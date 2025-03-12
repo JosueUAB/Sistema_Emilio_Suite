@@ -153,10 +153,10 @@ public function store(Request $request)
         // Actualizar el estado de la habitación a 'reservado'
         $habitacion->update(['estado' => 'reservado']);
 
-        // Si el check-in es hoy, actualizamos el estado del huésped a 'activo'
-        if ($checkin->isToday()) {
-            $huesped->update(['estado' => 'activo']);
-        }
+        // // Si el check-in es hoy, actualizamos el estado del huésped a 'activo'
+        // if ($checkin->isToday()) {
+        //     $huesped->update(['estado' => 'activo']);
+        // }
 
         // Cargar relaciones para la respuesta
         $reserva->load('huesped', 'habitacion', 'descuento', 'pago');
@@ -616,131 +616,6 @@ public function store(Request $request)
     }
 
 
-// public function checkinDirecto(Request $request)
-// {
-//     try {
-//         Log::info('Iniciando check-in directo:', ['request' => $request->all()]);
-
-//         // Validar los datos de la solicitud
-//         $request->validate([
-//             'huesped_id' => 'required|exists:huesped,id',
-//             'habitacion_id' => 'required|exists:habitaciones,id',
-//             'fecha_inicio' => 'required|date',
-//             'fecha_fin' => 'required|date|after:fecha_inicio',
-//             'metodo_de_pago' => 'required|in:qr,efectivo',
-//             'monto_pagado' => 'required|numeric|min:0',
-//             'descuento_id' => 'nullable|exists:descuento,id', // Descuento opcional
-//         ]);
-
-//         // Obtener la habitación y el huésped
-//         $habitacion = Habitaciones::find($request->habitacion_id);
-//         $huesped = Huesped::find($request->huesped_id);
-
-//         // Verificar si la habitación y el huésped existen
-//         if (!$habitacion) {
-//             Log::error('Habitación no encontrada:', ['habitacion_id' => $request->habitacion_id]);
-//             return response()->json(['mensaje' => 'Habitación no encontrada.'], 404);
-//         }
-//         if (!$huesped) {
-//             Log::error('Huésped no encontrado:', ['huesped_id' => $request->huesped_id]);
-//             return response()->json(['mensaje' => 'Huésped no encontrado.'], 404);
-//         }
-
-//         // Verificar si la habitación está disponible
-//         if ($habitacion->estado !== 'disponible') {
-//             Log::warning('La habitación no está disponible:', ['habitacion_id' => $habitacion->id, 'estado' => $habitacion->estado]);
-//             return response()->json(['mensaje' => 'La habitación no está disponible.'], 409);
-//         }
-
-//         // Calcular la duración de la estancia en días
-//         $checkin = Carbon::parse($request->fecha_inicio);
-//         $checkout = Carbon::parse($request->fecha_fin);
-//         $duracion = $checkin->diffInDays($checkout);
-
-//         // Calcular el costo total sin descuento
-//         $costoTotalSinDescuento = $habitacion->costo * $duracion;
-
-//         // Aplicar descuento si existe
-//         $descuento = null;
-//         $montoDescuento = 0;
-//         if ($request->descuento_id) {
-//             $descuento = Descuento::find($request->descuento_id);
-//             if (!$descuento) {
-//                 Log::error('Descuento no encontrado:', ['descuento_id' => $request->descuento_id]);
-//                 return response()->json(['mensaje' => 'El descuento no existe.'], 404);
-//             }
-//             $montoDescuento = ($costoTotalSinDescuento * $descuento->porcentaje) / 100;
-//         }
-
-//         // Calcular el total después de aplicar el descuento
-//         $totalConDescuento = $costoTotalSinDescuento - $montoDescuento;
-
-//         // Verificar si el monto pagado es mayor que el total
-//         if ($request->monto_pagado > $totalConDescuento) {
-//             Log::warning('El monto pagado no puede ser mayor que el total de la reserva:', ['monto_pagado' => $request->monto_pagado, 'total_con_descuento' => $totalConDescuento]);
-//             return response()->json([
-//                 'mensaje' => 'El monto pagado no puede ser mayor que el total de la reserva.',
-//                 'status' => 400
-//             ], 400);
-//         }
-
-//         // Crear la reserva con check-in inmediato
-//         $reserva = Reserva::create([
-//             'huesped_id' => $huesped->id,
-//             'habitacion_id' => $habitacion->id,
-//             'descuento_id' => $request->descuento_id, // Puede ser NULL
-//             'usuario_id' => auth()->id(), // ID del usuario autenticado
-//             'fecha_inicio' => $request->fecha_inicio,
-//             'fecha_fin' => $request->fecha_fin,
-//             'estado' => 'confirmada', // Usar un valor válido del ENUM
-//             'total' => $totalConDescuento, // Total con descuento aplicado
-//         ]);
-
-//         // Actualizar estados
-//         $habitacion->update(['estado' => 'ocupado']); // Cambiar el estado de la habitación a "ocupado"
-//         $huesped->update(['estado' => 'activo']); // Cambiar el estado del huésped a "activo"
-
-//         // Registrar el pago
-//         $pago = Pago::create([
-//             'reserva_id' => $reserva->id,
-//             'usuario_id' => auth()->id(), // ID del usuario autenticado
-//             'monto_pagado' => $request->monto_pagado,
-//             'saldo' => $totalConDescuento - $request->monto_pagado,
-//             'metodo_de_pago' => $request->metodo_de_pago,
-//             'estado_pago' => ($request->monto_pagado >= $totalConDescuento) ? 'completado' : 'deuda',
-//             'fecha_de_pago' => now(),
-//         ]);
-
-//         // Cargar relaciones para la respuesta
-//         $reserva->load('huesped', 'habitacion', 'descuento', 'pago');
-
-//         // Respuesta con detalles adicionales
-//         return response()->json([
-//             'mensaje' => 'Check-in directo realizado exitosamente.',
-//             'reserva' => $reserva,
-//             'pago' => $pago,
-//             'huesped' => $huesped, // Detalles del huésped
-//             'habitacion' => $habitacion, // Detalles de la habitación
-//             'descuento' => $descuento, // Detalles del descuento (si aplica)
-//             'detalles_pago' => [
-//                 'dias_hospedaje' => $duracion, // Días de hospedaje
-//                 'costo_por_noche' => $habitacion->costo, // Costo por noche
-//                 'costo_total_sin_descuento' => $costoTotalSinDescuento, // Costo total sin descuento
-//                 'monto_descuento' => $montoDescuento, // Monto del descuento en dinero
-//                 'total_con_descuento' => $totalConDescuento // Total a pagar con descuento
-//             ],
-//             'status' => 201
-//         ], 201);
-
-//     } catch (\Exception $e) {
-//         Log::error('Error al realizar el check-in directo:', ['error' => $e->getMessage()]);
-//         return response()->json([
-//             'mensaje' => 'Ocurrió un error al realizar el check-in directo.',
-//             'error' => $e->getMessage(),
-//             'status' => 500
-//         ], 500);
-//     }
-// }
 
 // public function checkinDirecto(Request $request)
 // {
@@ -801,14 +676,20 @@ public function store(Request $request)
 //             ->first(); // Obtener la primera reserva que cause conflicto
 
 //         if ($reservaExistente) {
-//             return response()->json([
-//                 'mensaje' => 'Ya existe una reserva para esta habitación en las fechas seleccionadas.',
-//                 'reserva_existente' => [
-//                     'fecha_inicio' => $reservaExistente->fecha_inicio,
-//                     'fecha_fin' => $reservaExistente->fecha_fin,
-//                 ],
-//                 'status' => 409
-//             ], 409);
+//             // Verificar si la fecha de inicio de la nueva reserva es al menos un día posterior al check-out de la reserva existente
+//             $fechaFinReservaExistente = Carbon::parse($reservaExistente->fecha_fin);
+//             if ($checkin->gt($fechaFinReservaExistente)) {
+//                 // No hay solapamiento, permitir la reserva
+//             } else {
+//                 return response()->json([
+//                     'mensaje' => 'Ya existe una reserva para esta habitación en las fechas seleccionadas.',
+//                     'reserva_existente' => [
+//                         'fecha_inicio' => $reservaExistente->fecha_inicio,
+//                         'fecha_fin' => $reservaExistente->fecha_fin,
+//                     ],
+//                     'status' => 409
+//                 ], 409);
+//             }
 //         }
 
 //         // Verificar si la habitación está disponible
@@ -962,8 +843,12 @@ public function checkinDirecto(Request $request)
         $reservaExistente = Reserva::where('habitacion_id', $request->habitacion_id)
             ->where(function($query) use ($checkin, $checkout) {
                 $query->where(function($q) use ($checkin, $checkout) {
-                        $q->where('fecha_inicio', '<', $checkout)
-                          ->where('fecha_fin', '>', $checkin);
+                        $q->where('fecha_inicio', '<', $checkout) // Reserva existente comienza antes del check-out de la nueva reserva
+                          ->where('fecha_fin', '>', $checkin); // Reserva existente termina después del check-in de la nueva reserva
+                    })
+                    ->orWhere(function($q) use ($checkin, $checkout) {
+                        $q->where('fecha_inicio', '=', $checkout) // Reserva existente comienza justo cuando la nueva reserva termina
+                          ->orWhere('fecha_fin', '=', $checkin); // Reserva existente termina justo cuando la nueva reserva comienza
                     });
             })
             ->first(); // Obtener la primera reserva que cause conflicto
@@ -1078,6 +963,8 @@ public function checkinDirecto(Request $request)
         ], 500);
     }
 }
+
+
 
 
 // public function checkout($id)
@@ -1496,6 +1383,70 @@ public function habitacionesOcupadasParaCheckout()
     }
 }
 
+// public function listarHabitacionesDisponiblesHoy()
+// {
+//     try {
+//         // Obtener la fecha de hoy
+//         $hoy = Carbon::today();
+
+//         // Obtener todas las habitaciones
+//         $habitaciones = Habitaciones::with('tipoHabitacion')->orderBy('numero', 'asc')->get();
+
+//         // Obtener reservas para hoy
+//         $reservasHoy = Reserva::where(function($query) use ($hoy) {
+//             $query->whereDate('fecha_inicio', $hoy)
+//                   ->orWhereDate('fecha_fin', $hoy);
+//         })->pluck('habitacion_id'); // Obtener solo los IDs de las habitaciones reservadas
+
+//         // Marcar habitaciones como disponibles o reservadas
+//         $habitacionesConEstado = $habitaciones->map(function ($habitacion) use ($reservasHoy) {
+//             // Verificar el estado actual de la habitación
+//             if (in_array($habitacion->estado, ['mantenimiento', 'limpieza', 'ocupado'])) {
+//                 $estado = $habitacion->estado; // Mantener el estado actual
+//             } else {
+//                 $estado = $reservasHoy->contains($habitacion->id) ? 'reservado' : 'disponible';
+//             }
+
+//             return [
+//                 'id' => $habitacion->id,
+//                 'numero_piso' => $habitacion->numero_piso,
+//                 'numero' => $habitacion->numero,
+//                 'cantidad_camas' => $habitacion->cantidad_camas,
+//                 'tipo_id' => $habitacion->tipo_id,
+//                 'limite_personas' => $habitacion->limite_personas,
+//                 'descripcion' => $habitacion->descripcion,
+//                 'costo' => $habitacion->costo,
+//                 'tv' => $habitacion->tv,
+//                 'ducha' => $habitacion->ducha,
+//                 'banio' => $habitacion->banio,
+//                 'estado' => $estado,
+//                 'created_at' => $habitacion->created_at,
+//                 'updated_at' => $habitacion->updated_at,
+//                 'tipo_habitacion' => [
+//                     'id' => $habitacion->tipoHabitacion->id,
+//                     'nombre' => $habitacion->tipoHabitacion->nombre,
+//                     'descripcion' => $habitacion->tipoHabitacion->descripcion,
+//                     'created_at' => $habitacion->tipoHabitacion->created_at,
+//                     'updated_at' => $habitacion->tipoHabitacion->updated_at,
+//                 ]
+//             ];
+//         });
+
+//         return response()->json([
+//             'msg' => 'Habitaciones obtenidas con éxito',
+//             'habitaciones' => $habitacionesConEstado,
+//             'status' => 200
+//         ], 200);
+
+//     } catch (\Exception $e) {
+//         Log::error('Error al listar habitaciones disponibles hoy:', ['error' => $e->getMessage()]);
+//         return response()->json([
+//             'msg' => 'Ocurrió un error al listar las habitaciones.',
+//             'error' => $e->getMessage(),
+//             'status' => 500
+//         ], 500);
+//     }
+// }
 public function listarHabitacionesDisponiblesHoy()
 {
     try {
@@ -1505,21 +1456,50 @@ public function listarHabitacionesDisponiblesHoy()
         // Obtener todas las habitaciones
         $habitaciones = Habitaciones::with('tipoHabitacion')->orderBy('numero', 'asc')->get();
 
-        // Obtener reservas para hoy
-        $reservasHoy = Reserva::where(function($query) use ($hoy) {
+        // Obtener reservas activas para hoy
+        $reservasActivasHoy = Reserva::where(function($query) use ($hoy) {
             $query->whereDate('fecha_inicio', $hoy)
                   ->orWhereDate('fecha_fin', $hoy);
-        })->pluck('habitacion_id'); // Obtener solo los IDs de las habitaciones reservadas
+        })->where('estado', 'activa') // Solo reservas activas
+          ->pluck('habitacion_id'); // Obtener solo los IDs de las habitaciones reservadas
 
-        // Marcar habitaciones como disponibles o reservadas
-        $habitacionesConEstado = $habitaciones->map(function ($habitacion) use ($reservasHoy) {
-            // Verificar el estado actual de la habitación
-            if (in_array($habitacion->estado, ['mantenimiento', 'limpieza', 'ocupado'])) {
-                $estado = $habitacion->estado; // Mantener el estado actual
-            } else {
-                $estado = $reservasHoy->contains($habitacion->id) ? 'reservado' : 'disponible';
+        // Obtener reservas pendientes para hoy
+        $reservasPendientesHoy = Reserva::where(function($query) use ($hoy) {
+            $query->whereDate('fecha_inicio', $hoy)
+                  ->orWhereDate('fecha_fin', $hoy);
+        })->where('estado', 'pendiente') // Solo reservas pendientes
+          ->pluck('habitacion_id'); // Obtener solo los IDs de las habitaciones reservadas
+
+        // Actualizar el estado de las habitaciones en la base de datos
+        $habitaciones->each(function ($habitacion) use ($reservasActivasHoy, $reservasPendientesHoy) {
+            // Verificar si la habitación está reservada activamente hoy
+            if ($reservasActivasHoy->contains($habitacion->id)) {
+                // Si está reservada activamente, actualizar el estado a "ocupado"
+                if ($habitacion->estado !== 'ocupado') {
+                    $habitacion->update(['estado' => 'ocupado']);
+                }
             }
+            // Verificar si la habitación tiene una reserva pendiente hoy
+            elseif ($reservasPendientesHoy->contains($habitacion->id)) {
+                // Si tiene una reserva pendiente, actualizar el estado a "reservado"
+                if ($habitacion->estado !== 'reservado') {
+                    $habitacion->update(['estado' => 'reservado']);
+                }
+            }
+            // Si no tiene reservas activas ni pendientes hoy
+            else {
+                // Si no está en mantenimiento, limpieza o ocupado, actualizar a "disponible"
+                if (!in_array($habitacion->estado, ['mantenimiento', 'limpieza', 'ocupado'])) {
+                    $habitacion->update(['estado' => 'disponible']);
+                }
+            }
+        });
 
+        // Obtener las habitaciones actualizadas
+        $habitacionesActualizadas = Habitaciones::with('tipoHabitacion')->orderBy('numero', 'asc')->get();
+
+        // Mapear las habitaciones para la respuesta
+        $habitacionesConEstado = $habitacionesActualizadas->map(function ($habitacion) {
             return [
                 'id' => $habitacion->id,
                 'numero_piso' => $habitacion->numero_piso,
@@ -1532,7 +1512,7 @@ public function listarHabitacionesDisponiblesHoy()
                 'tv' => $habitacion->tv,
                 'ducha' => $habitacion->ducha,
                 'banio' => $habitacion->banio,
-                'estado' => $estado,
+                'estado' => $habitacion->estado, // Estado actualizado en la base de datos
                 'created_at' => $habitacion->created_at,
                 'updated_at' => $habitacion->updated_at,
                 'tipo_habitacion' => [

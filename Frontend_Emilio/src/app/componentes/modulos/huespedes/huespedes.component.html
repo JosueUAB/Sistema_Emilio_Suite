@@ -21,7 +21,7 @@
             </p-toolbar>
                         <p-table #dt [value]="huespedes"
                     [paginator]="true" [rows]="10"
-                    [globalFilterFields]="['id','nombre', 'tipo_de_documento', 'numero_documento', 'telefono', 'procedencia','estado']"
+                    [globalFilterFields]="['','nombre', '', 'numero_documento', '', '','']"
                     [rowsPerPageOptions]="[10, 20, 30]">
             <ng-template pTemplate="header">
                 <tr>
