@@ -615,9 +615,12 @@ public function store(Request $request)
         }
     }
 
+
 // public function checkinDirecto(Request $request)
 // {
 //     try {
+//         Log::info('Iniciando check-in directo:', ['request' => $request->all()]);
+
 //         // Validar los datos de la solicitud
 //         $request->validate([
 //             'huesped_id' => 'required|exists:huesped,id',
@@ -633,8 +636,19 @@ public function store(Request $request)
 //         $habitacion = Habitaciones::find($request->habitacion_id);
 //         $huesped = Huesped::find($request->huesped_id);
 
+//         // Verificar si la habitación y el huésped existen
+//         if (!$habitacion) {
+//             Log::error('Habitación no encontrada:', ['habitacion_id' => $request->habitacion_id]);
+//             return response()->json(['mensaje' => 'Habitación no encontrada.'], 404);
+//         }
+//         if (!$huesped) {
+//             Log::error('Huésped no encontrado:', ['huesped_id' => $request->huesped_id]);
+//             return response()->json(['mensaje' => 'Huésped no encontrado.'], 404);
+//         }
+
 //         // Verificar si la habitación está disponible
 //         if ($habitacion->estado !== 'disponible') {
+//             Log::warning('La habitación no está disponible:', ['habitacion_id' => $habitacion->id, 'estado' => $habitacion->estado]);
 //             return response()->json(['mensaje' => 'La habitación no está disponible.'], 409);
 //         }
 
@@ -650,8 +664,9 @@ public function store(Request $request)
 //         $descuento = null;
 //         $montoDescuento = 0;
 //         if ($request->descuento_id) {
-//             $descuento = descuento::find($request->descuento_id);
+//             $descuento = Descuento::find($request->descuento_id);
 //             if (!$descuento) {
+//                 Log::error('Descuento no encontrado:', ['descuento_id' => $request->descuento_id]);
 //                 return response()->json(['mensaje' => 'El descuento no existe.'], 404);
 //             }
 //             $montoDescuento = ($costoTotalSinDescuento * $descuento->porcentaje) / 100;
@@ -659,6 +674,15 @@ public function store(Request $request)
 
 //         // Calcular el total después de aplicar el descuento
 //         $totalConDescuento = $costoTotalSinDescuento - $montoDescuento;
+
+//         // Verificar si el monto pagado es mayor que el total
+//         if ($request->monto_pagado > $totalConDescuento) {
+//             Log::warning('El monto pagado no puede ser mayor que el total de la reserva:', ['monto_pagado' => $request->monto_pagado, 'total_con_descuento' => $totalConDescuento]);
+//             return response()->json([
+//                 'mensaje' => 'El monto pagado no puede ser mayor que el total de la reserva.',
+//                 'status' => 400
+//             ], 400);
+//         }
 
 //         // Crear la reserva con check-in inmediato
 //         $reserva = Reserva::create([
@@ -673,12 +697,13 @@ public function store(Request $request)
 //         ]);
 
 //         // Actualizar estados
-//         $habitacion->update(['estado' => 'ocupado']); // Usar 'ocupado' en lugar de 'ocupada'
-//         $huesped->update(['estado' => 'activo']);
+//         $habitacion->update(['estado' => 'ocupado']); // Cambiar el estado de la habitación a "ocupado"
+//         $huesped->update(['estado' => 'activo']); // Cambiar el estado del huésped a "activo"
 
 //         // Registrar el pago
 //         $pago = Pago::create([
 //             'reserva_id' => $reserva->id,
+//             'usuario_id' => auth()->id(), // ID del usuario autenticado
 //             'monto_pagado' => $request->monto_pagado,
 //             'saldo' => $totalConDescuento - $request->monto_pagado,
 //             'metodo_de_pago' => $request->metodo_de_pago,
@@ -687,7 +712,7 @@ public function store(Request $request)
 //         ]);
 
 //         // Cargar relaciones para la respuesta
-//         $reserva->load('huesped', 'habitacion', 'descuento');
+//         $reserva->load('huesped', 'habitacion', 'descuento', 'pago');
 
 //         // Respuesta con detalles adicionales
 //         return response()->json([
@@ -703,17 +728,20 @@ public function store(Request $request)
 //                 'costo_total_sin_descuento' => $costoTotalSinDescuento, // Costo total sin descuento
 //                 'monto_descuento' => $montoDescuento, // Monto del descuento en dinero
 //                 'total_con_descuento' => $totalConDescuento // Total a pagar con descuento
-//             ]
+//             ],
+//             'status' => 201
 //         ], 201);
 
 //     } catch (\Exception $e) {
 //         Log::error('Error al realizar el check-in directo:', ['error' => $e->getMessage()]);
 //         return response()->json([
 //             'mensaje' => 'Ocurrió un error al realizar el check-in directo.',
-//             'error' => $e->getMessage()
+//             'error' => $e->getMessage(),
+//             'status' => 500
 //         ], 500);
 //     }
 // }
+
 public function checkinDirecto(Request $request)
 {
     try {
@@ -737,22 +765,62 @@ public function checkinDirecto(Request $request)
         // Verificar si la habitación y el huésped existen
         if (!$habitacion) {
             Log::error('Habitación no encontrada:', ['habitacion_id' => $request->habitacion_id]);
-            return response()->json(['mensaje' => 'Habitación no encontrada.'], 404);
+            return response()->json([
+                'mensaje' => 'Habitación no encontrada.',
+                'status' => 404
+            ], 404);
         }
         if (!$huesped) {
             Log::error('Huésped no encontrado:', ['huesped_id' => $request->huesped_id]);
-            return response()->json(['mensaje' => 'Huésped no encontrado.'], 404);
+            return response()->json([
+                'mensaje' => 'Huésped no encontrado.',
+                'status' => 404
+            ], 404);
         }
 
         // Verificar si la habitación está disponible
         if ($habitacion->estado !== 'disponible') {
             Log::warning('La habitación no está disponible:', ['habitacion_id' => $habitacion->id, 'estado' => $habitacion->estado]);
-            return response()->json(['mensaje' => 'La habitación no está disponible.'], 409);
+            return response()->json([
+                'mensaje' => 'La habitación no está disponible.',
+                'status' => 409
+            ], 409);
+        }
+
+        // Parsear fechas con horas
+        $checkin = Carbon::parse($request->fecha_inicio)->setTime(12, 0, 0); // Forzar check-in a las 12:00 PM
+        $checkout = Carbon::parse($request->fecha_fin)->setTime(12, 0, 0); // Forzar check-out a las 12:00 PM
+
+        // Verificar si el check-out es después del check-in
+        if ($checkout->lte($checkin)) {
+            return response()->json([
+                'mensaje' => 'La fecha de salida debe ser después de la fecha de entrada.',
+                'status' => 400
+            ], 400);
+        }
+
+        // Verificar si ya existe una reserva para esta habitación en estas fechas
+        $reservaExistente = Reserva::where('habitacion_id', $request->habitacion_id)
+            ->where(function($query) use ($checkin, $checkout) {
+                $query->where(function($q) use ($checkin, $checkout) {
+                        $q->where('fecha_inicio', '<', $checkout)
+                          ->where('fecha_fin', '>', $checkin);
+                    });
+            })
+            ->first(); // Obtener la primera reserva que cause conflicto
+
+        if ($reservaExistente) {
+            return response()->json([
+                'mensaje' => 'Ya existe una reserva para esta habitación en las fechas seleccionadas.',
+                'reserva_existente' => [
+                    'fecha_inicio' => $reservaExistente->fecha_inicio,
+                    'fecha_fin' => $reservaExistente->fecha_fin,
+                ],
+                'status' => 409
+            ], 409);
         }
 
         // Calcular la duración de la estancia en días
-        $checkin = Carbon::parse($request->fecha_inicio);
-        $checkout = Carbon::parse($request->fecha_fin);
         $duracion = $checkin->diffInDays($checkout);
 
         // Calcular el costo total sin descuento
@@ -765,7 +833,10 @@ public function checkinDirecto(Request $request)
             $descuento = Descuento::find($request->descuento_id);
             if (!$descuento) {
                 Log::error('Descuento no encontrado:', ['descuento_id' => $request->descuento_id]);
-                return response()->json(['mensaje' => 'El descuento no existe.'], 404);
+                return response()->json([
+                    'mensaje' => 'El descuento no existe.',
+                    'status' => 404
+                ], 404);
             }
             $montoDescuento = ($costoTotalSinDescuento * $descuento->porcentaje) / 100;
         }
@@ -788,8 +859,8 @@ public function checkinDirecto(Request $request)
             'habitacion_id' => $habitacion->id,
             'descuento_id' => $request->descuento_id, // Puede ser NULL
             'usuario_id' => auth()->id(), // ID del usuario autenticado
-            'fecha_inicio' => $request->fecha_inicio,
-            'fecha_fin' => $request->fecha_fin,
+            'fecha_inicio' => $checkin->format('Y-m-d H:i:s'), // Guardar en formato datetime
+            'fecha_fin' => $checkout->format('Y-m-d H:i:s'), // Guardar en formato datetime
             'estado' => 'confirmada', // Usar un valor válido del ENUM
             'total' => $totalConDescuento, // Total con descuento aplicado
         ]);
@@ -1679,6 +1750,103 @@ public function obtenerCobroHoy(Request $request)
 }
 
 
+public function obtenerCheckoutPorHabitacionId($habitacionId)
+{
+    try {
+        Log::info('Buscando checkout para la habitación:', ['habitacion_id' => $habitacionId]);
+
+        // Buscar la reserva activa para la habitación específica
+        $reserva = Reserva::with([
+            'huesped',          // Relación con el huésped
+            'habitacion',       // Relación con la habitación
+            'descuento',        // Relación con el descuento
+            'pago',             // Relación con el pago
+            'usuario',          // Relación con el usuario (si existe)
+            'habitacion.tipoHabitacion', // Relación con el tipo de habitación (si existe)
+        ])
+            ->where('habitacion_id', $habitacionId)
+            ->where('estado', 'activa') // Filtrar por estado activa
+            ->first();
+
+        // Verificar si se encontró una reserva activa
+        if ($reserva) {
+            Log::info('Reserva activa encontrada:', ['reserva_id' => $reserva->id]);
+
+            // Verificar si la habitación está ocupada
+            if ($reserva->habitacion->estado !== 'ocupado') {
+                Log::warning('La habitación no está ocupada:', ['habitacion_id' => $habitacionId]);
+                return response()->json([
+                    'mensaje' => 'La habitación no está ocupada.',
+                    'status' => 404
+                ], 404);
+            }
+
+            // Obtener el pago asociado a la reserva
+            $pago = $reserva->pago;
+
+            // Calcular los detalles del pago
+            $diasHospedaje = Carbon::parse($reserva->fecha_inicio)
+                ->diffInDays(Carbon::parse($reserva->fecha_fin));
+
+            $costoPorNoche = $reserva->habitacion->costo;
+            $costoTotalSinDescuento = $costoPorNoche * $diasHospedaje;
+
+            $montoDescuento = 0;
+            if ($reserva->descuento) {
+                $montoDescuento = ($costoTotalSinDescuento * $reserva->descuento->porcentaje) / 100;
+            }
+
+            $totalConDescuento = $costoTotalSinDescuento - $montoDescuento;
+
+            // Calcular el tiempo restante para el checkout
+            $fechaActual = Carbon::now();
+            $fechaFin = Carbon::parse($reserva->fecha_fin);
+            $diasRestantes = $fechaActual->diffInDays($fechaFin, false); // Diferencia en días (puede ser negativo)
+
+            // Determinar si el checkout ya pasó o está en curso
+            if ($diasRestantes < 0) {
+                $mensajeCheckout = 'El checkout ya pasó.';
+            } elseif ($diasRestantes == 0) {
+                $mensajeCheckout = 'El checkout es hoy.';
+            } else {
+                $mensajeCheckout = "Faltan {$diasRestantes} días para el checkout.";
+            }
+
+            // Respuesta con detalles de la reserva, el pago y el tiempo restante
+            return response()->json([
+                'mensaje' => 'Reserva activa encontrada.',
+                'reserva' => $reserva, // Detalles de la reserva
+                'pago' => $pago, // Detalles del pago
+                'detalles_pago' => [
+                    'dias_hospedaje' => $diasHospedaje,
+                    'costo_por_noche' => $costoPorNoche,
+                    'costo_total_sin_descuento' => $costoTotalSinDescuento,
+                    'monto_descuento' => $montoDescuento,
+                    'total_con_descuento' => $totalConDescuento,
+                ],
+                'tiempo_restante_checkout' => [
+                    'dias_restantes' => $diasRestantes,
+                    'mensaje' => $mensajeCheckout,
+                ],
+                'status' => 200
+            ], 200);
+        } else {
+            Log::warning('No hay reservas activas para esta habitación:', ['habitacion_id' => $habitacionId]);
+            return response()->json([
+                'mensaje' => 'No hay reservas activas para esta habitación.',
+                'status' => 404
+            ], 404);
+        }
+
+    } catch (\Exception $e) {
+        Log::error('Error al obtener el checkout:', ['error' => $e->getMessage()]);
+        return response()->json([
+            'mensaje' => 'Ocurrió un error al obtener el checkout.',
+            'error' => $e->getMessage(),
+            'status' => 500
+        ], 500);
+    }
+}
 
 
 

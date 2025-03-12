@@ -246,25 +246,25 @@ export class ReservasService {
     const token = this.authservice.obtenerToken();
 
     if (token) {
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      return this.http.post<any>(this.rutaApi, data, { headers }).pipe(
-        map((response) => {
-          // Asegúrate de que la respuesta tenga la estructura esperada
-          if (response && response.status && response.detalles_pago) {
-            return response;
-          } else {
-            throw new Error('Respuesta del servidor no válida');
-          }
-        }),
-        finalize(() => this.isLoadingSubject.next(false)),
-        catchError((error) => this.manejarError(error, 'Error al crear la reserva'))
-      );
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        return this.http.post<any>(this.rutaApi, data, { headers }).pipe(
+            map((response) => {
+                // Asegúrate de que la respuesta tenga la estructura esperada
+                if (response && response.status && response.detalles_pago) {
+                    return response;
+                } else {
+                    throw new Error('Respuesta del servidor no válida');
+                }
+            }),
+            finalize(() => this.isLoadingSubject.next(false)),
+            catchError((error) => this.manejarError(error, 'Error al crear la reserva'))
+        );
     } else {
-      console.log('Token no disponible');
-      this.isLoadingSubject.next(false);
-      return of(null);
+        console.log('Token no disponible');
+        this.isLoadingSubject.next(false);
+        return of(null);
     }
-  }
+}
 
   // Actualizar una reserva
   actualizarReserva(id: number, data: any): Observable<any> {
@@ -479,70 +479,86 @@ obtenerReservaPendienteHoyPorId(habitacionId: number): Observable<any> {
   }
 
 
-  // Manejo de errores global
-//   private manejarError(error: HttpErrorResponse, mensaje: string): Observable<never> {
+// private manejarError(error: HttpErrorResponse, mensaje: string): Observable<never> {
 //     console.error(mensaje, error);
 //     let errorMessage = 'Ocurrió un error inesperado.';
+
 //     if (error.error instanceof ErrorEvent) {
 //       // Error de cliente o conexión
 //       errorMessage = 'Ocurrió un error en la conexión.';
 //     } else {
 //       // Error del servidor
-//       switch (error.status) {
-//         case 400:
-//           errorMessage = 'Datos incorrectos. Verifica la entrada.';
-//           break;
-//         case 404:
-//           errorMessage = 'Recurso no encontrado.';
-//           break;
-//         case 409:
-//           errorMessage = 'Conflicto con los datos proporcionados.';
-//           break;
-//         case 500:
-//           errorMessage = 'Error interno del servidor.';
-//           break;
+//       if (error.error && error.error.mensaje) {
+//         errorMessage = error.error.mensaje; // Mensaje específico del error
+//       } else {
+//         // Mensaje genérico basado en el código de estado
+//         switch (error.status) {
+//           case 400:
+//             errorMessage = 'Datos incorrectos. Verifica la entrada.';
+//             break;
+//           case 404:
+//             errorMessage = 'Recurso no encontrado.';
+//             break;
+//           case 409:
+//             errorMessage = 'Conflicto con los datos proporcionados.';
+//             break;
+//           case 500:
+//             errorMessage = 'Error interno del servidor.';
+//             break;
+//           default:
+//             errorMessage = 'Ocurrió un error inesperado.';
+//             break;
+//         }
 //       }
 //     }
+
+//     // Puedes incluir el código de estado en el mensaje si lo deseas
+//     errorMessage += ` (Código de estado: ${error.status})`;
+
 //     return throwError(() => new Error(errorMessage));
 //   }
+
+
 private manejarError(error: HttpErrorResponse, mensaje: string): Observable<never> {
     console.error(mensaje, error);
     let errorMessage = 'Ocurrió un error inesperado.';
 
     if (error.error instanceof ErrorEvent) {
-      // Error de cliente o conexión
-      errorMessage = 'Ocurrió un error en la conexión.';
+        // Error de cliente o conexión
+        errorMessage = 'Ocurrió un error en la conexión.';
     } else {
-      // Error del servidor
-      if (error.error && error.error.mensaje) {
-        errorMessage = error.error.mensaje; // Mensaje específico del error
-      } else {
-        // Mensaje genérico basado en el código de estado
-        switch (error.status) {
-          case 400:
-            errorMessage = 'Datos incorrectos. Verifica la entrada.';
-            break;
-          case 404:
-            errorMessage = 'Recurso no encontrado.';
-            break;
-          case 409:
-            errorMessage = 'Conflicto con los datos proporcionados.';
-            break;
-          case 500:
-            errorMessage = 'Error interno del servidor.';
-            break;
-          default:
-            errorMessage = 'Ocurrió un error inesperado.';
-            break;
+        // Error del servidor
+        if (error.error && error.error.mensaje) {
+            errorMessage = error.error.mensaje; // Mensaje específico del error
+        } else {
+            // Mensaje genérico basado en el código de estado
+            switch (error.status) {
+                case 400:
+                    errorMessage = 'Datos incorrectos. Verifica la entrada.';
+                    break;
+                case 404:
+                    errorMessage = 'Recurso no encontrado.';
+                    break;
+                case 409:
+                    errorMessage = 'Conflicto con los datos proporcionados.';
+                    break;
+                case 500:
+                    errorMessage = 'Error interno del servidor.';
+                    break;
+                default:
+                    errorMessage = 'Ocurrió un error inesperado.';
+                    break;
+            }
         }
-      }
     }
 
-    // Puedes incluir el código de estado en el mensaje si lo deseas
-    errorMessage += ` (Código de estado: ${error.status})`;
-
-    return throwError(() => new Error(errorMessage));
-  }
+    // Devuelve un objeto con el mensaje de error y el código de estado
+    return throwError(() => ({
+        message: errorMessage,
+        status: error.status,
+        error: error.error // Opcional: incluir el error completo si es necesario
+    }));
+}
 
   // Completar el pago de una reserva
   completarPago(pagoId: number, montoPagado: number, metodoDePago: string): Observable<any> {

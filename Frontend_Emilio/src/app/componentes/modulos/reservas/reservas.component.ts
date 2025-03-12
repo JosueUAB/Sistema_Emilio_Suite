@@ -77,6 +77,7 @@ export class ReservasComponent implements OnInit {
 
   ModalCHECK:boolean=false;
   ModalCHECKReserva:boolean=false;
+  ModalCHECKOUT:Boolean=false;
 
 
 
@@ -474,6 +475,48 @@ onDescuentoSelect(descuento: any) {
     }
 
 
+    // guardarReserva() {
+    //     if (this.reservaForm.valid) {
+    //         console.log('Formulario enviado:', this.reservaForm.value);
+    //         this.isLoadingReserva = true;
+
+    //         // Obtener los datos del formulario
+    //         const formData = this.reservaForm.value;
+
+    //         // Realizar el parseo de las fechas aquí antes de enviarlas al servicio
+    //         const parsedData = this.parsearFechas(formData);
+
+    //         // Llamamos al servicio para registrar la reserva
+    //         this._reservaService.registrarReserva(parsedData).subscribe({
+    //             next: (response) => {
+    //                 if (response && response.reserva) {
+    //                     this.CerrarModalGuardar();
+    //                     console.log('Reserva guardada exitosamente:', response.reserva);
+    //                     this.messageService.add({
+    //                         severity: 'success',
+    //                         summary: 'Éxito',
+    //                         detail: 'Reserva realizado exitosamente.',
+    //                       });
+    //                 }
+    //             },
+    //             error: (error) => {
+    //                 this.errorMessage = error.mensaje || 'Ocurrió un error al guardar la reserva';
+    //                 console.error(this.errorMessage);
+    //                 this.messageService.add({
+    //                     severity: 'error',
+    //                     summary: 'Error',
+    //                     detail: 'Ocurrió un error al guardar la reserva ',
+    //                   });
+    //             },
+    //             complete: () => {
+    //                 this.isLoadingReserva = false;
+    //             },
+    //         });
+    //     } else {
+    //         console.log('Formulario inválido');
+    //     }
+    // }
+
     guardarReserva() {
         if (this.reservaForm.valid) {
             console.log('Formulario enviado:', this.reservaForm.value);
@@ -494,18 +537,37 @@ onDescuentoSelect(descuento: any) {
                         this.messageService.add({
                             severity: 'success',
                             summary: 'Éxito',
-                            detail: 'Reserva realizado exitosamente.',
-                          });
+                            detail: 'Reserva realizada exitosamente.',
+                        });
                     }
                 },
                 error: (error) => {
-                    this.errorMessage = error.mensaje || 'Ocurrió un error al guardar la reserva';
-                    console.error(this.errorMessage);
+                    // Capturar el mensaje de error del backend
+                    const errorMessage = error.error?.mensaje || 'Ocurrió un error al guardar la reserva.';
+                    const reservaExistente = error.error?.reserva_existente;
+
+                    // Mostrar el mensaje de error en el toast
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Error',
-                        detail: 'Ocurrió un error al guardar la reserva ',
-                      });
+                        detail: errorMessage,
+                    });
+
+                    // Si hay una reserva existente, mostrar sus fechas
+                    if (reservaExistente) {
+                        const fechaInicio = reservaExistente.fecha_inicio;
+                        const fechaFin = reservaExistente.fecha_fin;
+                        console.log('Reserva existente:', reservaExistente);
+
+                        // Mostrar un segundo toast con las fechas de la reserva existente
+                        this.messageService.add({
+                            severity: 'warn',
+                            summary: 'Conflicto de fechas',
+                            detail: `La habitación ya está reservada desde ${fechaInicio} hasta ${fechaFin}.`,
+                        });
+                    }
+
+                    console.error('Error al guardar la reserva:', error);
                 },
                 complete: () => {
                     this.isLoadingReserva = false;
@@ -515,7 +577,6 @@ onDescuentoSelect(descuento: any) {
             console.log('Formulario inválido');
         }
     }
-
       // Método para parsear las fechas antes de enviarlas
       private parsearFechas(data: any) {
         // Convertir las fechas de formato Date a formato 'YYYY-MM-DD'
@@ -534,7 +595,49 @@ onDescuentoSelect(descuento: any) {
         };
       }
 
-      checkinDirecto() {
+    //   checkinDirecto() {
+    //     if (this.reservaForm.valid) {
+    //         console.log('Formulario enviado:', this.reservaForm.value);
+    //         this.isLoadingReserva = true;
+
+    //         // Obtener los datos del formulario
+    //         const formData = this.reservaForm.value;
+
+    //         // Realizar el parseo de las fechas aquí antes de enviarlas al servicio
+    //         const parsedData = this.parsearFechas(formData);
+
+    //         // Llamamos al servicio para realizar el check-in directo
+    //         this._reservaService.checkinDirecto(parsedData).subscribe({
+    //             next: (response) => {
+    //                 if (response) {
+    //                     this.CerrarModalCHECK(); // Cerrar el modal si es necesario
+    //                     console.log('Check-in directo realizado exitosamente:', response);
+    //                     this.messageService.add({
+    //                         severity: 'success',
+    //                         summary: 'Éxito',
+    //                         detail: 'Check-in directo realizado exitosamente.',
+    //                       });
+    //                 }
+    //             },
+    //             error: (error) => {
+    //                 this.errorMessage = error.mensaje || 'Ocurrió un error al realizar el check-in directo';
+    //                 console.error(this.errorMessage);
+    //                 let mensajedeerror=this.errorMessage;
+    //                 this.messageService.add({
+    //                     severity: 'error',
+    //                     summary: 'Error',
+    //                     detail: 'Ocurrió un error al realizar el check-in directo: ',
+    //                   });
+    //             },
+    //             complete: () => {
+    //                 this.isLoadingReserva = false;
+    //             },
+    //         });
+    //     } else {
+    //         console.log('Formulario inválido');
+    //     }
+    // }
+    checkinDirecto() {
         if (this.reservaForm.valid) {
             console.log('Formulario enviado:', this.reservaForm.value);
             this.isLoadingReserva = true;
@@ -555,18 +658,35 @@ onDescuentoSelect(descuento: any) {
                             severity: 'success',
                             summary: 'Éxito',
                             detail: 'Check-in directo realizado exitosamente.',
-                          });
+                        });
                     }
                 },
                 error: (error) => {
-                    this.errorMessage = error.mensaje || 'Ocurrió un error al realizar el check-in directo';
-                    console.error(this.errorMessage);
-                    let mensajedeerror=this.errorMessage;
+                    // Capturar el mensaje de error y el código de estado
+                    const errorMessage = error.error?.mensaje || 'Ocurrió un error al realizar el check-in directo.';
+                    const errorStatus = error.status || 'Desconocido';
+
+                    // Mostrar el mensaje de error y el código de estado en el toast
                     this.messageService.add({
                         severity: 'error',
-                        summary: 'Error',
-                        detail: 'Ocurrió un error al realizar el check-in directo: ',
-                      });
+                        summary: `Error (Código: ${errorStatus})`,
+                        detail: errorMessage,
+                    });
+
+                    // Si hay una reserva existente, mostrar sus fechas
+                    if (error.error?.reserva_existente) {
+                        const reservaExistente = error.error.reserva_existente;
+                        const fechaInicio = reservaExistente.fecha_inicio;
+                        const fechaFin = reservaExistente.fecha_fin;
+
+                        this.messageService.add({
+                            severity: 'warn',
+                            summary: 'Conflicto de fechas',
+                            detail: `La habitación ya está reservada desde ${fechaInicio} hasta ${fechaFin}.`,
+                        });
+                    }
+
+                    console.error('Error al realizar el check-in directo:', error);
                 },
                 complete: () => {
                     this.isLoadingReserva = false;
@@ -574,6 +694,11 @@ onDescuentoSelect(descuento: any) {
             });
         } else {
             console.log('Formulario inválido');
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'El formulario no es válido. Verifica los datos ingresados.',
+            });
         }
     }
 

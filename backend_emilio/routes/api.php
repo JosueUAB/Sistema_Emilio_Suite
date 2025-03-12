@@ -76,5 +76,6 @@ Route::group([
     Route::post('reserva/obtener-reserva-id-habitacion/{id}', [ReservaController::class, 'obtenerReservaPendienteHoyPorID']);
     Route::post('reserva/completar-pago/{id}', [ReservaController::class, 'completarPago']);
     Route::get('cobroshoy', [ReportesController::class, 'obtenerCobroHoy']);
+    Route::post('reserva/obtener-checkout-id-habitacion/{id}', [ReservaController::class, 'obtenerCheckoutPorHabitacionId']);
 
 });
