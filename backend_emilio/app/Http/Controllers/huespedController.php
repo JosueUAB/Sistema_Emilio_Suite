@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Huesped;
 use Illuminate\Http\Request;
+use App\Notifications\NotificarCheckout;
 use Illuminate\Support\Facades\Validator;
 
 class HuespedController extends Controller
@@ -25,7 +26,11 @@ class HuespedController extends Controller
             'huespedes' => $huespedes,
             'status' => 200
         ];
+
+
+
         return response()->json($data, 200);
+       
     }
 
     public function store(Request $request)

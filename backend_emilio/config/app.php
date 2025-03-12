@@ -70,7 +70,8 @@ return [
     |
     */
 
-    'timezone' => 'America/Los_Angeles',
+    'timezone' => 'America/La_Paz',
+
 
     /*
     |--------------------------------------------------------------------------

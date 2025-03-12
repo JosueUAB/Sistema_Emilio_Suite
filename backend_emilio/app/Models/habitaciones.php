@@ -29,6 +29,10 @@ class habitaciones extends Model
         'estado'
 
     ];
+    public function reservas()
+    {
+        return $this->hasMany(Reserva::class, 'habitacion_id');
+    }
 
     public function tipoHabitacion()
     {

@@ -8,6 +8,7 @@ use App\Http\Controllers\Configuracion\tarifaController;
 use App\Http\Controllers\Configuracion\tipo_habitacionController;
 use App\Http\Controllers\HabitacionesController;
 use App\Http\Controllers\HuespedController;
+use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\UserAccessController;
@@ -67,4 +68,13 @@ Route::group([
     Route::post('reserva/checkin/{id}', [ReservaController::class, 'checkin']);
     Route::post('reserva/checkin-directo', [ReservaController::class, 'checkinDirecto']);
     Route::post('reserva/checkout/{id}', [ReservaController::class, 'checkout']);
+    Route::post('reserva/habitaciones-disponibles', [ReservaController::class, 'habitacionesDisponibles']);
+    Route::post('reserva/reservas-por-fecha', [ReservaController::class, 'reservasPorFecha']);
+    Route::post('reserva/reservas-para-hoy-manana', [ReservaController::class, 'reservasParaHoyYManana']);
+    Route::post('reserva/habitaciones-para-checkout', [ReservaController::class, 'habitacionesOcupadasParaCheckout']);
+    Route::post('reserva/listarHabitaciones-disponibles-hoy', [ReservaController::class, 'listarHabitacionesDisponiblesHoy']);
+    Route::post('reserva/obtener-reserva-id-habitacion/{id}', [ReservaController::class, 'obtenerReservaPendienteHoyPorID']);
+    Route::post('reserva/completar-pago/{id}', [ReservaController::class, 'completarPago']);
+    Route::get('cobroshoy', [ReportesController::class, 'obtenerCobroHoy']);
+
 });

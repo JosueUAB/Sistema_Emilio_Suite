@@ -4,6 +4,7 @@ import { LayoutService } from "./service/app.layout.service";
 import { environment } from "src/environments/environment";
 import { MenuModule } from 'primeng/menu';
 import { AuthService } from '../services/auth.service';
+import { CobroService } from '../componentes/modulos/reportes/service/reportes.service';
 @Component({
     selector: 'app-topbar',
     templateUrl: './app.topbar.component.html',
@@ -11,6 +12,7 @@ import { AuthService } from '../services/auth.service';
 export class AppTopBarComponent {
 
     items!: MenuItem[];
+    montoTotalHoy: number | null = null;
 
     fullname: string = '';
     email: string = '';
@@ -29,7 +31,8 @@ export class AppTopBarComponent {
     @ViewChild('topbarmenu') menu!: ElementRef;
 
     constructor(public layoutService: LayoutService,
-                private _authService: AuthService
+                private _authService: AuthService,
+                private cobroService: CobroService
     ) { }
 
     ngOnInit(): void {
@@ -54,8 +57,31 @@ export class AppTopBarComponent {
                 ]
             }
         ];
+        this.obtenerCobroHoy();
     }
-
+    obtenerCobroHoy(): void {
+        this.cobroService.obtenerCobroHoy().subscribe({
+          next: (respuesta) => {
+            if (respuesta) {
+              this.montoTotalHoy = respuesta.monto_total;
+              console.log('monto total hoy : ', this.montoTotalHoy)
+            //   this.messageService.add({
+            //     severity: 'success',
+            //     summary: 'Éxito',
+            //     detail: 'Monto total recaudado hoy obtenido exitosamente.',
+            //   });
+            }
+          },
+          error: (error) => {
+            console.error('Error al obtener el cobro de hoy:', error);
+            // this.messageService.add({
+            //   severity: 'error',
+            //   summary: 'Error',
+            //   detail: error.message,
+            // });
+          },
+        });
+      }
     cargarUsuario(): void {
         // Acceder al valor almacenado en localStorage
         const storedUser = localStorage.getItem('user');
@@ -67,7 +93,7 @@ export class AppTopBarComponent {
           this.email = user.email;
           this.avatar = user.avatar;
           this.role = user.role_name;
-         
+
         }
       }
 

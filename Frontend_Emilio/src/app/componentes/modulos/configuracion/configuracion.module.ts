@@ -17,7 +17,8 @@ import { DescuentosComponent } from './descuentos/descuentos.component';
 import { CalendarModule } from 'primeng/calendar';
 import { TipoHabitacionComponent } from './tipo-habitacion/tipo-habitacion.component';
 @NgModule({
-  declarations: [ConfiguracionComponent,
+  declarations: [
+    ConfiguracionComponent,
     TarifasComponent,
     DescuentosComponent,
     TipoHabitacionComponent
@@ -40,9 +41,9 @@ import { TipoHabitacionComponent } from './tipo-habitacion/tipo-habitacion.compo
     InputTextareaModule,
     ButtonModule,
     CalendarModule,
-    
-    
-    
+
+
+
 
   ]
 })

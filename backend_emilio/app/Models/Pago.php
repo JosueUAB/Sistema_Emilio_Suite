@@ -12,6 +12,7 @@ class Pago extends Model
     protected $table ='pago';
     protected $fillable=[
         'reserva_id',
+        'usuario_id',
         'monto_pagado',
         'saldo',
         'metodo_de_pago',
@@ -22,6 +23,10 @@ class Pago extends Model
 
     public function reserva(){
         return $this->belongsTo(Reserva::class,'reserva_id'. 'id');
+    }
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'usuario_id'. 'id');
     }
 
 }

@@ -7,7 +7,6 @@ import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-tarifas',
-
   templateUrl: './tarifas.component.html',
   providers: [MessageService]
 
@@ -95,7 +94,7 @@ export class TarifasComponent {
                 });
             },
 
-            
+
             (error) => {
                 if (error && error.message === 'Este nombre de tarifa ya existe. Por favor elige otro.') {
                     Swal.fire({
@@ -162,16 +161,16 @@ export class TarifasComponent {
         });
         this.editDialog = true; // Mostramos el modal para editar
       }
-      
+
 
 
       guardarTarifaActualizada() {
         if (this.tarifaForm.invalid) {
           return; // No guardar si el formulario es inválido
         }
-      
+
         const tarifaData = this.tarifaForm.value;
-      
+
         if (this.tarifaSeleccionada) {
           this._TarifasService
             .actualizarTarifa(this.tarifaSeleccionada.id, tarifaData)
@@ -206,15 +205,15 @@ export class TarifasComponent {
             );
         }
       }
-      
-      
-      
+
+
+
       cancelarEdicion() {
         this.editDialog = false; // Cerramos el modal de edición
         this.tarifaForm.reset(); // Limpiamos el formulario
         this.tarifaSeleccionada = null; // Limpiamos la tarifa seleccionada
       }
-      
+
 
 
 

@@ -1,249 +1,245 @@
 
+<p-panel
+      >
+    <ng-template pTemplate="header">
+         <!-- Mensajes de PrimeNG -->
+         <p-toast></p-toast>
+        <!-- Título -->
+        <h2 class="panel-title ">Listado de Habitaciones  Fecha: {{currentDate}}    hora:  {{currentTime}}</h2>
+    </ng-template>
+    <ng-template pTemplate="content">
+        <div class="p-grid p-fluid p-nogutter p-ai-center" style="gap: 1rem; padding: 1rem;">
+            <div class="grid formgrid">
 
-  <div class="p-grid p-fluid p-nogutter p-ai-center" style="gap: 1rem; padding: 1rem;">
-    <div class="grid formgrid">
+
+                <!-- Filtro por número de piso -->
+                <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+                    <label for="numeroPiso" class="p-d-block p-mb-1">Filtrar por piso:</label>
+                    <p-dropdown
+                    [showClear]="true"
+                    [options]="numerosPiso"
+                    [(ngModel)]="selectedPiso"
+                    (onChange)="filtrarHabitaciones()"
+                    placeholder="Selecciona un piso"
+                    appendTo="body"
+                    ></p-dropdown>
+                </div>
+
+                 <!-- Filtro por número de habitación -->
+                 <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+                        <label for="numero" class="p-d-block p-mb-1">Buscar por número:</label>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                            pInputText
+                            type="number"
+                            [(ngModel)]="numeroHabitacion"
+                            (input)="filtrarHabitaciones()"
+                            placeholder="Buscar Nº habitacion" />
 
 
-        <!-- Filtro por número de piso -->
-        <div class="col-12 mb-2 lg:col-3 lg:mb-0">
-            <label for="numeroPiso" class="p-d-block p-mb-1">Filtrar por piso:</label>
+
+                        </span>
+                </div>
+
+                <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+                    <label for="estado" class="p-d-block p-mb-1">Filtrar por estado:</label>
+                    <p-multiSelect
+                        [options]="estados"
+                        [(ngModel)]="selectedEstados"
+                        optionLabel="label"
+                        optionValue="value"
+                        (onChange)="filtrarHabitaciones()"
+                        placeholder="Seleccione uno o varios estados"
+                        appendTo="body"
+                        styleClass="p-inputtext-sm">
+                        <ng-template let-option pTemplate="item">
+                            <div class="inline-block vertical-align-middle">
+                                <span>{{ option.label }}</span>
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div>
+
+
+          <!-- Filtro por tipo de habitación -->
+          <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+            <label for="tipoHabitacion" class="p-d-block p-mb-1">Filtrar por tipo de habitación:</label>
             <p-dropdown
             [showClear]="true"
-            [options]="numerosPiso"
-            [(ngModel)]="selectedPiso"
-            (onChange)="filtrarHabitaciones()"
-            placeholder="Selecciona un piso"
-            appendTo="body"
+              [options]="tiposHabitacion"
+              [(ngModel)]="selectedTipoHabitacion"
+              (onChange)="filtrarHabitaciones()"
+              placeholder="Selecciona un tipo"
+              appendTo="body"
             ></p-dropdown>
+          </div>
+
+
+
+
+                <!-- Filtro por cantidad de camas -->
+                <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
+                    <label for="camas" class="p-d-block p-mb-1">Buscar por camas:</label>
+
+                        <span class="p-input-icon-left">
+                            <i class="fas fa-procedures "></i>
+                            <input
+                            pInputText
+                            type="number"
+                            [(ngModel)]="cantidadCamas"
+                            (input)="filtrarHabitaciones()"
+                            placeholder="Filtrar por Nº Camas" />
+                        </span>
+                </div> -->
+
+
+
+
+
+
+            </div>
         </div>
-
-         <!-- Filtro por número de habitación -->
-         <div class="col-12 mb-2 lg:col-3 lg:mb-0">
-                <label for="numero" class="p-d-block p-mb-1">Buscar por número:</label>
-                <span class="p-input-icon-left">
-                    <i class="pi pi-search"></i>
-                    <input
-                    pInputText
-                    type="number"
-                    [(ngModel)]="numeroHabitacion"
-                    (input)="filtrarHabitaciones()"
-                    placeholder="Buscar Nº habitacion" />
+        <div class="p-grid p-fluid p-nogutter p-ai-center" style="gap: 1rem; padding: 1rem;">
+            <div class="grid formgrid">
 
 
 
-                </span>
-        </div>
+
 
         <div class="col-12 mb-2 lg:col-3 lg:mb-0">
-            <label for="estado" class="p-d-block p-mb-1">Filtrar por estado:</label>
-            <p-multiSelect
-                [options]="estados"
-                [(ngModel)]="selectedEstados"
-                optionLabel="label"
-                optionValue="value"
-                (onChange)="filtrarHabitaciones()"
-                placeholder="Seleccione uno o varios estados"
-                appendTo="body"
-                styleClass="p-inputtext-sm">
-                <ng-template let-option pTemplate="item">
-                    <div class="inline-block vertical-align-middle">
-                        <span>{{ option.label }}</span>
-                    </div>
-                </ng-template>
-            </p-multiSelect>
+            <label for="camas" class="p-d-block p-mb-1">Buscar por camas:</label>
+            <p-inputGroup class="w-full">
+                <p-inputGroupAddon>
+                    <i class="fas fa-procedures" style="line-height: 1.25"></i>
+                </p-inputGroupAddon>
+                <p-inputNumber
+                    [showButtons]="true"
+                    [(ngModel)]="cantidadCamas"
+                    (onInput)="filtrarHabitaciones()"
+                    [min]="1" [max]="100" [step]="1"
+                    [minFractionDigits]="0" [maxFractionDigits]="0"
+                    placeholder="Filtrar por Nº Camas">
+                </p-inputNumber>
+            </p-inputGroup>
         </div>
-
-
-  <!-- Filtro por tipo de habitación -->
-  <div class="col-12 mb-2 lg:col-3 lg:mb-0">
-    <label for="tipoHabitacion" class="p-d-block p-mb-1">Filtrar por tipo de habitación:</label>
-    <p-dropdown
-    [showClear]="true"
-      [options]="tiposHabitacion"
-      [(ngModel)]="selectedTipoHabitacion"
-      (onChange)="filtrarHabitaciones()"
-      placeholder="Selecciona un tipo"
-      appendTo="body"
-    ></p-dropdown>
-  </div>
-
-
-
-
-        <!-- Filtro por cantidad de camas -->
-        <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
-            <label for="camas" class="p-d-block p-mb-1">Buscar por camas:</label>
-
-                <span class="p-input-icon-left">
-                    <i class="fas fa-procedures "></i>
-                    <input
-                    pInputText
-                    type="number"
-                    [(ngModel)]="cantidadCamas"
-                    (input)="filtrarHabitaciones()"
-                    placeholder="Filtrar por Nº Camas" />
-                </span>
-        </div> -->
-
-
-
-
-
-
-    </div>
-</div>
-
-
-
-<div class="p-grid p-fluid p-nogutter p-ai-center" style="gap: 1rem; padding: 1rem;">
-    <div class="grid formgrid">
-
-
-
-
-
-        <!-- Filtro por cantidad de camas -->
-        <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
-            <label for="camas" class="p-d-block p-mb-1">Buscar por camas:</label>
-
-                <span class="p-input-icon-left">
-                    <i class="fas fa-procedures "></i>
-                    <input
-                    pInputText
-                    type="number"
-                    [(ngModel)]="cantidadCamas"
-                    (input)="filtrarHabitaciones()"
-                    placeholder="Filtrar por Nº Camas" />
-                </span>
-        </div> -->
-        <!-- Filtro por cantidad de camas -->
-<div class="col-12 mb-2 lg:col-3 lg:mb-0">
-    <label for="camas" class="p-d-block p-mb-1">Buscar por camas:</label>
-    <p-inputGroup class="w-full">
-        <p-inputGroupAddon>
-            <i class="fas fa-procedures" style="line-height: 1.25"></i>
-        </p-inputGroupAddon>
-        <p-inputNumber
-            [showButtons]="true"
-            [(ngModel)]="cantidadCamas"
-            (onInput)="filtrarHabitaciones()"
-            [min]="1" [max]="100" [step]="1"
-            [minFractionDigits]="0" [maxFractionDigits]="0"
-            placeholder="Filtrar por Nº Camas">
-        </p-inputNumber>
-    </p-inputGroup>
-</div>
-
-<!-- Filtro por máximo de personas -->
-<div class="col-12 mb-2 lg:col-3 lg:mb-0">
-    <label for="personas" class="p-d-block p-mb-1">Máximo de personas:</label>
-    <p-inputGroup class="w-full">
-        <p-inputGroupAddon>
-            <i class="fas fa-users" style="line-height: 1.25"></i>
-        </p-inputGroupAddon>
-        <p-inputNumber
-            [showButtons]="true"
-            [(ngModel)]="maxPersonas"
-            (onInput)="filtrarHabitaciones()"
-            [min]="1" [max]="20" [step]="1"
-            [minFractionDigits]="0" [maxFractionDigits]="0"
-            placeholder="iltrar por Nº Personas">
-        </p-inputNumber>
-    </p-inputGroup>
-</div>
-
 
         <!-- Filtro por máximo de personas -->
-        <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
-            <label for="personas" class="p-d-block p-mb-1">máximo de personas:</label>
-
-                <span class="p-input-icon-left">
-                    <i class="fas fa-users "></i>
-                    <input
-                    pInputText
-                    type="number"
+        <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+            <label for="personas" class="p-d-block p-mb-1">Máximo de personas:</label>
+            <p-inputGroup class="w-full">
+                <p-inputGroupAddon>
+                    <i class="fas fa-users" style="line-height: 1.25"></i>
+                </p-inputGroupAddon>
+                <p-inputNumber
+                    [showButtons]="true"
                     [(ngModel)]="maxPersonas"
-                    (input)="filtrarHabitaciones()"
-                    placeholder="Filtrar por Nº Personas" />
-                </span>
-        </div> -->
-
-        <!-- Filtro por precio mínimo -->
-        <div class="col-12 mb-2 lg:col-3 lg:mb-0">
-            <label for="precioMinimo" class="p-d-block p-mb-1">Precio mínimo:</label>
-            <p-inputGroup class="w-full">
-                <p-inputGroupAddon>
-                    <i class="fas fa-money-bill" style="line-height: 1.25"></i>
-                </p-inputGroupAddon>
-                <p-inputNumber
-                [showButtons]="true"
-                    [(ngModel)]="precioMinimo"
                     (onInput)="filtrarHabitaciones()"
-                    [min]="1" [max]="10000" [step]="1"
-                    [minFractionDigits]="2" [maxFractionDigits]="2"
-                    currency="BOB" locale="es-BO"
-                    placeholder="Precio Mínimo">
+                    [min]="1" [max]="20" [step]="1"
+                    [minFractionDigits]="0" [maxFractionDigits]="0"
+                    placeholder="iltrar por Nº Personas">
                 </p-inputNumber>
             </p-inputGroup>
         </div>
 
-        <!-- Filtro por precio máximo -->
-        <div class="col-12 mb-2 lg:col-3 lg:mb-0">
-            <label for="precioMaximo" class="p-d-block p-mb-1">Precio máximo:</label>
-            <p-inputGroup class="w-full">
-                <p-inputGroupAddon>
-                    <i class="fas fa-money-bill" style="line-height: 1.25"></i>
-                </p-inputGroupAddon>
-                <p-inputNumber
-                [showButtons]="true"
-                    [(ngModel)]="precioMaximo"
-                    (onInput)="filtrarHabitaciones()"
-                    [min]="1" [max]="10000" [step]="1"
-                    [minFractionDigits]="2" [maxFractionDigits]="2"
-                    currency="BOB" locale="es-BO"
-                    placeholder="Precio Máximo">
-                </p-inputNumber>
-            </p-inputGroup>
+
+                <!-- Filtro por máximo de personas -->
+                <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
+                    <label for="personas" class="p-d-block p-mb-1">máximo de personas:</label>
+
+                        <span class="p-input-icon-left">
+                            <i class="fas fa-users "></i>
+                            <input
+                            pInputText
+                            type="number"
+                            [(ngModel)]="maxPersonas"
+                            (input)="filtrarHabitaciones()"
+                            placeholder="Filtrar por Nº Personas" />
+                        </span>
+                </div> -->
+
+                <!-- Filtro por precio mínimo -->
+                <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+                    <label for="precioMinimo" class="p-d-block p-mb-1">Precio mínimo:</label>
+                    <p-inputGroup class="w-full">
+                        <p-inputGroupAddon>
+                            <i class="fas fa-money-bill" style="line-height: 1.25"></i>
+                        </p-inputGroupAddon>
+                        <p-inputNumber
+                        [showButtons]="true"
+                            [(ngModel)]="precioMinimo"
+                            (onInput)="filtrarHabitaciones()"
+                            [min]="1" [max]="10000" [step]="1"
+                            [minFractionDigits]="2" [maxFractionDigits]="2"
+                            currency="BOB" locale="es-BO"
+                            placeholder="Precio Mínimo">
+                        </p-inputNumber>
+                    </p-inputGroup>
+                </div>
+
+                <!-- Filtro por precio máximo -->
+                <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+                    <label for="precioMaximo" class="p-d-block p-mb-1">Precio máximo:</label>
+                    <p-inputGroup class="w-full">
+                        <p-inputGroupAddon>
+                            <i class="fas fa-money-bill" style="line-height: 1.25"></i>
+                        </p-inputGroupAddon>
+                        <p-inputNumber
+                        [showButtons]="true"
+                            [(ngModel)]="precioMaximo"
+                            (onInput)="filtrarHabitaciones()"
+                            [min]="1" [max]="10000" [step]="1"
+                            [minFractionDigits]="2" [maxFractionDigits]="2"
+                            currency="BOB" locale="es-BO"
+                            placeholder="Precio Máximo">
+                        </p-inputNumber>
+                    </p-inputGroup>
+                </div>
+
+          <!-- Filtro por precio mínimo -->
+                <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
+                    <label for="precioMinimo" class="p-d-block p-mb-1">precio mínimo:</label>
+
+                        <span class="p-input-icon-left">
+                            <i class="fas fa-money-bill "></i>
+                            <input
+                            pInputText
+                            type="number"
+                            [(ngModel)]="precioMinimo"
+                            (input)="filtrarHabitaciones()"
+                            placeholder="Precio Minimo" />
+                        </span>
+                </div> -->
+
+                  <!-- Filtro por precio máximo -->
+                  <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
+                    <label for="precioMaximo" class="p-d-block p-mb-1">precio máximo:</label>
+
+
+                        <span class="p-input-icon-left">
+                            <i class="fas fa-money-bill "></i>
+                            <input
+                            pInputText
+                            type="number"
+                            [(ngModel)]="precioMaximo"
+                            (input)="filtrarHabitaciones()"
+                            placeholder="Precio Maximo" />
+                        </span>
+                </div> -->
+                <!-- Filtro por número de piso -->
+
+            </div>
         </div>
 
-  <!-- Filtro por precio mínimo -->
-        <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
-            <label for="precioMinimo" class="p-d-block p-mb-1">precio mínimo:</label>
 
-                <span class="p-input-icon-left">
-                    <i class="fas fa-money-bill "></i>
-                    <input
-                    pInputText
-                    type="number"
-                    [(ngModel)]="precioMinimo"
-                    (input)="filtrarHabitaciones()"
-                    placeholder="Precio Minimo" />
-                </span>
-        </div> -->
-
-          <!-- Filtro por precio máximo -->
-          <!-- <div class="col-12 mb-2 lg:col-2 lg:mb-0">
-            <label for="precioMaximo" class="p-d-block p-mb-1">precio máximo:</label>
-
-
-                <span class="p-input-icon-left">
-                    <i class="fas fa-money-bill "></i>
-                    <input
-                    pInputText
-                    type="number"
-                    [(ngModel)]="precioMaximo"
-                    (input)="filtrarHabitaciones()"
-                    placeholder="Precio Maximo" />
-                </span>
-        </div> -->
-        <!-- Filtro por número de piso -->
-
-    </div>
-</div>
+    </ng-template>
+</p-panel>
 
 
 
 
+
+<br>
 
 
   <!-- Lista de habitaciones filtradas -->
@@ -270,6 +266,7 @@
 
 
     }
+
     @for (lista of listaHabitacionesFiltradas; track $index) {
         @switch (lista.estado) {
             @case ('disponible') {
@@ -332,7 +329,8 @@
 
                         <div class="mt-3">
                             <p-button label="Reservar" (click)="ObtenerHabitacionID(lista.id)" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
-                            <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                            <!-- <p-button label="Chek-in" (click)="ObtenerHabitacionID(lista.id)" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/> -->
+                            <p-button label="Chek-in" (click)="ObtenerHabitacionIDCHECK(lista.id)" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
                         </div>
                     </div>
                 </div>
@@ -464,7 +462,7 @@
                         <div class="mt-3">
                                                         <p-button label="Reservar" (click)="ObtenerHabitacionID(lista.id)" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/>
 
-                            <p-button label="Ver Info" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                            <p-button label="Ver Info" (click)="obtenerReservaPendiente(lista.id)" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
                         </div>
                     </div>
                 </div>
@@ -679,7 +677,7 @@
             </div>
           </div>
           <div class="col-6 lg:col-4">
-            <div class="card">
+            <div class="">
               <h3 class="card-header">Datos del Huesped</h3>
               <div class="card-body">
                 <form (ngSubmit)="MostrarDatosHuesped()" #huespedForm="ngForm">
@@ -740,6 +738,25 @@
                   </p-card>
               </div>
             </div>
+
+            <p-messages severity="info">
+                <ng-template pTemplate>
+                    <i class="fas fa-calendar-day"  width="32"></i>
+
+                    <div class="ml-2"><strong>Monto de Descuento Bs.  </strong> {{monto_descuento}} </div>
+                </ng-template>
+            </p-messages>
+            <p-messages severity="info">
+                <ng-template pTemplate>
+                    <i class="fas fa-money-bill" width="32"></i>
+
+                    <div class="ml-2"><strong>Costo total con descuento Bs. {{total_con_descuento}} </strong></div>
+                </ng-template>
+            </p-messages>
+
+
+
+
           </div>
     <div class="col-12 lg:col-4">
         <div class="card p-fluid">
@@ -778,40 +795,10 @@
                         <ng-template pTemplate>
                             <i class="fas fa-money-bill" width="32"></i>
 
-                            <div class="ml-2"><strong>costo Bs. {{costoTotal}} </strong></div>
+                            <div class="ml-2"><strong> Costo total Sin Descuento Bs. {{costoTotal}} </strong></div>
                         </ng-template>
                     </p-messages>
-
-
-                    <label for="metodo_de_pago">Método de pago</label>
-                    <p-dropdown
-                      id="metodo_de_pago"
-                      formControlName="metodo_de_pago"
-                      [options]="[
-                        { label: 'Efectivo', value: 'efectivo' },
-                        { label: 'QR', value: 'qr' }
-                      ]"
-                      optionLabel="label"
-                      optionValue="value"
-                      placeholder="Seleccione un método de pago"
-                    ></p-dropdown>
-
-                    <label for="monto_pagado">Monto pagado</label>
-
-                    <p-inputGroup class="w-full">
-                      <p-inputGroupAddon>
-                          <i class="fas fa-money-bill" style="line-height: 1.25"></i>
-                      </p-inputGroupAddon>
-
-                     <p-inputNumber formControlName="monto_pagado" [showButtons]="true"  mode="currency"  [min]="1" [max]="2000" [step]="1"   [minFractionDigits]="2"
-                     currency="BOB"
-                     locale="es-BO">
-                      </p-inputNumber>
-
-
-                  </p-inputGroup>
-
-                  <label for="Descuento" class="block font-bold mb-2">Descuento</label>
+                    <label for="Descuento" class="block font-bold mb-2">Descuento</label>
 
 
                   <div class=" flex justify-content-center">
@@ -831,6 +818,41 @@
 
 
                 </div>
+
+
+                    <label for="metodo_de_pago">Método de pago</label>
+                    <p-dropdown
+                      id="metodo_de_pago"
+                      formControlName="metodo_de_pago"
+                      [options]="[
+                        { label: 'Efectivo', value: 'efectivo' },
+                        { label: 'QR', value: 'qr' }
+                      ]"
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Seleccione un método de pago"
+                    ></p-dropdown>
+
+
+
+
+
+                    <label for="monto_pagado">Monto pagado</label>
+
+                    <p-inputGroup class="w-full">
+                      <p-inputGroupAddon>
+                          <i class="fas fa-money-bill" style="line-height: 1.25"></i>
+                      </p-inputGroupAddon>
+
+                     <p-inputNumber formControlName="monto_pagado" [showButtons]="true"  mode="currency"  [min]="1" [max]="2000" [step]="1"   [minFractionDigits]="2"
+                     currency="BOB"
+                     locale="es-BO">
+                      </p-inputNumber>
+
+
+                  </p-inputGroup>
+
+
 
 
 
@@ -868,10 +890,545 @@
 
 
 
+<p-dialog
+header="Check In de Habitacion"
+[modal]="true"
+[(visible)]="ModalCHECK"
+[style]="{ width: '90rem' , }"
+[breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+
+  <form action="" [formGroup]="reservaForm">
+      <div class="grid">
+
+      <div class="col-6 lg:col-4">
+          <div class="card">
+            <h3 class="card-header">Detalles de la Habitación</h3>
+            <div class="card-body">
+
+              @if (!habitacion) {
+                  <p>No se ha seleccionado una habitación.</p>
+              }
+              @if (habitacion) {
+
+                <div class="col-md-6">
+                  <p><strong>Número de Habitación:</strong> {{ habitacion.numero }}</p>
+                </div>
+
+
+                <div class="col-md-6">
+                  <p><strong>Piso:</strong> {{ habitacion.numero_piso }}</p>
+                </div>
+
+
+                <div class="col-md-6">
+                  <p><strong>Tipo de Habitación:</strong> {{ habitacion.tipo_habitacion?.nombre }}</p>
+                  <small>{{ habitacion.tipo_habitacion?.descripcion }}</small>
+                </div>
+
+
+                <div class="col-md-6">
+                  <p><strong>Cantidad de Camas:</strong> {{ habitacion.cantidad_camas }}</p>
+                </div>
+
+
+                <div class="col-md-6">
+                  <p><strong>Límite de Personas:</strong> {{ habitacion.limite_personas }}</p>
+                </div>
+
+                <div class="col-12">
+                  <p><strong>Descripción:</strong> {{ habitacion.descripcion }}</p>
+                </div>
+
+                <div class="col-md-6">
+                  <p><strong>Servicios:</strong></p>
+                  <ul>
+                    <li *ngIf="habitacion.tv">TV disponible</li>
+                    <li *ngIf="habitacion.ducha">Ducha disponible</li>
+                    <li *ngIf="habitacion.banio">Baño privado</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>Costo por Noche:</strong> Bs {{ habitacion.costo }}</p>
+                </div>
+
+
+                <div class="col-md-6">
+                  <p><strong>Estado:</strong> {{ habitacion.estado === 'limpieza' ? 'En Limpieza' : 'Disponible' }}</p>
+                </div>
+
+              }
+            </div>
+          </div>
+        </div>
+        <div class="col-6 lg:col-4">
+          <div class="">
+            <h3 class="card-header">Datos del Huesped</h3>
+            <div class="card-body">
+              <form (ngSubmit)="MostrarDatosHuesped()" #huespedForm="ngForm">
+                  <p-autoComplete
+                    [(ngModel)]="selectedHuesped"
+                    [dropdown]="true"
+                    [suggestions]="filteredHuespedes"
+                    (completeMethod)="filterHuespedes($event)"
+                    optionLabel="displayLabel"
+                    placeholder="Selecciona un huésped"
+                    [minLength]="3"
+                    [size]="30"
+                    name="huesped"
+                    required
+                    (onSelect)="onHuespedSelect($event)"
+                  ></p-autoComplete>
+                </form>
+                <p-card header="Datos del Huésped" *ngIf="selectedHuesped">
+                  <div class="p-grid p-fluid">
+                    <!-- Nombre y Apellido -->
+                    <div class="p-col-12 p-md-6">
+                      <p><strong>Nombre:</strong> {{ selectedHuesped.nombre }} {{ selectedHuesped.apellido }}</p>
+                    </div>
+                    <!-- Número de Documento -->
+                    <div class="p-col-12 p-md-6">
+                      <p><strong>Número de Documento:</strong> {{ selectedHuesped.numero_documento }}</p>
+                    </div>
+                    <!-- Correo -->
+                    <div class="p-col-12 p-md-6">
+                      <p><strong>Correo:</strong> {{ selectedHuesped.correo }}</p>
+                    </div>
+                    <!-- Dirección -->
+                    <div class="p-col-12 p-md-6">
+                      <p><strong>Dirección:</strong> {{ selectedHuesped.direccion }}</p>
+                    </div>
+                    <!-- Fecha de Nacimiento -->
+                    <div class="p-col-12 p-md-6">
+                      <p><strong>Fecha de Nacimiento:</strong> {{ selectedHuesped.fecha_de_nacimiento | date }}</p>
+                    </div>
+                    <!-- Estado Civil -->
+                    <div class="p-col-12 p-md-6">
+                      <p><strong>Estado Civil:</strong> {{ selectedHuesped.estado_civil }}</p>
+                    </div>
+                    <!-- Nacionalidad -->
+                    <div class="p-col-12 p-md-6">
+                      <p><strong>Nacionalidad:</strong> {{ selectedHuesped.nacionalidad }}</p>
+                    </div>
+                    <!-- Procedencia -->
+                    <div class="p-col-12 p-md-6">
+                      <p><strong>Procedencia:</strong> {{ selectedHuesped.procedencia }}</p>
+                    </div>
+                  </div>
+                </p-card>
+                <p-card *ngIf="!selectedHuesped" class="p-mt-4">
+                  <div class="p-text-center">
+                    <p class="text-muted">Por favor, selecciona un huésped para ver sus datos.</p>
+                  </div>
+                </p-card>
+            </div>
+          </div>
+
+          <p-messages severity="info">
+              <ng-template pTemplate>
+                  <i class="fas fa-calendar-day"  width="32"></i>
+
+                  <div class="ml-2"><strong>Monto de Descuento Bs.  </strong> {{monto_descuento}} </div>
+              </ng-template>
+          </p-messages>
+          <p-messages severity="info">
+              <ng-template pTemplate>
+                  <i class="fas fa-money-bill" width="32"></i>
+
+                  <div class="ml-2"><strong>Costo total con descuento Bs. {{total_con_descuento}} </strong></div>
+              </ng-template>
+          </p-messages>
 
 
 
 
+        </div>
+  <div class="col-12 lg:col-4">
+      <div class="card p-fluid">
+          <h5>Datos del Ingreso</h5>
+          <label for="Fecha_De_Ingreso" class="block font-bold mb-2">Fecha de ingreso</label>
+                  <p-calendar
+                      [readonlyInput]="true"
+                      [showIcon]="true"
+                      id="fecha_inicio"
+                      dateFormat="dd/mm/yy"
+                      placeholder="Seleccione La Fecha de CHECK IN"
+                      (onSelect)="calcularDuracionYCosto(habitacion.costo)"
+                      formControlName="fecha_inicio"
+                      class="w-full"
+                  ></p-calendar>
+
+                  <label for="fecha_de_salida" class="block font-bold mb-2">Fecha de salida</label>
+                  <p-calendar
+                      [readonlyInput]="true"
+                      [showIcon]="true"
+                      id="fecha_fin"
+                      dateFormat="dd/mm/yy"
+                      (onSelect)="calcularDuracionYCosto(habitacion.costo)"
+                      placeholder="Seleccione La Fecha de CHECK OUT"
+                      formControlName="fecha_fin"
+                      class="w-full"
+                  ></p-calendar>
+                  <p-messages severity="warn">
+                      <ng-template pTemplate>
+                          <i class="fas fa-calendar-day"  width="32"></i>
+
+                          <div class="ml-2"><strong>Duración de la estancia  </strong> {{duracionEstancia}} dia{{'(S)'}}</div>
+                      </ng-template>
+                  </p-messages>
+                  <p-messages severity="success">
+                      <ng-template pTemplate>
+                          <i class="fas fa-money-bill" width="32"></i>
+
+                          <div class="ml-2"><strong> Costo total Sin Descuento Bs. {{costoTotal}} </strong></div>
+                      </ng-template>
+                  </p-messages>
+                  <label for="Descuento" class="block font-bold mb-2">Descuento</label>
+
+
+                <div class=" flex justify-content-center">
+
+                  <p-autoComplete
+                  [dropdown]="true"
+                  [suggestions]="filteredDescuentos"
+                  (completeMethod)="filterDescuentos($event)"
+                  optionLabel="displayLabel"
+                  placeholder="Selecciona un descuento"
+                  [minLength]="3"
+                  [size]="30"
+                  name="descuento"
+                  required
+                  (onSelect)="onDescuentoSelect($event)"
+                ></p-autoComplete>
+
+
+              </div>
+
+
+                  <label for="metodo_de_pago">Método de pago</label>
+                  <p-dropdown
+                    id="metodo_de_pago"
+                    formControlName="metodo_de_pago"
+                    [options]="[
+                      { label: 'Efectivo', value: 'efectivo' },
+                      { label: 'QR', value: 'qr' }
+                    ]"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Seleccione un método de pago"
+                  ></p-dropdown>
+
+
+
+
+
+                  <label for="monto_pagado">Monto pagado</label>
+
+                  <p-inputGroup class="w-full">
+                    <p-inputGroupAddon>
+                        <i class="fas fa-money-bill" style="line-height: 1.25"></i>
+                    </p-inputGroupAddon>
+
+                   <p-inputNumber formControlName="monto_pagado" [showButtons]="true"  mode="currency"  [min]="1" [max]="2000" [step]="1"   [minFractionDigits]="2"
+                   currency="BOB"
+                   locale="es-BO">
+                    </p-inputNumber>
+
+
+                </p-inputGroup>
+
+
+
+
+
+
+
+      </div>
+
+  </div>
+
+
+  <div class="col-12 lg:col-12 justify-content-center  p-fluid">
+      <div class="grid justify-content-center">
+          <div class="col-4">
+              <p-button (onClick)="checkinDirecto()" label="Guardar" [outlined]="true" severity="success" [style]="{ width: '100%' }"></p-button>
+
+          </div>
+          <div class="col-4">
+              <p-button label="Cancelar" (onClick)="CerrarModalCHECK()" [outlined]="true" severity="warning" [style]="{ width: '100%' }"></p-button>
+
+          </div>
+      </div>
+  </div>
+
+
+
+
+
+</div>
+  </form>
+
+
+</p-dialog>
+
+
+<p-dialog
+  header="Detalles de la Reserva"
+  [modal]="true"
+  [(visible)]="ModalCHECKReserva"
+  [style]="{ width: '90rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+>
+  <div class="grid">
+
+
+    <div class="col-12 lg:col-4">
+        <div class="card">
+          <h3 class="card-header">Detalles del Pago</h3>
+          <div class="card-body">
+            @if (reservaPendiente?.pago) {
+              <div class="grid">
+                <div class="col-12">
+                    <p-messages severity="warn" *ngIf="reservaPendiente.pago.estado_pago === 'deuda'">
+                        <ng-template pTemplate>
+                          <i class="fas fa-exclamation-triangle" width="32"></i>
+                          <div class="ml-2"><strong>Estado del Pago:  {{ reservaPendiente.pago.estado_pago }}</strong> </div>
+                        </ng-template>
+                      </p-messages>
+                      <p-messages severity="success" *ngIf="reservaPendiente.pago.estado_pago !== 'deuda'">
+                        <ng-template pTemplate>
+                          <i class="fas fa-check-circle" width="32"></i>
+                          <div class="ml-2"><strong>Estado del Pago:  {{ reservaPendiente.pago.estado_pago }}</strong> </div>
+                        </ng-template>
+                      </p-messages>
+                      <p-messages severity="success">
+                        <ng-template pTemplate>
+                          <i class="fas fa-money-bill-wave" width="32"></i>
+                          <div class="ml-2"><strong>Costo Total de la Habitacion:</strong> Bs. {{reservaPendiente.detalles_pago.total_con_descuento}}</div>
+                        </ng-template>
+                      </p-messages>
+                    <p-messages severity="info">
+                        <ng-template pTemplate>
+                          <i class="fas fa-money-bill-wave" width="32"></i>
+                          <div class="ml-2"><strong>Monto Pagado:</strong> Bs {{ reservaPendiente.pago.monto_pagado }}</div>
+                        </ng-template>
+                      </p-messages>
+                      <p-messages severity="warn" *ngIf="reservaPendiente.pago.saldo > 0">
+                        <ng-template pTemplate>
+                          <i class="fas fa-exclamation-circle" width="32"></i>
+                          <div class="ml-2"><strong>Saldo: Saldo pendiente Bs. {{ reservaPendiente.pago.saldo }}</strong> </div>
+                        </ng-template>
+                      </p-messages>
+                      <p-messages severity="success" *ngIf="reservaPendiente.pago.saldo <= 0">
+                        <ng-template pTemplate>
+                          <i class="fas fa-check-circle" width="32"></i>
+                          <div class="ml-2"><strong>Saldo:</strong> Bs {{ reservaPendiente.pago.saldo }} <strong class="ml-2"> Sin saldo</strong></div>
+                        </ng-template>
+                      </p-messages>
+                      <p-messages severity="info">
+                        <ng-template pTemplate>
+                          <i class="fas fa-credit-card" width="32"></i>
+                          <div class="ml-2"><strong>Método de Pago:</strong> {{ reservaPendiente.pago.metodo_de_pago }}</div>
+                        </ng-template>
+                      </p-messages>
+
+
+
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+      <div class="col-12 lg:col-4">
+        <div class="card">
+          <h3 class="card-header">Detalles de la Reserva</h3>
+          <div class="card-body">
+            @if (reservaPendiente?.reserva) {
+              <div class="grid">
+                <div class="col-12">
+                  <p-messages severity="info">
+                    <ng-template pTemplate>
+                      <i class="fas fa-calendar-day" width="32"></i>
+                      <div class="ml-2"><strong>Fecha Inicio:</strong> {{reservaPendiente.reserva.fecha_inicio}}</div>
+                    </ng-template>
+                  </p-messages>
+                  <p-messages severity="info">
+                    <ng-template pTemplate>
+                      <i class="fas fa-calendar-day" width="32"></i>
+                      <div class="ml-2"><strong>Fecha Fin:</strong> {{reservaPendiente.reserva.fecha_fin}}</div>
+                    </ng-template>
+                  </p-messages>
+                  <p-messages severity="info">
+                    <ng-template pTemplate>
+                      <i class="fas fa-bed" width="32"></i>
+                      <div class="ml-2"><strong>Duración de la Estancia:</strong> {{reservaPendiente.detalles_pago.dias_hospedaje}} días</div>
+                    </ng-template>
+                  </p-messages>
+                  @if (reservaPendiente.detalles_pago.monto_descuento > 0) {
+                    <label class="ml-2">Descuento Aplicado</label>
+                    <p-messages severity="success">
+                      <ng-template pTemplate>
+                        <i class="fas fa-tag" width="32"></i>
+                        <div class="ml-2"><strong>Descuento:</strong> Bs. {{reservaPendiente.detalles_pago.monto_descuento}}</div>
+                      </ng-template>
+                    </p-messages>
+                    <p-messages severity="info">
+                      <ng-template pTemplate>
+                        <i class="fas fa-money-bill" width="32"></i>
+                        <div class="ml-2"><strong>Costo sin Descuento:</strong> Bs. {{reservaPendiente.detalles_pago.costo_total_sin_descuento}}</div>
+                      </ng-template>
+                    </p-messages>
+                  }
+                  @if (reservaPendiente.detalles_pago.monto_descuento===0) {
+                    <label class="ml-2">No se Aplico ningun descuento</label>
+                  }
+
+
+
+                </div>
+              </div>
+            } @else {
+              <p>No se encontraron detalles de la reserva.</p>
+            }
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-12 lg:col-4" *ngIf="reservaPendiente?.pago?.saldo > 0 || reservaPendiente?.pago?.estado_pago === 'deuda'">
+        <div class="card">
+          <h3 class="card-header">Cancelar Saldo Pendiente</h3>
+          <div class="card-body  p-fluid">
+            <!-- <form  [formGroup]="pagoPendienteForm">
+              <div class="grid">
+
+
+
+
+
+
+
+                <div class="col-12">
+
+                <label for="monto_pagado">Monto a Cancelar</label>
+
+                <p-inputGroup class="w-full">
+                  <p-inputGroupAddon>
+                      <i class="fas fa-money-bill" style="line-height: 1.25"></i>
+                  </p-inputGroupAddon>
+
+                 <p-inputNumber formControlName="monto_pagado" [showButtons]="true"  mode="currency"  [min]="1" [max]="2000" [step]="1"   [minFractionDigits]="2"
+                 currency="BOB"
+                 locale="es-BO">
+                  </p-inputNumber>
+              </p-inputGroup>
+                </div>
+
+                <div class="col-12">
+                    <label for="metodo_de_pago">Método de pago</label>
+                    <p-dropdown
+                      id="metodo_de_pago"
+                      formControlName="metodo_de_pago"
+                      [options]="[
+                        { label: 'Efectivo', value: 'efectivo' },
+                        { label: 'QR', value: 'qr' }
+                      ]"
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Seleccione un método de pago"
+                    ></p-dropdown>
+                </div>
+                <div class="col-12">
+                    <p-button  label="Pagar "  (click)="completarPago(reservaPendiente.reserva.id)"[outlined]="true" severity="success" [style]="{ width: '100%' }"></p-button>
+                </div>
+              </div>
+            </form> -->
+
+            <form [formGroup]="pagoPendienteForm">
+                <div class="grid">
+                  <!-- Monto a Cancelar -->
+                  <div class="col-12">
+                    <label for="monto_pagado">Monto a Cancelar</label>
+                    <p-inputGroup class="w-full">
+                      <p-inputGroupAddon>
+                        <i class="fas fa-money-bill" style="line-height: 1.25"></i>
+                      </p-inputGroupAddon>
+                      <p-inputNumber
+                        formControlName="monto_pagado"
+                        [showButtons]="true"
+                        mode="currency"
+                        [min]="1"
+                        [max]="2000"
+                        [step]="1"
+                        [minFractionDigits]="2"
+                        currency="BOB"
+                        locale="es-BO"
+                      ></p-inputNumber>
+                    </p-inputGroup>
+                    <!-- Mensaje de error para el monto -->
+                    <small *ngIf="pagoPendienteForm.get('monto_pagado').invalid && pagoPendienteForm.get('monto_pagado').touched" class="p-error">
+                      El monto es obligatorio y debe ser mayor a 0.
+                    </small>
+                  </div>
+
+                  <!-- Método de Pago -->
+                  <div class="col-12">
+                    <label for="metodo_de_pago">Método de pago</label>
+                    <p-dropdown
+                      id="metodo_de_pago"
+                      formControlName="metodo_de_pago"
+                      [options]="[
+                        { label: 'Efectivo', value: 'efectivo' },
+                        { label: 'QR', value: 'qr' }
+                      ]"
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Seleccione un método de pago"
+                    ></p-dropdown>
+                    <!-- Mensaje de error para el método de pago -->
+                    <small *ngIf="pagoPendienteForm.get('metodo_de_pago').invalid && pagoPendienteForm.get('metodo_de_pago').touched" class="p-error">
+                      El método de pago es obligatorio.
+                    </small>
+                  </div>
+
+                  <!-- Botón de Pagar -->
+                  <div class="col-12">
+                    <p-button
+                      label="Pagar"
+                      [outlined]="true"
+                      severity="success"
+                      [style]="{ width: '100%' }"
+                      (click)="completarPago(reservaPendiente.reserva.id)"
+                      [disabled]="pagoPendienteForm.invalid"
+                    ></p-button>
+                  </div>
+                </div>
+              </form>
+
+
+        </div>
+        </div>
+      </div>
+
+
+    <!-- Botones de acción -->
+    <div class="col-12 lg:col-12 justify-content-center p-fluid">
+      <div class="grid justify-content-center">
+        <div class="col-4">
+          <p-button (onClick)="realizarCheckinReserva(reservaPendiente.reserva.id)" label="Check-IN " [outlined]="true" severity="success" [style]="{ width: '100%' }"></p-button>
+        </div>
+        <div class="col-4">
+          <p-button label="Cancelar" (onClick)="CerrarModalCHECK()" [outlined]="true" severity="warning" [style]="{ width: '100%' }"></p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</p-dialog>
 
 
 

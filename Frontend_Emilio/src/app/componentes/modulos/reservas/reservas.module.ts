@@ -36,11 +36,18 @@ import { MultiSelectModule } from 'primeng/multiselect';  // Importa MultiSelect
 import { AutoCompleteModule } from 'primeng/autocomplete';
 
 import { MessagesModule } from 'primeng/messages';
-
+import { AdministrarReservasComponent } from './administrar-reservas/administrar-reservas.component';
+import { CheckInComponent } from './check-in/check-in.component';
+import { CheckOutComponent } from './check-out/check-out.component';
+import { PanelModule } from 'primeng/panel';
 
 @NgModule({
   declarations: [
     ReservasComponent,
+    AdministrarReservasComponent,
+    CheckInComponent,
+    CheckOutComponent
+
   ],
   imports: [
     CommonModule,
@@ -76,7 +83,8 @@ import { MessagesModule } from 'primeng/messages';
     InputNumberModule,
     MultiSelectModule,
     AutoCompleteModule,
-    MessagesModule
+    MessagesModule,
+    PanelModule
 
 
   ]

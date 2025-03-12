@@ -20,3 +20,19 @@ $gutter: 1rem; //for primeflex grid system
     margin-top: 4px; /* Espacio superior para separar del input */
     display: inline-block; /* Mostrar el texto en línea */
 }
+
+
+.titulocheck {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .clock {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 24px;
+    color: #333;
+  }

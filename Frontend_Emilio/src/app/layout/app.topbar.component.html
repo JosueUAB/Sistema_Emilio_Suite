@@ -20,10 +20,19 @@
     <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
 
         <!-- Primeros tres botones -->
-        <button class="p-link layout-topbar-button">
-            <i class="pi pi-calendar"></i>
-            <span>Calendar</span>
-        </button>
+       <!-- Monto recaudado hoy -->
+       <div class="monto-recaudado" style="display: flex; flex-direction: column; align-items: center; background-color: #f8f9fa; border-radius: 8px; padding: 5px; margin: 5px 0; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);">
+        <span class="monto-label" style="font-size: 12px; color: #333; font-weight: bold;">
+            <i class="fas fa-money-bill-wave" style="margin-right: 5px; color: #007bff;"></i>
+            Caja:
+        </span>
+        <span class="monto-valor" style="font-size: 16px; color: #007bff; font-weight: bold;">
+            {{ montoTotalHoy | number: '1.2-2' }} BS
+        </span>
+    </div>
+
+
+
         <button class="p-link layout-topbar-button" (click)="menu.toggle($event)">
             <!-- Reemplazamos el ícono con una imagen más grande -->
             <img src="{{avatar}}" alt="Menu" style="width: 40px; height: 40px; border-radius: 50%;"/>

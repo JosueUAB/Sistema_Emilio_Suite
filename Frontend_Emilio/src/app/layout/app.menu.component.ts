@@ -115,16 +115,27 @@ export class AppMenuComponent implements OnInit {
                 items: [
                     { label: 'Habitaciones', icon: 'pi pi-fw pi-id-card', routerLink: ['/modulo/habitaciones'], permisos: ['registrar_habitacion', 'editar_habitacion', 'eliminar_habitacion', 'ver_habitacion'] },
                     { label: 'Huespedes', icon: 'pi pi-fw pi-check-square', routerLink: ['/modulo/huespedes'], permisos: ['registrar_huesped', 'editar_huesped', 'eliminar_huesped', 'ver_huesped'] },
-                    { label: 'Reservas', icon: 'pi pi-fw pi-bookmark', routerLink: ['/modulo/reservas'], permisos: ['registrar_reserva', 'editar_reserva', 'eliminar_reserva', 'ver_reserva'] },
+                    // { label: 'Reservas', icon: 'pi pi-fw pi-bookmark', routerLink: ['/modulo/reservas'], permisos: ['registrar_reserva', 'editar_reserva', 'eliminar_reserva', 'ver_reserva'] },
+                    {
+                        label: 'Reservas',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            { label: 'Administrar Reservas', icon: 'pi pi-fw pi-list', routerLink: ['/modulo/reservas/administrar-reservas'], permisos: ['registrar_reserva', 'editar_reserva', 'eliminar_reserva', 'ver_reserva'] },
+                            { label: 'Check-In', icon: 'pi pi-fw pi-check', routerLink: ['/modulo/reservas/check-in'], permisos: ['registrar_reserva', 'ver_reserva'] },
+                            { label: 'Check-Out', icon: 'pi pi-fw pi-sign-out', routerLink: ['/modulo/reservas/check-out'], permisos: ['registrar_reserva', 'ver_reserva'] }
+                        ],
+                        routerLink: ['/modulo/reservas'], // Ruta base para el módulo de reservas
+                        permisos: ['registrar_reserva', 'editar_reserva', 'eliminar_reserva', 'ver_reserva']
+                    },
                     { label: 'Recordatorios', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/modulo/recordatorios'], permisos: ['registrar_recordatorio', 'ver_recordatorio'] },
                     { label: 'ventas', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/modulo/ventas'], permisos: ['egistrar_venta', 'ver_venta'] },
                     { label: 'parqueo', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/modulo/parqueo'], permisos: ['registrar_parqueo', 'ver_parqueo'] },
                     { label: 'Ingresos/Egresos', icon: 'pi pi-fw pi-box', routerLink: ['/modulo/ingresos-egresos'], permisos: ['registrar_ingreso_egreso', 'ver_ingreso_egreso', 'editar_ingreso_egreso', 'eliminar_ingreso_egreso'] },
                     { label: 'Reportes', icon: 'pi pi-fw pi-table', routerLink: ['/modulo/reportes'], permisos: ['ver_reportes'] },
                     { label: 'Usuarios', icon: 'pi pi-fw pi-list', routerLink: ['/modulo/usuarios'], permisos: ['registrar_usuario', 'editar_usuario', 'eliminar_usuario', 'ver_usuario', 'asignar_roles'] },
-                    { 
-                        label: 'Configuracion', 
-                        icon: 'pi pi-fw pi-cog', 
+                    {
+                        label: 'Configuracion',
+                        icon: 'pi pi-fw pi-cog',
                         items: [
                             { label: 'Tarifas', icon: 'pi pi-fw pi-dollar', routerLink: ['/modulo/configuracion/tarifas'], permisos: ['editar_tarifas', 'ver_tarifas'] },
                             { label: 'Descuentos', icon: 'pi pi-fw pi-dollar', routerLink: ['/modulo/configuracion/descuentos'], permisos: ['editar_descuentos', 'ver_descuentos'] },
@@ -135,7 +146,7 @@ export class AppMenuComponent implements OnInit {
                          },
 
                 ]
-                
+
             }
         ];
 

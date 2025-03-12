@@ -17,10 +17,13 @@ import { ReservasService } from './service/reservas.service';
 
 })
 export class ReservasComponent implements OnInit {
+    currentDate: string = '';
+    currentTime: string = '';
+    private intervalId: any;
   listaHabitaciones: any[] = [];
   listaHabitacionesFiltradas: any[] = [];
   selectedEstados: string[] = []; // Cambiado a un array de strings para seleccionar múltiples estados
-  selectedPiso: number | null = null; // Para el filtro por piso
+//   selectedPiso: number | null = null; // Para el filtro por piso
   selectedTipoHabitacion: number | null = null; // Para el filtro por tipo de habitación
   ModalReservar:boolean = false;
   selectedHuespedCodigo:any;
@@ -32,7 +35,7 @@ export class ReservasComponent implements OnInit {
     { label: 'Mantenimiento', value: 'mantenimiento' },
     { label: 'Limpieza', value: 'limpieza' }
   ];
-
+  selectedPiso: number = 1;
   numerosPiso: { label: string, value: number }[] = []; // Lista de pisos únicos con formato {label, value}
   tiposHabitacion: { label: string, value: number }[] = []; // Lista de tipos de habitación con formato {label, value}
 
@@ -51,18 +54,44 @@ export class ReservasComponent implements OnInit {
   selectedHuespedID:any;
   selectedHabitacionId:number;
   habitacionesEditForm:FormGroup;
+  pagoPendienteForm:FormGroup;
   descuentos: any = [];
   filteredDescuentos: any[] = [];
    isLoading: boolean;
   search: string = '';
   page:number=1;
   duracionEstancia: number = 0;
+  costo_total_sin_descuento:number=0;
+  monto_descuento:number=0;
+    total_con_descuento:number=0;
   costoTotal: number = 0;
 
   messages: Message[] = [];
   reservas: any[] = [];
+  reservasPendientes: any[] = [];
+  reservaPendiente: any = null; // Variable para almacenar la reserva pendiente
+  isLoadingreserva: boolean = false; // Variable para manejar el estado de carga
   isLoadingReserva = false;
   errorMessage: string = '';
+
+
+  ModalCHECK:boolean=false;
+  ModalCHECKReserva:boolean=false;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   constructor(private _HabitacionesService: HabitacionesService,
                 public _layoutService: LayoutService,
                 private _DescuentoService: DescuentoService,
@@ -89,8 +118,12 @@ export class ReservasComponent implements OnInit {
             ducha: ['', ],
             banio: ['', ],
             estado: ['', ],
-
         });
+        this.pagoPendienteForm = this.fb.group({
+            monto_pagado: [null, [Validators.required, Validators.min(1)]], // Monto a pagar
+            metodo_de_pago: ['efectivo', Validators.required], // Método de pago
+          });
+
 
       this.primengConfig.setTranslation({
         firstDayOfWeek: 0,
@@ -118,29 +151,62 @@ export class ReservasComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.updateTime();
+    this.intervalId = setInterval(() => this.updateTime(), 1000);
     this.GetHabitaciones();
     this.getHuespedes();
     this.listarDescuentos();
     this.GetReservas();
+
+    this.filtrarHabitaciones();
+
+
+  }
+  updateTime() {
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'America/La_Paz',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    };
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      timeZone: 'America/La_Paz',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+    this.currentTime = new Date().toLocaleTimeString('es-BO', options);
+    this.currentDate = new Date().toLocaleDateString('es-BO', dateOptions);
   }
 
-  GetHabitaciones() {
-    this._HabitacionesService.obtenerHabitaciones().subscribe((data: any) => {
-      this.listaHabitaciones = data.habitaciones;
-      this.listaHabitacionesFiltradas = [...this.listaHabitaciones];
+GetHabitaciones() {
+    this._reservaService.listarHabitacionesDisponiblesHoy().subscribe((data: any) => {
+      if (data && data.habitaciones) {
+        this.listaHabitaciones = data.habitaciones;
+        console.log(data);
+        this.listaHabitacionesFiltradas = [...this.listaHabitaciones];
 
-      // Obtener los números de piso únicos con formato {label, value}
-      this.numerosPiso = this.listaHabitaciones
-      .map(h => h.numero_piso)
-      .filter((value, index, self) => self.indexOf(value) === index) // Obtener valores únicos
-      .map(piso => ({ label: 'Piso ' + piso, value: piso }))
-      .sort((a, b) => a.value - b.value);
+        // Obtener los números de piso únicos con formato {label, value}
+        this.numerosPiso = this.listaHabitaciones
+          .map(h => h.numero_piso)
+          .filter((value, index, self) => self.indexOf(value) === index)
+          .map(piso => ({ label: 'Piso ' + piso, value: piso }))
+          .sort((a, b) => a.value - b.value);
 
-      // Obtener los tipos de habitación únicos con formato {label, value}
-      this.tiposHabitacion = this.listaHabitaciones
-        .map(h => h.tipo_habitacion)
-        .filter((value, index, self) => self.findIndex(t => t.id === value.id) === index) // Obtener valores únicos
-        .map(tipo => ({ label: tipo.nombre, value: tipo.id }));
+        // Obtener los tipos de habitación únicos con formato {label, value}
+        this.tiposHabitacion = this.listaHabitaciones
+          .map(h => h.tipo_habitacion)
+          .filter((value, index, self) => self.findIndex(t => t.id === value.id) === index)
+          .map(tipo => ({ label: tipo.nombre, value: tipo.id }));
+
+        // Llama a filtrarHabitaciones después de que se hayan cargado las habitaciones
+        this.filtrarHabitaciones();
+      } else {
+        console.error('La respuesta no contiene las habitaciones esperadas.');
+      }
+    }, error => {
+      console.error('Error al obtener habitaciones:', error);
     });
   }
   getHuespedes() {
@@ -205,6 +271,10 @@ export class ReservasComponent implements OnInit {
       // Retornar si todos los filtros coinciden
       return coincideEstado && coincideNumero && coincidePrecioMinimo && coincidePrecioMaximo && coincideCamas && coincidePersonas && coincidePiso && coincideTipoHabitacion;
     });
+    console.log('Filtrando habitaciones...');
+    console.log('Selected Piso:', this.selectedPiso);
+    console.log('Habitaciones antes del filtro:', this.listaHabitaciones);
+    console.log('Habitaciones filtradas:', this.listaHabitacionesFiltradas);
   }
 
   ObtenerHabitacionID(id: number): void {
@@ -229,27 +299,30 @@ export class ReservasComponent implements OnInit {
       }
     );
   }
-//   filterHuespedes(event: any) {
-//     let filtered: any[] = [];
-//     let query = event.query;
 
-//     // Preprocesar todos los huéspedes para agregar la propiedad 'displayLabel'
-//     this.huespedes.forEach(huesped => {
-//       huesped.displayLabel = `${huesped.numero_documento} | ${huesped.nombre} ${huesped.apellido}`;
-//     });
 
-//     // Filtrar los huéspedes por el número de documento
-//     filtered = this.huespedes.filter(huesped =>
-//       huesped.numero_documento.toLowerCase().includes(query.toLowerCase())
-//     );
+  ObtenerHabitacionIDCHECK(id: number): void {
+    this.selectedHabitacionId = id;
 
-//     // Si no hay resultados, mostrar el mensaje
-//     if (filtered.length === 0) {
-//       this.filteredHuespedes = [{ displayLabel: 'No se encontraron resultados' }];
-//     } else {
-//       this.filteredHuespedes = filtered;
-//     }
-//   }
+    this._HabitacionesService.obtenerHabitacionPorId(id).subscribe(
+      (data) => {
+        if (data && data.habitacion) {
+          console.log('datos del usuario : ', data);
+          this.habitacion = data.habitacion; // Guardamos la habitación
+          this.reservaForm.patchValue({
+            habitacion_id:this.habitacion.id
+          });
+          this.ModalCHECK= true;
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la habitación.' });
+        }
+      },
+      (error) => {
+        console.error('Error al cargar los datos de la habitación:', error);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Hubo un error al cargar los datos de la habitación.' });
+      }
+    );
+  }
 
 filterHuespedes(event: any) {
     let filtered: any[] = [];
@@ -260,9 +333,9 @@ filterHuespedes(event: any) {
       huesped.displayLabel = `${huesped.numero_documento} | ${huesped.nombre} ${huesped.apellido}`;
     });
 
-    // Filtrar los huéspedes por el número de documento
+    // Filtrar los huéspedes por el número de documento usando startsWith
     filtered = this.huespedes.filter(huesped =>
-      huesped.numero_documento.toLowerCase().includes(query.toLowerCase())
+      huesped.numero_documento.toLowerCase().startsWith(query.toLowerCase())
     );
 
     if (filtered.length === 0) {
@@ -270,8 +343,7 @@ filterHuespedes(event: any) {
     } else {
       this.filteredHuespedes = filtered;
     }
-  }
-
+}
 
 
   onHuespedSelect(event: any) {
@@ -297,22 +369,6 @@ filterHuespedes(event: any) {
 
 
 
-  show() {
-    // this.ref = this._DialogService.open(NotfoundComponent, {
-    //     header: 'Page Not Found',
-    //     width: '80vw',  // Ancho del modal (80% del ancho de la ventana)
-    //     height: '70vh', // Altura del modal (70% de la altura de la ventana)
-    //     contentStyle: {
-    //         overflow: 'auto', // Permite el scroll si el contenido es más grande que el modal
-    //         height: '100%', // Hace que el contenido ocupe toda la altura disponible
-    //         padding: '20px', // Añade un pequeño espacio alrededor del contenido
-    //     },
-    //     baseZIndex: 10000, // Hace que el modal se muestre encima de otros componentes
-    // });
-
-
-    this.ModalReservar = true;
-}
 calcularDuracionYCosto(coste:number) {
     const fechaInicio = this.reservaForm.get('fecha_inicio')?.value;
     const fechaFin = this.reservaForm.get('fecha_fin')?.value;
@@ -341,6 +397,9 @@ console.log(coste)
   }
 
 
+
+
+
   filterDescuentos(event: any) {
     const query = event.query.toLowerCase();
     this.filteredDescuentos = this.descuentos.filter(descuento =>
@@ -351,16 +410,48 @@ console.log(coste)
     }));
   }
 
-  onDescuentoSelect(descuento: any) {
+//   onDescuentoSelect(descuento: any) {
+//     // Aquí puedes hacer lo que necesites con el descuento seleccionado
+//     console.log('Descuento seleccionado:', descuento);
+//     console.log('Descuento id selec:', descuento.value.id);
+//     // Por ejemplo, puedes asignar el ID del descuento al formulario
+//     this.reservaForm.patchValue({
+//         descuento_id: descuento.value.id // Asigna el ID del descuento al formulario
+//     });
+//   }
+onDescuentoSelect(descuento: any) {
     // Aquí puedes hacer lo que necesites con el descuento seleccionado
     console.log('Descuento seleccionado:', descuento);
     console.log('Descuento id selec:', descuento.value.id);
-    // Por ejemplo, puedes asignar el ID del descuento al formulario
+
+    // Asignar el ID del descuento al formulario
     this.reservaForm.patchValue({
         descuento_id: descuento.value.id // Asigna el ID del descuento al formulario
     });
-  }
 
+    // Calcular el costo con descuento
+    const porcentajeDescuento = parseFloat(descuento.value.porcentaje); // Obtener el porcentaje de descuento
+    const costoTotalSinDescuento = this.costoTotal; // Obtener el costo total sin descuento
+
+    // Calcular el monto del descuento
+    const montoDescuento = (costoTotalSinDescuento * porcentajeDescuento) / 100;
+
+    // Calcular el costo total con descuento
+    const costoTotalConDescuento = costoTotalSinDescuento - montoDescuento;
+
+    // Almacenar los valores en variables
+    this.costo_total_sin_descuento = costoTotalSinDescuento;
+    this.monto_descuento = montoDescuento;
+    this.total_con_descuento = costoTotalConDescuento;
+
+    // Mostrar los resultados en consola (opcional)
+    console.log('Costo total sin descuento:', this.costo_total_sin_descuento);
+    console.log('Monto de descuento:', this.monto_descuento);
+    console.log('Costo total con descuento:', this.total_con_descuento);
+    this.reservaForm.patchValue({
+        monto_pagado: this.total_con_descuento // Asigna el ID del descuento al formulario
+    });
+}
 
   GetReservas(): void {
     this.isLoadingReserva = true;
@@ -400,11 +491,21 @@ console.log(coste)
                     if (response && response.reserva) {
                         this.CerrarModalGuardar();
                         console.log('Reserva guardada exitosamente:', response.reserva);
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Éxito',
+                            detail: 'Reserva realizado exitosamente.',
+                          });
                     }
                 },
                 error: (error) => {
                     this.errorMessage = error.mensaje || 'Ocurrió un error al guardar la reserva';
                     console.error(this.errorMessage);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'Ocurrió un error al guardar la reserva ',
+                      });
                 },
                 complete: () => {
                     this.isLoadingReserva = false;
@@ -433,13 +534,181 @@ console.log(coste)
         };
       }
 
+      checkinDirecto() {
+        if (this.reservaForm.valid) {
+            console.log('Formulario enviado:', this.reservaForm.value);
+            this.isLoadingReserva = true;
+
+            // Obtener los datos del formulario
+            const formData = this.reservaForm.value;
+
+            // Realizar el parseo de las fechas aquí antes de enviarlas al servicio
+            const parsedData = this.parsearFechas(formData);
+
+            // Llamamos al servicio para realizar el check-in directo
+            this._reservaService.checkinDirecto(parsedData).subscribe({
+                next: (response) => {
+                    if (response) {
+                        this.CerrarModalCHECK(); // Cerrar el modal si es necesario
+                        console.log('Check-in directo realizado exitosamente:', response);
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Éxito',
+                            detail: 'Check-in directo realizado exitosamente.',
+                          });
+                    }
+                },
+                error: (error) => {
+                    this.errorMessage = error.mensaje || 'Ocurrió un error al realizar el check-in directo';
+                    console.error(this.errorMessage);
+                    let mensajedeerror=this.errorMessage;
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'Ocurrió un error al realizar el check-in directo: ',
+                      });
+                },
+                complete: () => {
+                    this.isLoadingReserva = false;
+                },
+            });
+        } else {
+            console.log('Formulario inválido');
+        }
+    }
+
       CerrarModalGuardar(){
         this.ModalReservar=false;
         this.reservaForm.reset();
         this.selectedHuesped=[];
         this.GetHabitaciones();
         this.filteredDescuentos = [];
+        this.duracionEstancia=0
+        this.costo_total_sin_descuento=0
+        this.monto_descuento=0
+        this.total_con_descuento=0
+        this.costoTotal=0
       }
+
+      CerrarModalCHECK(){
+        this.ModalCHECK=false;
+        this.ModalCHECKReserva=false;
+        this.reservaForm.reset();
+        this.selectedHuesped=[];
+        this.GetHabitaciones();
+        this.filteredDescuentos = [];
+        this.duracionEstancia=0
+        this.costo_total_sin_descuento=0
+        this.monto_descuento=0
+        this.total_con_descuento=0
+        this.costoTotal=0
+      }
+
+      obtenerReservaPendiente(id: number) {
+        this.isLoadingreserva = true; // Activar el estado de carga
+
+        this._reservaService.obtenerReservaPendienteHoyPorId(id).subscribe({
+          next: (response) => {
+            if (response && response.reserva) {
+              this.reservaPendiente = response; // Almacenar la respuesta completa
+              console.log('Reserva pendiente:', this.reservaPendiente);
+              this.ModalCHECKReserva=true;
+            } else {
+              console.log('No se encontró una reserva pendiente para esta habitación.');
+            }
+          },
+          error: (error) => {
+            console.error('Error al obtener la reserva pendiente:', error);
+          },
+          complete: () => {
+            this.isLoadingReserva = false; // Desactivar el estado de carga
+          }
+        });
+      }
+
+      completarPago(reservaId: number) {
+        if (this.pagoPendienteForm.invalid) {
+          // Mostrar mensaje de error si el formulario es inválido
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Por favor, complete todos los campos correctamente.',
+          });
+          return;
+        }
+
+        const { monto_pagado, metodo_de_pago } = this.pagoPendienteForm.value;
+
+        // Llamar al servicio para completar el pago
+        this._reservaService.completarPago(reservaId, monto_pagado, metodo_de_pago).subscribe({
+          next: (respuesta) => {
+            console.log('Pago completado exitosamente:', respuesta);
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'Pago completado exitosamente.',
+            });
+            this.pagoPendienteForm.reset();
+            this.CerrarModalCHECK();
+
+          },
+          error: (error) => {
+            console.error('Error al completar el pago:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Ocurrió un error al completar el pago.',
+            });
+          },
+        });
+      }
+
+      checkout(reservaId: number): void {
+        this._reservaService.checkout(reservaId).subscribe({
+          next: (respuesta) => {
+            console.log('Checkout realizado exitosamente:', respuesta);
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'Checkout realizado exitosamente.',
+            });
+          },
+          error: (error) => {
+            console.error('Error al realizar el checkout:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Ocurrió un error al realizar el checkout.',
+            });
+          },
+        });
+      }
+
+      realizarCheckinReserva(reservaId: number): void {
+        this._reservaService.checkin(reservaId).subscribe({
+          next: (respuesta) => {
+            console.log('Check-in realizado exitosamente:', respuesta);
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'Check-in realizado exitosamente.',
+            });
+            this.GetHabitaciones();
+            this.CerrarModalCHECK();
+
+          },
+          error: (error) => {
+            console.error('Error al realizar el check-in:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: error.message, // Aquí se mostrará el mensaje que se genera en manejarError
+            });
+          },
+        });
+      }
+
+
 
 
   mostrar(){
