@@ -1481,24 +1481,7 @@ public function habitacionOcupadaPorIdReserva($idReserva)
 
         return response()->json([
             'mensaje' => 'Habitación ocupada obtenida exitosamente.',
-            'habitacion' => [
-                'id' => $reserva->habitacion->id,
-                'numero_piso' => $reserva->habitacion->numero_piso,
-                'numero' => $reserva->habitacion->numero,
-                'cantidad_camas' => $reserva->habitacion->cantidad_camas,
-                'tipo_id' => $reserva->habitacion->tipo_id,
-                'limite_personas' => $reserva->habitacion->limite_personas,
-                'descripcion' => $reserva->habitacion->descripcion,
-                'costo' => $reserva->habitacion->costo,
-                'tv' => $reserva->habitacion->tv,
-                'ducha' => $reserva->habitacion->ducha,
-                'banio' => $reserva->habitacion->banio,
-                'estado' => $reserva->habitacion->estado,
-                'created_at' => $reserva->habitacion->created_at,
-                'updated_at' => $reserva->habitacion->updated_at,
-                'tipo_habitacion' => $reserva->habitacion->tipoHabitacion
-                // Detalles del tipo de habitación
-            ],
+
             'reserva' => [
                 'id' => $reserva->id,
                 'huesped' => $reserva->huesped, // Detalles del huésped
@@ -1512,8 +1495,26 @@ public function habitacionOcupadaPorIdReserva($idReserva)
                     'monto_descuento' => $montoDescuento, // Monto del descuento en dinero
                     'total_con_descuento' => $totalConDescuento // Total a pagar con descuento
                 ],
+                'habitacion' => [
+                    'id' => $reserva->habitacion->id,
+                    'numero_piso' => $reserva->habitacion->numero_piso,
+                    'numero' => $reserva->habitacion->numero,
+                    'cantidad_camas' => $reserva->habitacion->cantidad_camas,
+                    'tipo_id' => $reserva->habitacion->tipo_id,
+                    'limite_personas' => $reserva->habitacion->limite_personas,
+                    'descripcion' => $reserva->habitacion->descripcion,
+                    'costo' => $reserva->habitacion->costo,
+                    'tv' => $reserva->habitacion->tv,
+                    'ducha' => $reserva->habitacion->ducha,
+                    'banio' => $reserva->habitacion->banio,
+                    'estado' => $reserva->habitacion->estado,
+                    'created_at' => $reserva->habitacion->created_at,
+                    'updated_at' => $reserva->habitacion->updated_at,
+                    'tipo_habitacion' => $reserva->habitacion->tipoHabitacion
+                    // Detalles del tipo de habitación
+                ],
                 'pago' => [
-                    'id' => $pago->id, 
+                    'id' => $pago->id,
                     'monto_pagado' => $pago->monto_pagado, // Monto ya pagado
                     'saldo' => $pago->saldo, // Saldo pendiente
                     'metodo_de_pago' => $pago->metodo_de_pago, // Método de pago
