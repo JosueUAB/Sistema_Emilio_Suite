@@ -1,1 +1,158 @@
-<p>check-out works!</p>
+<p-panel>
+    <ng-template pTemplate="header">
+      <p-toast></p-toast>
+      <h2 class="panel-title">
+        Listado de Habitaciones Para Checkout Fecha: {{ currentDate }} hora: {{ currentTime }}
+      </h2>
+    </ng-template>
+    <ng-template pTemplate="content">
+      <div class="grid">
+        <div class="p-grid p-fluid p-nogutter p-ai-center" style="gap: 1rem; padding: 1rem;">
+          <div class="grid formgrid">
+            <!-- Filtro por número de piso -->
+            <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+              <label for="numeroPiso" class="p-d-block p-mb-1">Filtrar por piso:</label>
+              <p-dropdown
+                [showClear]="true"
+                [options]="numerosPiso"
+                [(ngModel)]="selectedPiso"
+                (onChange)="filtrarHabitaciones()"
+                placeholder="Selecciona un piso"
+                appendTo="body"
+              ></p-dropdown>
+            </div>
+
+            <!-- Filtro por número de habitación -->
+            <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+              <label for="numero" class="p-d-block p-mb-1">Buscar por número:</label>
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input
+                  pInputText
+                  type="number"
+                  [(ngModel)]="numeroHabitacion"
+                  (input)="filtrarHabitaciones()"
+                  placeholder="Buscar Nº habitacion"
+                />
+              </span>
+            </div>
+
+            <!-- Filtro por código de reserva -->
+            <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+              <label for="codigoReserva" class="p-d-block p-mb-1">Buscar por código de reserva:</label>
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input
+                  pInputText
+                  type="text"
+                  [(ngModel)]="codigoReserva"
+                  (input)="filtrarHabitaciones()"
+                  placeholder="Buscar código de reserva"
+                />
+              </span>
+            </div>
+
+            <!-- Filtro por número de documento del huésped -->
+            <div class="col-12 mb-2 lg:col-3 lg:mb-0">
+              <label for="documentoHuesped" class="p-d-block p-mb-1">Buscar por número de documento del huésped:</label>
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input
+                  pInputText
+                  type="text"
+                  [(ngModel)]="documentoHuesped"
+                  (input)="filtrarHabitaciones()"
+                  placeholder="Buscar número de documento del huésped"
+                />
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mostrar habitaciones filtradas -->
+        <div class="col-12 lg:col-6 xl:col-3" *ngFor="let lista of habitacionesOcupadasFiltradas">
+          <!-- Tarjeta de habitación -->
+          <div class="card mb-0 bg-red-500">
+            <div class="flex justify-content-between mb-3">
+              <div>
+                <h2 class="font-medium text-4xl text-white">Habitación {{ lista.numero }}</h2>
+                <span class="font-medium text-xl font-semibold text-gray-900">
+                  Tipo: <p-tag severity="warning" [value]="lista.tipo_habitacion.nombre" />
+                </span>
+              </div>
+              <div class="flex align-items-center justify-content-center border-round bg-red-200" style="width: 3rem; height: 3rem;">
+                <i class="pi pi-times text-2xl text-red-600"></i>
+              </div>
+            </div>
+            <p class="text-white">{{ lista.descripcion }}</p>
+
+            <!-- Sección de camas y máximo de personas -->
+            <div class="flex justify-content-between align-items-center mt-3 p-3 border-round bg-red-600">
+              <div class="flex flex-column align-items-center">
+                <i class="fas fa-procedures text-white"></i>
+                <span class="font-medium text-xl text-white"> Camas:</span>
+                <span class="text-white font-bold">{{ lista.cantidad_camas }}</span>
+              </div>
+
+              <div class="flex flex-column align-items-center">
+                <i class="fas fa-users text-2xl text-white"></i>
+                <span class="font-medium text-xl text-white">Máx. Personas:</span>
+                <span class="text-white font-bold">{{ lista.limite_personas }}</span>
+              </div>
+            </div>
+            <br />
+
+            <!-- Amenidades -->
+            <div class="p-d-flex p-ai-center mb-3">
+              @if (lista.tv === 1) {
+                <p-tag value="TV" icon="fas fa-tv" class="mr-2"></p-tag>
+              }
+              @if (lista.ducha === 1) {
+                <p-tag value="Ducha" icon="fas fa-shower" class="mr-2" severity="success"></p-tag>
+              }
+              @if (lista.banio === 1) {
+                <p-tag value="Baño" icon="fas fa-toilet" class="mr-2" severity="warning"></p-tag>
+              }
+              <p-tag value="Wi-Fi" icon="fas fa-wifi" severity="danger"></p-tag>
+            </div>
+
+            <!-- Costo y estado -->
+            <div class="flex justify-content-between align-items-center mt-3">
+              <div class="flex flex-column border-round bg-red-600">
+                <span class="text-white text-3xl font-bold">Bs. {{ lista.costo }}</span>
+              </div>
+
+              <div class="flex flex-column">
+                <span class="font-medium text-xl font-semibold text-gray-900">Estado:</span>
+                <span class="text-white">{{ lista.estado }}</span>
+              </div>
+            </div>
+
+            <!-- Botón de ver info -->
+            <div class="mt-3">
+              <p-button
+                label="Ver Info"
+                (click)="obtenerCheckout(lista.id)"
+                icon="fas fa-check-double"
+                [rounded]="true"
+                severity="warning"
+              />
+            </div>
+
+            <!-- Saldo pendiente y tiempo restante -->
+            <div class="flex justify-content-between align-items-center mt-3">
+              <div class="flex flex-column">
+                <span class="font-medium text-xl font-semibold text-gray-900">Saldo Pendiente:</span>
+                <span class="text-white">{{ lista.reservas[0].pago.saldo }}</span>
+              </div>
+
+              <div class="flex flex-column">
+                <span class="font-medium text-xl font-semibold text-gray-900">Tiempo Restante:</span>
+                <span class="text-white">{{ lista.reservas[0].tiempo_restante_checkout.mensaje }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-panel>

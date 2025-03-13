@@ -221,8 +221,7 @@ class ReportesController extends Controller
             ]
         ]);
 
-    }
-    public function obtenerClientesPorDiaYIngresosDiarios()
+    }public function obtenerClientesPorDiaYIngresosDiarios()
     {
         // Obtener los clientes por día
         $clientesPorDia = Reserva::where('estado', 'activa')
@@ -241,13 +240,22 @@ class ReportesController extends Controller
         // Obtener la cantidad total de habitaciones disponibles en el hotel
         $totalHabitaciones = Habitaciones::count(); // Asumiendo que tienes un modelo Habitacion
 
+        // Obtener el día de hoy
+        $hoy = date('Y-m-d');
+        $diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+        // Calcular los últimos 7 días
+        $labels = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $fecha = date('Y-m-d', strtotime("-$i days", strtotime($hoy)));
+            $nombreDia = $diasSemana[date('w', strtotime($fecha))];
+            $labels[] = $nombreDia;
+        }
+
         // Inicializar los arreglos de datos
         $clientesPorDiaData = array_fill(0, 7, 0);
         $ingresosDiariosData = array_fill(0, 7, 0);
         $porcentajeOcupacionData = array_fill(0, 7, 0);
-
-        // Obtener el día de hoy
-        $hoy = date('Y-m-d');
 
         // Rellenar los arreglos de datos
         foreach ($clientesPorDia as $dia) {
@@ -267,15 +275,7 @@ class ReportesController extends Controller
 
         // Devolver la respuesta en formato JSON
         return response()->json([
-            'labels' => [
-                'Lunes',
-                'Martes',
-                'Miércoles',
-                'Jueves',
-                'Viernes',
-                'Sábado',
-                'Domingo'
-            ],
+            'labels' => $labels, // Labels dinámicos
             'datasets' => [
                 [
                     'label' => 'Clientes por día',
@@ -292,9 +292,6 @@ class ReportesController extends Controller
             ]
         ]);
     }
-
-
-
 
 
 

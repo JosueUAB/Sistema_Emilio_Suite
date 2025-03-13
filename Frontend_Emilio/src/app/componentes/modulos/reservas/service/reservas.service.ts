@@ -357,22 +357,7 @@ export class ReservasService {
   }
 
   // Obtener habitaciones ocupadas para checkout
-  obtenerHabitacionesOcupadasParaCheckout(): Observable<any> {
-    this.isLoadingSubject.next(true);
-    const token = this.authservice.obtenerToken();
 
-    if (token) {
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      return this.http.post<any>(`${this.rutaApi}/habitaciones-para-checkout`, {}, { headers }).pipe(
-        finalize(() => this.isLoadingSubject.next(false)),
-        catchError((error) => this.manejarError(error, 'Error al obtener habitaciones ocupadas para checkout'))
-      );
-    } else {
-      console.log('Token no disponible');
-      this.isLoadingSubject.next(false);
-      return of(null);
-    }
-  }
 
   // Listar habitaciones disponibles hoy
   listarHabitacionesDisponiblesHoy(): Observable<any> {
@@ -599,7 +584,28 @@ obtenerCheckoutPorHabitacionId(habitacionId: number): Observable<any> {
       return of(null);
     }
   }
- 
+
+  obtenerHabitacionesOcupadasParaCheckout(): Observable<any> {
+    this.isLoadingSubject.next(true);
+    const token = this.authservice.obtenerToken();
+
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      return this.http.post<any>(`${this.rutaApi}/habitaciones-para-checkout`, {}, { headers }).pipe(
+        finalize(() => this.isLoadingSubject.next(false)),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error en la solicitud al obtener habitaciones para checkout:', error);
+          return throwError(() => new Error(error.message || 'Error en la solicitud al servidor'));
+        })
+      );
+    } else {
+      console.log('Token no disponible');
+      this.isLoadingSubject.next(false);
+      return of(null);
+    }
+  }
+
 
 
 }
