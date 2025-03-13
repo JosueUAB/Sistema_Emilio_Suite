@@ -79,7 +79,7 @@ export class ReservasComponent implements OnInit {
   ModalCHECKReserva:boolean=false;
   ModalCHECKOUT:Boolean=false;
 
-
+  checkoutInfo: any;
 
 
 
@@ -718,6 +718,7 @@ onDescuentoSelect(descuento: any) {
       CerrarModalCHECK(){
         this.ModalCHECK=false;
         this.ModalCHECKReserva=false;
+        this.ModalCHECKOUT=false;
         this.reservaForm.reset();
         this.selectedHuesped=[];
         this.GetHabitaciones();
@@ -788,6 +789,9 @@ onDescuentoSelect(descuento: any) {
         });
       }
 
+
+
+
       checkout(reservaId: number): void {
         this._reservaService.checkout(reservaId).subscribe({
           next: (respuesta) => {
@@ -829,6 +833,29 @@ onDescuentoSelect(descuento: any) {
               summary: 'Error',
               detail: error.message, // Aquí se mostrará el mensaje que se genera en manejarError
             });
+          },
+        });
+      }
+
+
+
+
+
+
+
+
+      obtenerCheckout(habitacionId:number): void {
+        this._reservaService.obtenerCheckoutPorHabitacionId(habitacionId).subscribe({
+          next: (response) => {
+            this.checkoutInfo = response;
+
+            console.log(this.checkoutInfo)
+            this.ModalCHECKOUT=true;
+            this.errorMessage = null;
+          },
+          error: (error) => {
+            this.errorMessage = error.message || 'Ocurrió un error al obtener el checkout.';
+            console.error(error);
           },
         });
       }

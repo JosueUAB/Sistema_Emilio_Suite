@@ -395,7 +395,7 @@
                         <div class="mt-3">
                             <!-- <p-button label="Reservar" (click)="ObtenerHabitacionID(lista.id)" icon="far fa-eye" severity="help" [rounded]="true" class="mr-3"/> -->
 
-                            <p-button label="Ver Info"  (click)="obtenerReservaPendiente(lista.id)" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
+                            <p-button label="Ver Info"  (click)="obtenerCheckout(lista.id)" icon="fas fa-check-double" [rounded]="true" severity="warning"/>
                         </div>
                     </div>
                 </div>
@@ -1254,6 +1254,18 @@ header="Check In de Habitacion"
                 <label class="ml-2"> Codigo de Reserva : {{reservaPendiente.reserva.id }} </label>
               <div class="grid">
                 <div class="col-12">
+                    <p-messages severity="success">
+                        <ng-template pTemplate>
+                          <i class="fas fa-calendar-day" width="32"></i>
+                          <div class="ml-2"><strong>Nombres y Apellidos</strong> {{reservaPendiente.reserva.huesped.nombre}} {{' '}} {{reservaPendiente.reserva.huesped.apellido}} </div>
+                        </ng-template>
+                      </p-messages>
+                      <p-messages severity="success">
+                        <ng-template pTemplate>
+                          <i class="fas fa-calendar-day" width="32"></i>
+                          <div class="ml-2"><strong>Nº de Documento</strong> {{reservaPendiente.reserva.huesped.numero_documento}}</div>
+                        </ng-template>
+                      </p-messages>
                   <p-messages severity="info">
                     <ng-template pTemplate>
                       <i class="fas fa-calendar-day" width="32"></i>
@@ -1444,251 +1456,230 @@ header="Check In de Habitacion"
   [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
 >
   <div class="grid">
-
-
+    <!-- Detalles del Pago -->
     <div class="col-12 lg:col-4">
-        <div class="card">
-          <h3 class="card-header">Detalles del Pago</h3>
-
-          <div class="card-body">
-            @if (reservaPendiente?.pago) {
-
-              <div class="grid">
-                <div class="col-12">
-                    <p-messages severity="warn" *ngIf="reservaPendiente.pago.estado_pago === 'deuda'">
-                        <ng-template pTemplate>
-                          <i class="fas fa-exclamation-triangle" width="32"></i>
-                          <div class="ml-2"><strong>Estado del Pago:  {{ reservaPendiente.pago.estado_pago }}</strong> </div>
-                        </ng-template>
-                      </p-messages>
-                      <p-messages severity="success" *ngIf="reservaPendiente.pago.estado_pago !== 'deuda'">
-                        <ng-template pTemplate>
-                          <i class="fas fa-check-circle" width="32"></i>
-                          <div class="ml-2"><strong>Estado del Pago:  {{ reservaPendiente.pago.estado_pago }}</strong> </div>
-                        </ng-template>
-                      </p-messages>
-                      <p-messages severity="success">
-                        <ng-template pTemplate>
-                          <i class="fas fa-money-bill-wave" width="32"></i>
-                          <div class="ml-2"><strong>Costo Total de la Habitacion:</strong> Bs. {{reservaPendiente.detalles_pago.total_con_descuento}}</div>
-                        </ng-template>
-                      </p-messages>
-                    <p-messages severity="info">
-                        <ng-template pTemplate>
-                          <i class="fas fa-money-bill-wave" width="32"></i>
-                          <div class="ml-2"><strong>Monto Pagado:</strong> Bs {{ reservaPendiente.pago.monto_pagado }}</div>
-                        </ng-template>
-                      </p-messages>
-                      <p-messages severity="warn" *ngIf="reservaPendiente.pago.saldo > 0">
-                        <ng-template pTemplate>
-                          <i class="fas fa-exclamation-circle" width="32"></i>
-                          <div class="ml-2"><strong>Saldo: Saldo pendiente Bs. {{ reservaPendiente.pago.saldo }}</strong> </div>
-                        </ng-template>
-                      </p-messages>
-                      <p-messages severity="success" *ngIf="reservaPendiente.pago.saldo <= 0">
-                        <ng-template pTemplate>
-                          <i class="fas fa-check-circle" width="32"></i>
-                          <div class="ml-2"><strong>Saldo:</strong> Bs {{ reservaPendiente.pago.saldo }} <strong class="ml-2"> Sin saldo</strong></div>
-                        </ng-template>
-                      </p-messages>
-                      <p-messages severity="info">
-                        <ng-template pTemplate>
-                          <i class="fas fa-credit-card" width="32"></i>
-                          <div class="ml-2"><strong>Método de Pago:</strong> {{ reservaPendiente.pago.metodo_de_pago }}</div>
-                        </ng-template>
-                      </p-messages>
-
-
-
-                </div>
+      <div class="card">
+        <h3 class="card-header">Detalles del Pago</h3>
+        <div class="card-body">
+          @if (checkoutInfo?.pago) {
+            <div class="grid">
+              <div class="col-12">
+                <p-messages severity="warn" *ngIf="checkoutInfo.pago.estado_pago === 'deuda'">
+                  <ng-template pTemplate>
+                    <i class="fas fa-exclamation-triangle" width="32"></i>
+                    <div class="ml-2"><strong>Estado del Pago: {{ checkoutInfo.pago.estado_pago }}</strong></div>
+                  </ng-template>
+                </p-messages>
+                <p-messages severity="success" *ngIf="checkoutInfo.pago.estado_pago !== 'deuda'">
+                  <ng-template pTemplate>
+                    <i class="fas fa-check-circle" width="32"></i>
+                    <div class="ml-2"><strong>Estado del Pago: {{ checkoutInfo.pago.estado_pago }}</strong></div>
+                  </ng-template>
+                </p-messages>
+                <p-messages severity="success">
+                  <ng-template pTemplate>
+                    <i class="fas fa-money-bill-wave" width="32"></i>
+                    <div class="ml-2"><strong>Costo Total de la Habitación:</strong> Bs. {{ checkoutInfo.detalles_pago.total_con_descuento }}</div>
+                  </ng-template>
+                </p-messages>
+                <p-messages severity="info">
+                  <ng-template pTemplate>
+                    <i class="fas fa-money-bill-wave" width="32"></i>
+                    <div class="ml-2"><strong>Monto Pagado:</strong> Bs {{ checkoutInfo.pago.monto_pagado }}</div>
+                  </ng-template>
+                </p-messages>
+                <p-messages severity="warn" *ngIf="checkoutInfo.pago.saldo > 0">
+                  <ng-template pTemplate>
+                    <i class="fas fa-exclamation-circle" width="32"></i>
+                    <div class="ml-2"><strong>Saldo Pendiente:</strong> Bs. {{ checkoutInfo.pago.saldo }}</div>
+                  </ng-template>
+                </p-messages>
+                <p-messages severity="success" *ngIf="checkoutInfo.pago.saldo <= 0">
+                  <ng-template pTemplate>
+                    <i class="fas fa-check-circle" width="32"></i>
+                    <div class="ml-2"><strong>Saldo:</strong> Bs {{ checkoutInfo.pago.saldo }} <strong class="ml-2">Sin saldo</strong></div>
+                  </ng-template>
+                </p-messages>
+                <p-messages severity="info">
+                  <ng-template pTemplate>
+                    <i class="fas fa-credit-card" width="32"></i>
+                    <div class="ml-2"><strong>Método de Pago:</strong> {{ checkoutInfo.pago.metodo_de_pago }}</div>
+                  </ng-template>
+                </p-messages>
               </div>
-            }
-          </div>
+            </div>
+          }
         </div>
       </div>
+    </div>
 
-
-
-
-
-      <div class="col-12 lg:col-4">
-        <div class="card">
-          <h3 class="card-header">Detalles de la Reserva</h3>
-          <div class="card-body">
-            @if (reservaPendiente?.reserva) {
-                <label class="ml-2"> Codigo de Reserva : {{reservaPendiente.reserva.id }} </label>
-              <div class="grid">
-                <div class="col-12">
-                  <p-messages severity="info">
+    <!-- Detalles de la Reserva -->
+    <div class="col-12 lg:col-4">
+      <div class="card">
+        <h3 class="card-header">Detalles de la Reserva</h3>
+        <div class="card-body">
+          @if (checkoutInfo?.reserva) {
+            <label class="ml-2">Código de Reserva: {{ checkoutInfo.reserva.id }}</label>
+            <div class="grid">
+              <div class="col-12">
+                <p-messages severity="info">
+                  <ng-template pTemplate>
+                    <i class="fas fa-calendar-day" width="32"></i>
+                    <div class="ml-2"><strong>Fecha Inicio:</strong> {{ checkoutInfo.reserva.fecha_inicio }}</div>
+                  </ng-template>
+                </p-messages>
+                <p-messages severity="info">
+                  <ng-template pTemplate>
+                    <i class="fas fa-calendar-day" width="32"></i>
+                    <div class="ml-2"><strong>Fecha Fin:</strong> {{ checkoutInfo.reserva.fecha_fin }}</div>
+                  </ng-template>
+                </p-messages>
+                <p-messages severity="info">
+                  <ng-template pTemplate>
+                    <i class="fas fa-bed" width="32"></i>
+                    <div class="ml-2"><strong>Duración de la Estancia:</strong> {{ checkoutInfo.detalles_pago.dias_hospedaje }} días</div>
+                  </ng-template>
+                </p-messages>
+                @if (checkoutInfo.detalles_pago.monto_descuento > 0) {
+                  <label class="ml-2">Descuento Aplicado</label>
+                  <p-messages severity="success">
                     <ng-template pTemplate>
-                      <i class="fas fa-calendar-day" width="32"></i>
-                      <div class="ml-2"><strong>Fecha Inicio:</strong> {{reservaPendiente.reserva.fecha_inicio}}</div>
+                      <i class="fas fa-tag" width="32"></i>
+                      <div class="ml-2"><strong>Descuento:</strong> Bs. {{ checkoutInfo.detalles_pago.monto_descuento }}</div>
                     </ng-template>
                   </p-messages>
                   <p-messages severity="info">
                     <ng-template pTemplate>
-                      <i class="fas fa-calendar-day" width="32"></i>
-                      <div class="ml-2"><strong>Fecha Fin:</strong> {{reservaPendiente.reserva.fecha_fin}}</div>
+                      <i class="fas fa-money-bill" width="32"></i>
+                      <div class="ml-2"><strong>Costo sin Descuento:</strong> Bs. {{ checkoutInfo.detalles_pago.costo_total_sin_descuento }}</div>
                     </ng-template>
                   </p-messages>
-                  <p-messages severity="info">
-                    <ng-template pTemplate>
-                      <i class="fas fa-bed" width="32"></i>
-                      <div class="ml-2"><strong>Duración de la Estancia:</strong> {{reservaPendiente.detalles_pago.dias_hospedaje}} días</div>
-                    </ng-template>
-                  </p-messages>
-                  @if (reservaPendiente.detalles_pago.monto_descuento > 0) {
-                    <label class="ml-2">Descuento Aplicado</label>
-                    <p-messages severity="success">
-                      <ng-template pTemplate>
-                        <i class="fas fa-tag" width="32"></i>
-                        <div class="ml-2"><strong>Descuento:</strong> Bs. {{reservaPendiente.detalles_pago.monto_descuento}}</div>
-                      </ng-template>
-                    </p-messages>
-                    <p-messages severity="info">
-                      <ng-template pTemplate>
-                        <i class="fas fa-money-bill" width="32"></i>
-                        <div class="ml-2"><strong>Costo sin Descuento:</strong> Bs. {{reservaPendiente.detalles_pago.costo_total_sin_descuento}}</div>
-                      </ng-template>
-                    </p-messages>
-                  }
-                  @if (reservaPendiente.detalles_pago.monto_descuento===0) {
-                    <label class="ml-2">No se Aplico ningun descuento</label>
-                  }
-
-
-
-                </div>
+                }
+                @if (checkoutInfo.detalles_pago.monto_descuento === 0) {
+                  <label class="ml-2">No se aplicó ningún descuento</label>
+                }
               </div>
-            } @else {
-              <p>No se encontraron detalles de la reserva.</p>
-            }
-          </div>
+            </div>
+          } @else {
+            <p>No se encontraron detalles de la reserva.</p>
+          }
         </div>
       </div>
+    </div>
 
-
-      <div class="col-12 lg:col-4" *ngIf="reservaPendiente?.pago?.saldo > 0 || reservaPendiente?.pago?.estado_pago === 'deuda'">
-        <div class="card">
-          <h3 class="card-header">Cancelar Saldo Pendiente</h3>
-          <div class="card-body  p-fluid">
-            <!-- <form  [formGroup]="pagoPendienteForm">
-              <div class="grid">
-
-
-
-
-
-
-
-                <div class="col-12">
-
+    <!-- Cancelar Saldo Pendiente -->
+    <div class="col-12 lg:col-4" *ngIf="checkoutInfo?.pago?.saldo > 0 || checkoutInfo?.pago?.estado_pago === 'deuda'">
+      <div class="card">
+        <h3 class="card-header">Cancelar Saldo Pendiente</h3>
+        <div class="card-body p-fluid">
+          <form [formGroup]="pagoPendienteForm">
+            <div class="grid">
+              <!-- Monto a Cancelar -->
+              <div class="col-12">
                 <label for="monto_pagado">Monto a Cancelar</label>
-
                 <p-inputGroup class="w-full">
                   <p-inputGroupAddon>
-                      <i class="fas fa-money-bill" style="line-height: 1.25"></i>
+                    <i class="fas fa-money-bill" style="line-height: 1.25"></i>
                   </p-inputGroupAddon>
-
-                 <p-inputNumber formControlName="monto_pagado" [showButtons]="true"  mode="currency"  [min]="1" [max]="2000" [step]="1"   [minFractionDigits]="2"
-                 currency="BOB"
-                 locale="es-BO">
-                  </p-inputNumber>
-              </p-inputGroup>
-                </div>
-
-                <div class="col-12">
-                    <label for="metodo_de_pago">Método de pago</label>
-                    <p-dropdown
-                      id="metodo_de_pago"
-                      formControlName="metodo_de_pago"
-                      [options]="[
-                        { label: 'Efectivo', value: 'efectivo' },
-                        { label: 'QR', value: 'qr' }
-                      ]"
-                      optionLabel="label"
-                      optionValue="value"
-                      placeholder="Seleccione un método de pago"
-                    ></p-dropdown>
-                </div>
-                <div class="col-12">
-                    <p-button  label="Pagar "  (click)="completarPago(reservaPendiente.reserva.id)"[outlined]="true" severity="success" [style]="{ width: '100%' }"></p-button>
-                </div>
+                  <p-inputNumber
+                    [ngModel]="checkoutInfo.pago.saldo"
+                    formControlName="monto_pagado"
+                    [showButtons]="true"
+                    mode="currency"
+                    [min]="1"
+                    [max]="2000"
+                    [step]="1"
+                    [minFractionDigits]="2"
+                    currency="BOB"
+                    locale="es-BO"
+                  ></p-inputNumber>
+                </p-inputGroup>
+                <!-- Mensaje de error para el monto -->
+                <small *ngIf="pagoPendienteForm.get('monto_pagado').invalid && pagoPendienteForm.get('monto_pagado').touched" class="p-error">
+                  El monto es obligatorio y debe ser mayor a 0.
+                </small>
               </div>
-            </form> -->
 
-            <form [formGroup]="pagoPendienteForm">
-                <div class="grid">
-                  <!-- Monto a Cancelar -->
-                  <div class="col-12">
-                    <label for="monto_pagado">Monto a Cancelar</label>
-                    <p-inputGroup class="w-full">
-                      <p-inputGroupAddon>
-                        <i class="fas fa-money-bill" style="line-height: 1.25"></i>
-                      </p-inputGroupAddon>
-                      <p-inputNumber
-                        formControlName="monto_pagado"
-                        [showButtons]="true"
-                        mode="currency"
-                        [min]="1"
-                        [max]="2000"
-                        [step]="1"
-                        [minFractionDigits]="2"
-                        currency="BOB"
-                        locale="es-BO"
-                      ></p-inputNumber>
-                    </p-inputGroup>
-                    <!-- Mensaje de error para el monto -->
-                    <small *ngIf="pagoPendienteForm.get('monto_pagado').invalid && pagoPendienteForm.get('monto_pagado').touched" class="p-error">
-                      El monto es obligatorio y debe ser mayor a 0.
-                    </small>
-                  </div>
+              <!-- Método de Pago -->
+              <div class="col-12">
+                <label for="metodo_de_pago">Método de pago</label>
+                <p-dropdown
+                  id="metodo_de_pago"
+                  formControlName="metodo_de_pago"
+                  [options]="[
+                    { label: 'Efectivo', value: 'efectivo' },
+                    { label: 'QR', value: 'qr' }
+                  ]"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Seleccione un método de pago"
+                ></p-dropdown>
+                <!-- Mensaje de error para el método de pago -->
+                <small *ngIf="pagoPendienteForm.get('metodo_de_pago').invalid && pagoPendienteForm.get('metodo_de_pago').touched" class="p-error">
+                  El método de pago es obligatorio.
+                </small>
+              </div>
 
-                  <!-- Método de Pago -->
-                  <div class="col-12">
-                    <label for="metodo_de_pago">Método de pago</label>
-                    <p-dropdown
-                      id="metodo_de_pago"
-                      formControlName="metodo_de_pago"
-                      [options]="[
-                        { label: 'Efectivo', value: 'efectivo' },
-                        { label: 'QR', value: 'qr' }
-                      ]"
-                      optionLabel="label"
-                      optionValue="value"
-                      placeholder="Seleccione un método de pago"
-                    ></p-dropdown>
-                    <!-- Mensaje de error para el método de pago -->
-                    <small *ngIf="pagoPendienteForm.get('metodo_de_pago').invalid && pagoPendienteForm.get('metodo_de_pago').touched" class="p-error">
-                      El método de pago es obligatorio.
-                    </small>
-                  </div>
-
-                  <!-- Botón de Pagar -->
-                  <div class="col-12">
-                    <p-button
-                      label="Pagar"
-                      [outlined]="true"
-                      severity="success"
-                      [style]="{ width: '100%' }"
-                      (click)="completarPago(reservaPendiente.reserva.id)"
-                      [disabled]="pagoPendienteForm.invalid"
-                    ></p-button>
-                  </div>
-                </div>
-              </form>
-
-
-        </div>
+              <!-- Botón de Pagar -->
+              <div class="col-12">
+                <p-button
+                  label="Pagar"
+                  [outlined]="true"
+                  severity="success"
+                  [style]="{ width: '100%' }"
+                  (click)="completarPago(checkoutInfo.pago.id)"
+                  [disabled]="pagoPendienteForm.invalid"
+                ></p-button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
+    </div>
 
-
-    <!-- Botones de acción -->
+    <!-- Botones de Acción -->
     <div class="col-12 lg:col-12 justify-content-center p-fluid">
+       @if (checkoutInfo) {
+        @if (checkoutInfo.tiempo_restante_checkout.dias_restantes >= 1 || checkoutInfo.tiempo_restante_checkout.horas_restantes >= 12) {
+            <!-- Si quedan más de 12 horas o más de 1 día, mostrar en verde -->
+            <p-messages severity="success">
+                <ng-template pTemplate>
+                    <i class="fas fa-exclamation-triangle" width="32"></i>
+                    <div class="ml-2">
+                        <strong>Tiempo restante del checkout: {{ checkoutInfo.tiempo_restante_checkout.mensaje }}</strong>
+                    </div>
+                </ng-template>
+            </p-messages>
+        }
+        @else if (checkoutInfo.tiempo_restante_checkout.horas_restantes >= 1) {
+            <!-- Si quedan entre 1 y 12 horas, mostrar en amarillo -->
+            <p-messages severity="warn">
+                <ng-template pTemplate>
+                    <i class="fas fa-exclamation-triangle" width="32"></i>
+                    <div class="ml-2">
+                        <strong>Tiempo restante del checkout: {{ checkoutInfo.tiempo_restante_checkout.mensaje }}</strong>
+                    </div>
+                </ng-template>
+            </p-messages>
+        }
+        @else {
+            <!-- Si quedan menos de 1 hora, mostrar en rojo -->
+            <p-messages severity="error">
+                <ng-template pTemplate>
+                    <i class="fas fa-exclamation-triangle" width="32"></i>
+                    <div class="ml-2">
+                        <strong>Tiempo restante del checkout: {{ checkoutInfo.tiempo_restante_checkout.mensaje }}</strong>
+                    </div>
+                </ng-template>
+            </p-messages>
+        }
+       }
       <div class="grid justify-content-center">
         <div class="col-4">
-          <p-button (onClick)="realizarCheckinReserva(reservaPendiente.reserva.id)" label="Check-IN " [outlined]="true" severity="success" [style]="{ width: '100%' }"></p-button>
+          <p-button label="Checkout" [outlined]="true" severity="success" [style]="{ width: '100%' }"></p-button>
+        </div>
+        <div class="col-4">
+          <p-button label="Imprimir Ticket" [outlined]="true" severity="info" [style]="{ width: '100%' }"></p-button>
         </div>
         <div class="col-4">
           <p-button label="Cancelar" (onClick)="CerrarModalCHECK()" [outlined]="true" severity="warning" [style]="{ width: '100%' }"></p-button>
@@ -1697,7 +1688,6 @@ header="Check In de Habitacion"
     </div>
   </div>
 </p-dialog>
-
 
 <!--
 <div class="grid">

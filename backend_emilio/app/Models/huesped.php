@@ -40,6 +40,10 @@ class huesped extends Model
     protected $casts = [
         'fecha_de_nacimiento' => 'date',
     ];
-
+ // Relación con las reservas
+ public function reservas()
+ {
+     return $this->hasMany(Reserva::class, 'huesped_id');
+ }
 
 }

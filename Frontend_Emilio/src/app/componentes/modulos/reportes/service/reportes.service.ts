@@ -8,7 +8,7 @@ import { AuthService } from 'src/app/services/auth.service';
 @Injectable({
   providedIn: 'root'
 })
-export class CobroService {
+export class ReporteService {
   private rutaApi = `${environment.URL_SERVICIOS}`;
 
   isLoading$: Observable<boolean>;
@@ -45,4 +45,26 @@ export class CobroService {
     }
   }
 
+  // Obtener los reportes del dashboard
+  obtenerReportesDashboard(): Observable<any> {
+    this.isLoadingSubject.next(true);
+    const token = this.authservice.obtenerToken();
+
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      // Concatenar la ruta completa correctamente
+      return this.http.get<any>(`${this.rutaApi}/reportes-dashboard`, { headers }).pipe(
+        finalize(() => this.isLoadingSubject.next(false)),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error en la solicitud al obtener los reportes del dashboard:', error);
+          return throwError(() => new Error(error.message || 'Error en la solicitud al servidor'));
+        })
+      );
+    } else {
+      console.log('Token no disponible');
+      this.isLoadingSubject.next(false);
+      return of(null);
+    }
+  }
 }

@@ -50,6 +50,14 @@ Route::group([
     Route::post('/users/{id}', [UserAccessController::class, 'update']);
     Route::resource("users",UserAccessController::class);
 
+
+
+    //! reportes dashboard */
+    Route::get('reportes-dashboard', [ReportesController::class, 'obtenerReportesDashboard']);
+    Route::get('cobroshoy', [ReportesController::class, 'obtenerCobroHoy']);
+
+
+
     //! Configuraciones */
 
     Route::resource("tarifas",tarifaController::class);
@@ -75,7 +83,7 @@ Route::group([
     Route::post('reserva/listarHabitaciones-disponibles-hoy', [ReservaController::class, 'listarHabitacionesDisponiblesHoy']);
     Route::post('reserva/obtener-reserva-id-habitacion/{id}', [ReservaController::class, 'obtenerReservaPendienteHoyPorID']);
     Route::post('reserva/completar-pago/{id}', [ReservaController::class, 'completarPago']);
-    Route::get('cobroshoy', [ReportesController::class, 'obtenerCobroHoy']);
+
     Route::post('reserva/obtener-checkout-id-habitacion/{id}', [ReservaController::class, 'obtenerCheckoutPorHabitacionId']);
 
 });

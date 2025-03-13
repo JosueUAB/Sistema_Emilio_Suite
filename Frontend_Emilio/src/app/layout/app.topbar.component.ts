@@ -4,7 +4,7 @@ import { LayoutService } from "./service/app.layout.service";
 import { environment } from "src/environments/environment";
 import { MenuModule } from 'primeng/menu';
 import { AuthService } from '../services/auth.service';
-import { CobroService } from '../componentes/modulos/reportes/service/reportes.service';
+import { ReporteService } from '../componentes/modulos/reportes/service/reportes.service';
 @Component({
     selector: 'app-topbar',
     templateUrl: './app.topbar.component.html',
@@ -32,7 +32,7 @@ export class AppTopBarComponent {
 
     constructor(public layoutService: LayoutService,
                 private _authService: AuthService,
-                private cobroService: CobroService
+                private cobroService: ReporteService
     ) { }
 
     ngOnInit(): void {

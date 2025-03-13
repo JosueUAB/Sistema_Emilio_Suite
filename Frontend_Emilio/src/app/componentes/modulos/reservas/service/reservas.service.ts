@@ -560,6 +560,26 @@ private manejarError(error: HttpErrorResponse, mensaje: string): Observable<neve
     }));
 }
 
+obtenerCheckoutPorHabitacionId(habitacionId: number): Observable<any> {
+    this.isLoadingSubject.next(true);
+    const token = this.authservice.obtenerToken();
+
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      const url = `${this.rutaApi}/obtener-checkout-id-habitacion/${habitacionId}`;
+
+      // Usar this.http.post en lugar de this.http.get
+      return this.http.post<any>(url, {}, { headers }).pipe(
+        finalize(() => this.isLoadingSubject.next(false)),
+        catchError((error) => this.manejarError(error, 'Error al obtener el checkout'))
+      );
+    } else {
+      console.log('Token no disponible');
+      this.isLoadingSubject.next(false);
+      return of(null);
+    }
+}
+
   // Completar el pago de una reserva
   completarPago(pagoId: number, montoPagado: number, metodoDePago: string): Observable<any> {
     const token = this.authservice.obtenerToken();

@@ -914,7 +914,7 @@ public function checkinDirecto(Request $request)
             'usuario_id' => auth()->id(), // ID del usuario autenticado
             'fecha_inicio' => $checkin->format('Y-m-d H:i:s'), // Guardar en formato datetime
             'fecha_fin' => $checkout->format('Y-m-d H:i:s'), // Guardar en formato datetime
-            'estado' => 'confirmada', // Usar un valor válido del ENUM
+            'estado' => 'activa', // Usar un valor válido del ENUM
             'total' => $totalConDescuento, // Total con descuento aplicado
         ]);
 
@@ -1730,10 +1730,39 @@ public function obtenerReservaPendienteHoyPorID($habitacionId)
 
             $totalConDescuento = $costoTotalSinDescuento - $montoDescuento;
 
+            // Formatear las fechas
+            $fechaInicioFormateada = Carbon::parse($reservaPendiente->fecha_inicio)->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY hh:mm A');
+            $fechaFinFormateada = Carbon::parse($reservaPendiente->fecha_fin)->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY hh:mm A');
+
+            // Calcular el tiempo restante para el checkout
+            $fechaActual = Carbon::now();
+            $fechaFin = Carbon::parse($reservaPendiente->fecha_fin);
+            $tiempoRestante = $fechaActual->diff($fechaFin);
+
+            $diasRestantes = $tiempoRestante->d;
+            $horasRestantes = $tiempoRestante->h;
+            $minutosRestantes = $tiempoRestante->i;
+
+            // Determinar si el checkout ya pasó o está en curso
+            if ($fechaActual->gt($fechaFin)) {
+                $mensajeCheckout = 'El checkout ya pasó.';
+            } elseif ($fechaActual->eq($fechaFin)) {
+                $mensajeCheckout = 'El checkout es hoy.';
+            } else {
+                $mensajeCheckout = "Faltan {$diasRestantes} días, {$horasRestantes} horas y {$minutosRestantes} minutos para el checkout.";
+            }
+
             // Respuesta con detalles de la reserva y el pago
             return response()->json([
                 'mensaje' => 'Reserva pendiente encontrada.',
-                'reserva' => $reservaPendiente, // Devolver todos los datos de la reserva
+                'reserva' => [
+                    'id' => $reservaPendiente->id,
+                    'huesped' => $reservaPendiente->huesped,
+                    'habitacion' => $reservaPendiente->habitacion,
+                    'fecha_inicio' => $fechaInicioFormateada,
+                    'fecha_fin' => $fechaFinFormateada,
+                    'estado' => $reservaPendiente->estado,
+                ],
                 'pago' => $pago, // Usar el pago real desde la base de datos
                 'detalles_pago' => [
                     'dias_hospedaje' => $diasHospedaje,
@@ -1741,6 +1770,12 @@ public function obtenerReservaPendienteHoyPorID($habitacionId)
                     'costo_total_sin_descuento' => $costoTotalSinDescuento,
                     'monto_descuento' => $montoDescuento,
                     'total_con_descuento' => $totalConDescuento,
+                ],
+                'tiempo_restante_checkout' => [
+                    'dias_restantes' => $diasRestantes,
+                    'horas_restantes' => $horasRestantes,
+                    'minutos_restantes' => $minutosRestantes,
+                    'mensaje' => $mensajeCheckout,
                 ],
                 'status' => 200
             ], 200);
@@ -1946,24 +1981,39 @@ public function obtenerCheckoutPorHabitacionId($habitacionId)
 
             $totalConDescuento = $costoTotalSinDescuento - $montoDescuento;
 
+            // Formatear las fechas
+            $fechaInicioFormateada = Carbon::parse($reserva->fecha_inicio)->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY hh:mm A');
+            $fechaFinFormateada = Carbon::parse($reserva->fecha_fin)->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY hh:mm A');
+
             // Calcular el tiempo restante para el checkout
             $fechaActual = Carbon::now();
             $fechaFin = Carbon::parse($reserva->fecha_fin);
-            $diasRestantes = $fechaActual->diffInDays($fechaFin, false); // Diferencia en días (puede ser negativo)
+            $tiempoRestante = $fechaActual->diff($fechaFin);
+
+            $diasRestantes = $tiempoRestante->d;
+            $horasRestantes = $tiempoRestante->h;
+            $minutosRestantes = $tiempoRestante->i;
 
             // Determinar si el checkout ya pasó o está en curso
-            if ($diasRestantes < 0) {
+            if ($fechaActual->gt($fechaFin)) {
                 $mensajeCheckout = 'El checkout ya pasó.';
-            } elseif ($diasRestantes == 0) {
+            } elseif ($fechaActual->eq($fechaFin)) {
                 $mensajeCheckout = 'El checkout es hoy.';
             } else {
-                $mensajeCheckout = "Faltan {$diasRestantes} días para el checkout.";
+                $mensajeCheckout = "Faltan {$diasRestantes} días, {$horasRestantes} horas y {$minutosRestantes} minutos para el checkout.";
             }
 
             // Respuesta con detalles de la reserva, el pago y el tiempo restante
             return response()->json([
                 'mensaje' => 'Reserva activa encontrada.',
-                'reserva' => $reserva, // Detalles de la reserva
+                'reserva' => [
+                    'id' => $reserva->id,
+                    'huesped' => $reserva->huesped,
+                    'habitacion' => $reserva->habitacion,
+                    'fecha_inicio' => $fechaInicioFormateada,
+                    'fecha_fin' => $fechaFinFormateada,
+                    'estado' => $reserva->estado,
+                ],
                 'pago' => $pago, // Detalles del pago
                 'detalles_pago' => [
                     'dias_hospedaje' => $diasHospedaje,
@@ -1974,6 +2024,8 @@ public function obtenerCheckoutPorHabitacionId($habitacionId)
                 ],
                 'tiempo_restante_checkout' => [
                     'dias_restantes' => $diasRestantes,
+                    'horas_restantes' => $horasRestantes,
+                    'minutos_restantes' => $minutosRestantes,
                     'mensaje' => $mensajeCheckout,
                 ],
                 'status' => 200
