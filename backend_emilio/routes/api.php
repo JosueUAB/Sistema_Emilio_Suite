@@ -56,7 +56,7 @@ Route::group([
     Route::get('reportes-dashboard', [ReportesController::class, 'obtenerReportesDashboard']);
     Route::get('huespedes-por-nacionalidad', [ReportesController::class, 'obtenerHuespedesPorNacionalidad']);
     Route::get('clientes-ingresos-mensuales', [ReportesController::class, 'obtenerClientesPorMesYIngresosMensuales']);
-    
+
     Route::get('clientes-ingresos-diarios', [ReportesController::class, 'obtenerClientesPorDiaYIngresosDiarios']);
 
     Route::get('cobroshoy', [ReportesController::class, 'obtenerCobroHoy']);
@@ -85,6 +85,7 @@ Route::group([
     Route::post('reserva/reservas-por-fecha', [ReservaController::class, 'reservasPorFecha']);
     Route::post('reserva/reservas-para-hoy-manana', [ReservaController::class, 'reservasParaHoyYManana']);
     Route::post('reserva/habitaciones-para-checkout', [ReservaController::class, 'habitacionesOcupadasParaCheckout']);
+    Route::post('reserva/habitacion-para-check-out/{id}', [ReservaController::class, 'habitacionOcupadaPorIdReserva']);
     Route::post('reserva/listarHabitaciones-disponibles-hoy', [ReservaController::class, 'listarHabitacionesDisponiblesHoy']);
     Route::post('reserva/obtener-reserva-id-habitacion/{id}', [ReservaController::class, 'obtenerReservaPendienteHoyPorID']);
     Route::post('reserva/completar-pago/{id}', [ReservaController::class, 'completarPago']);

@@ -1420,6 +1420,131 @@ public function habitacionesOcupadasParaCheckout()
     }
 }
 
+public function habitacionOcupadaPorIdReserva($idReserva)
+{
+    try {
+        // Obtener la reserva por su ID
+        $reserva = Reserva::where('id', $idReserva)
+            ->with(['habitacion', 'huesped', 'descuento', 'pago']) // Incluir detalles de la habitación, huésped, descuento y pago
+            ->first();
+
+        // Si no hay reserva, devolver un mensaje
+        if (!$reserva) {
+            return response()->json([
+                'mensaje' => 'No hay reserva con el ID especificado.',
+                'status' => 404
+            ], 404);
+        }
+
+        // Obtener la fecha y hora actual
+        $fechaActual = Carbon::now();
+
+        // Calcular la duración de la estancia en días
+        $checkin = Carbon::parse($reserva->fecha_inicio);
+        $checkout = Carbon::parse($reserva->fecha_fin);
+        $duracion = $checkin->diffInDays($checkout);
+
+        // Calcular el costo total sin descuento
+        $costoTotalSinDescuento = $reserva->habitacion->costo * $duracion;
+
+        // Aplicar descuento si existe
+        $descuento = $reserva->descuento;
+        $montoDescuento = 0;
+        if ($descuento) {
+            $montoDescuento = ($costoTotalSinDescuento * $descuento->porcentaje) / 100;
+        }
+
+        // Calcular el total después de aplicar el descuento
+        $totalConDescuento = $costoTotalSinDescuento - $montoDescuento;
+
+        // Obtener detalles del pago
+        $pago = $reserva->pago;
+
+        // Calcular el tiempo restante para el checkout
+        $tiempoRestante = $fechaActual->diff($checkout);
+        $diasRestantes = $tiempoRestante->d;
+        $horasRestantes = $tiempoRestante->h;
+        $minutosRestantes = $tiempoRestante->i;
+
+        // Determinar si el checkout ya pasó o está en curso
+        if ($fechaActual->gt($checkout)) {
+            $mensajeCheckout = 'El checkout ya pasó.';
+        } elseif ($fechaActual->eq($checkout)) {
+            $mensajeCheckout = 'El checkout es hoy.';
+        } else {
+            $mensajeCheckout = "Faltan {$diasRestantes} días, {$horasRestantes} horas y {$minutosRestantes} minutos para el checkout.";
+        }
+
+        // Formatear las fechas
+        $fechaInicioFormateada = $checkin->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY hh:mm A');
+        $fechaFinFormateada = $checkout->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY hh:mm A');
+
+        return response()->json([
+            'mensaje' => 'Habitación ocupada obtenida exitosamente.',
+            'habitacion' => [
+                'id' => $reserva->habitacion->id,
+                'numero_piso' => $reserva->habitacion->numero_piso,
+                'numero' => $reserva->habitacion->numero,
+                'cantidad_camas' => $reserva->habitacion->cantidad_camas,
+                'tipo_id' => $reserva->habitacion->tipo_id,
+                'limite_personas' => $reserva->habitacion->limite_personas,
+                'descripcion' => $reserva->habitacion->descripcion,
+                'costo' => $reserva->habitacion->costo,
+                'tv' => $reserva->habitacion->tv,
+                'ducha' => $reserva->habitacion->ducha,
+                'banio' => $reserva->habitacion->banio,
+                'estado' => $reserva->habitacion->estado,
+                'created_at' => $reserva->habitacion->created_at,
+                'updated_at' => $reserva->habitacion->updated_at,
+                'tipo_habitacion' => $reserva->habitacion->tipoHabitacion
+                // Detalles del tipo de habitación
+            ],
+            'reserva' => [
+                'id' => $reserva->id,
+                'huesped' => $reserva->huesped, // Detalles del huésped
+                'fecha_inicio' => $fechaInicioFormateada,
+                'fecha_fin' => $fechaFinFormateada,
+                'estado' => $reserva->estado,
+                'detalles_pago' => [
+                    'dias_hospedaje' => $duracion, // Días de hospedaje
+                    'costo_por_noche' => $reserva->habitacion->costo, // Costo por noche
+                    'costo_total_sin_descuento' => $costoTotalSinDescuento, // Costo total sin descuento
+                    'monto_descuento' => $montoDescuento, // Monto del descuento en dinero
+                    'total_con_descuento' => $totalConDescuento // Total a pagar con descuento
+                ],
+                'pago' => [
+                    'id' => $pago->id, 
+                    'monto_pagado' => $pago->monto_pagado, // Monto ya pagado
+                    'saldo' => $pago->saldo, // Saldo pendiente
+                    'metodo_de_pago' => $pago->metodo_de_pago, // Método de pago
+                    'estado_pago' => $pago->estado_pago, // Estado del pago
+                    'fecha_de_pago' => $pago->fecha_de_pago // Fecha de pago
+                ],
+                'descuento' => $descuento ? [
+                    'id' => $descuento->id,
+                    'porcentaje' => $descuento->porcentaje,
+                    'descripcion' => $descuento->descripcion // Descripción del descuento
+                ] : null, // Si no hay descuento, devolver null
+                'tiempo_restante_checkout' => [
+                    'dias_restantes' => $diasRestantes,
+                    'horas_restantes' => $horasRestantes,
+                    'minutos_restantes' => $minutosRestantes,
+                    'mensaje' => $mensajeCheckout,
+                ],
+            ],
+        ], 200); // Asegúrate de que el status esté aquí
+    } catch (\Exception $e) {
+        Log::error('Error al obtener habitación ocupada por ID de reserva:', ['error' => $e->getMessage()]);
+        return response()->json([
+            'mensaje' => 'Ocurrió un error al obtener la habitación ocupada.',
+            'error' => $e->getMessage(),
+            'status' => 500
+        ], 500);
+    }
+}
+
+
+
 // public function listarHabitacionesDisponiblesHoy()
 // {
 //     try {
