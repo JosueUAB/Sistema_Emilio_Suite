@@ -30,7 +30,6 @@ export class ReporteService {
     if (token) {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-      // Concatenar la ruta completa correctamente
       return this.http.get<any>(`${this.rutaApi}/cobroshoy`, { headers }).pipe(
         finalize(() => this.isLoadingSubject.next(false)),
         catchError((error: HttpErrorResponse) => {
@@ -53,7 +52,6 @@ export class ReporteService {
     if (token) {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-      // Concatenar la ruta completa correctamente
       return this.http.get<any>(`${this.rutaApi}/reportes-dashboard`, { headers }).pipe(
         finalize(() => this.isLoadingSubject.next(false)),
         catchError((error: HttpErrorResponse) => {
@@ -67,6 +65,8 @@ export class ReporteService {
       return of(null);
     }
   }
+
+  // Obtener los huéspedes por nacionalidad
   obtenerHuespedesPorNacionalidad(): Observable<any> {
     this.isLoadingSubject.next(true);
     const token = this.authservice.obtenerToken();
@@ -74,11 +74,54 @@ export class ReporteService {
     if (token) {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-      // Concatenar la ruta completa correctamente
       return this.http.get<any>(`${this.rutaApi}/huespedes-por-nacionalidad`, { headers }).pipe(
         finalize(() => this.isLoadingSubject.next(false)),
         catchError((error: HttpErrorResponse) => {
-          console.error('Error en la solicitud al obtener los huespedes por nacionalidad:', error);
+          console.error('Error en la solicitud al obtener los huéspedes por nacionalidad:', error);
+          return throwError(() => new Error(error.message || 'Error en la solicitud al servidor'));
+        })
+      );
+    } else {
+      console.log('Token no disponible');
+      this.isLoadingSubject.next(false);
+      return of(null);
+    }
+  }
+
+  // Obtener clientes e ingresos diarios
+  obtenerClientesPorDiaYIngresosDiarios(): Observable<any> {
+    this.isLoadingSubject.next(true);
+    const token = this.authservice.obtenerToken();
+
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      return this.http.get<any>(`${this.rutaApi}/clientes-ingresos-diarios`, { headers }).pipe(
+        finalize(() => this.isLoadingSubject.next(false)),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error en la solicitud al obtener clientes e ingresos diarios:', error);
+          return throwError(() => new Error(error.message || 'Error en la solicitud al servidor'));
+        })
+      );
+    } else {
+      console.log('Token no disponible');
+      this.isLoadingSubject.next(false);
+      return of(null);
+    }
+  }
+
+  // Obtener clientes e ingresos semanales
+  obtenerClientesPorSemanaYIngresosMensuales(): Observable<any> {
+    this.isLoadingSubject.next(true);
+    const token = this.authservice.obtenerToken();
+
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      return this.http.get<any>(`${this.rutaApi}/clientes-ingresos-mensuales`, { headers }).pipe(
+        finalize(() => this.isLoadingSubject.next(false)),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error en la solicitud al obtener clientes e ingresos semanales:', error);
           return throwError(() => new Error(error.message || 'Error en la solicitud al servidor'));
         })
       );
