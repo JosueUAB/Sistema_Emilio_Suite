@@ -599,4 +599,7 @@ obtenerCheckoutPorHabitacionId(habitacionId: number): Observable<any> {
       return of(null);
     }
   }
+ 
+
+
 }

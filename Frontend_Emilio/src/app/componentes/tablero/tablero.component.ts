@@ -10,9 +10,19 @@ export class TableroComponent {
 
     reportes: any;
     errorMessage: string | null = null;
+    huespedesPorNacionalidad: any;
+errorMessageHuespedesPorNacionalidad: string | null = null;
+colors: string[] = [
+                    'bg-orange-500',
+                    'bg-cyan-500',
+                    'bg-pink-500',
+                    'bg-green-500',
+                    'bg-purple-500',
+                    'bg-teal-500'];
 
     ngOnInit(): void {
         this.obtenerReportesDashboard();
+        this.obtenerHuespedesPorNacionalidad();
 
     }
 
@@ -22,6 +32,7 @@ export class TableroComponent {
     ){
 
     }
+
 
 
     obtenerReportesDashboard(): void {
@@ -37,5 +48,25 @@ export class TableroComponent {
           }
         });
       }
+
+      obtenerHuespedesPorNacionalidad(): void {
+        this._reporteService.obtenerHuespedesPorNacionalidad().subscribe({
+          next: (response) => {
+            this.huespedesPorNacionalidad = response.huespedes_por_nacionalidad;
+            console.log(this.huespedesPorNacionalidad)
+            this.errorMessageHuespedesPorNacionalidad = null;
+          },
+          error: (error) => {
+            this.errorMessageHuespedesPorNacionalidad =
+              error.message || 'Ocurrió un error al obtener los huéspedes por nacionalidad.';
+            console.error(error);
+          },
+        });
+      }
+
+      getColor(index: number): string {
+        return this.colors[index % this.colors.length]; // Usa el operador % para ciclar los colores
+      }
+      
 
 }

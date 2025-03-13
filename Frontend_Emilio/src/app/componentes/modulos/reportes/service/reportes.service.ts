@@ -67,4 +67,25 @@ export class ReporteService {
       return of(null);
     }
   }
+  obtenerHuespedesPorNacionalidad(): Observable<any> {
+    this.isLoadingSubject.next(true);
+    const token = this.authservice.obtenerToken();
+
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      // Concatenar la ruta completa correctamente
+      return this.http.get<any>(`${this.rutaApi}/huespedes-por-nacionalidad`, { headers }).pipe(
+        finalize(() => this.isLoadingSubject.next(false)),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error en la solicitud al obtener los huespedes por nacionalidad:', error);
+          return throwError(() => new Error(error.message || 'Error en la solicitud al servidor'));
+        })
+      );
+    } else {
+      console.log('Token no disponible');
+      this.isLoadingSubject.next(false);
+      return of(null);
+    }
+  }
 }

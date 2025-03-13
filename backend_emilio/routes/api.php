@@ -54,6 +54,11 @@ Route::group([
 
     //! reportes dashboard */
     Route::get('reportes-dashboard', [ReportesController::class, 'obtenerReportesDashboard']);
+    Route::get('huespedes-por-nacionalidad', [ReportesController::class, 'obtenerHuespedesPorNacionalidad']);
+    Route::get('clientes-ingresos-mensuales', [ReportesController::class, 'obtenerClientesPorMesYIngresosMensuales']);
+    
+    Route::get('clientes-ingresos-diarios', [ReportesController::class, 'obtenerClientesPorDiaYIngresosDiarios']);
+
     Route::get('cobroshoy', [ReportesController::class, 'obtenerCobroHoy']);
 
 
