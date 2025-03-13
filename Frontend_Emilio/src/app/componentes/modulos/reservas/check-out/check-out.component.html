@@ -54,7 +54,7 @@
 
             <!-- Filtro por número de documento del huésped -->
             <div class="col-12 mb-2 lg:col-3 lg:mb-0">
-              <label for="documentoHuesped" class="p-d-block p-mb-1">Buscar por número de documento del huésped:</label>
+              <label for="documentoHuesped" class="p-d-block p-mb-1">Buscar por Nº de documento</label>
               <span class="p-input-icon-left">
                 <i class="pi pi-search"></i>
                 <input
@@ -421,7 +421,7 @@
           }"></p-button>
         </div>
         <div class="col-4">
-          <p-button label="Imprimir Ticket" [outlined]="true" severity="info" [style]="{ width: '100%' }"></p-button>
+          <p-button label="Imprimir Ticket" (onClick)="imprimirTicket(checkoutInfo.id)" [outlined]="true" severity="info" [style]="{ width: '100%' }"></p-button>
         </div>
         <div class="col-4">
           <p-button label="Cancelar" (onClick)="cerrarModalCheckOut()" [outlined]="true" severity="warning" [style]="{ width: '100%' }"></p-button>

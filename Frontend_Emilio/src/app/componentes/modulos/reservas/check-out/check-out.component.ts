@@ -4,6 +4,17 @@ import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+
+import QRCode from 'qrcode';
+import JsBarcode from 'jsbarcode';
+
+
+
+
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+
+(pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-check-out',
   templateUrl: './check-out.component.html',
@@ -164,6 +175,312 @@ export class CheckOutComponent {
         }
     );
 }
+
+
+imprimirTicket(idReserva: number): void {
+    console.log('El ID que se manda es: ', idReserva);
+
+    this._reservaService.obtenerHabitacionOcupadaPorIdReserva(idReserva).subscribe(
+        (response) => {
+            if (response) {
+                const reserva = response.reserva;
+                console.log('Respuesta obtenida:', reserva);
+
+                // Generar el ticket de salida en PDF con QR y código de barras
+                this.generarTicketPDF(reserva);
+            } else {
+                console.log('No se encontraron datos para la reserva.');
+            }
+        },
+        (error) => {
+            // Manejar errores
+            this.errorMessage = 'Error al obtener los detalles de la habitación.';
+            console.error('Error:', error);
+        }
+    );
+}
+
+
+
+
+
+
+// generarTicketPDF(reserva: any): void {
+//   const qrData = `ID de Reserva: ${reserva.id}\nHabitación: ${reserva.habitacion.numero}\nCliente: ${reserva.huesped.nombre} ${reserva.huesped.apellido}`;
+
+//   // Generar el código QR
+//   QRCode.toDataURL(qrData, { errorCorrectionLevel: 'H' }, (err, qrUrl) => {
+//     if (err) {
+//       console.error('Error al generar el código QR:', err);
+//       return;
+//     }
+
+//     // Generar el código de barras
+//     const canvas = document.createElement('canvas');
+//     JsBarcode(canvas, reserva.id.toString(), {
+//       format: 'CODE128',
+//       displayValue: true,
+//       fontSize: 10,
+//       height: 20,
+//     });
+
+//     const barcodeDataUrl = canvas.toDataURL('image/png');
+
+//     // Definir el contenido del PDF
+//     const content: any[] = [
+//       { text: '**************************', alignment: 'center', fontSize: 10 },
+//       { text: '****** Emilio Suite ******', alignment: 'center', style: 'header', fontSize: 12 },
+//       { text: '***** NIT: xxxxxxxxxxx *****', alignment: 'center', fontSize: 10 },
+//       { text: '**************************', alignment: 'center', fontSize: 10 },
+//       { text: '\n' }, // Espacio en blanco
+
+//       { text: `Código de Reserva: ${reserva.id}`, alignment: 'center', style: 'subheader', fontSize: 10 },
+//       { text: `Fecha de Generación: ${new Date().toLocaleDateString('es-BO')}`, alignment: 'center', style: 'subheader', fontSize: 10 },
+//       { text: '\n' }, // Espacio en blanco
+
+//       { text: '------------------------------', alignment: 'center', fontSize: 10 },
+//       { text: 'Código QR', alignment: 'center', style: 'subheader', fontSize: 10 },
+//       { image: qrUrl, width: 80, alignment: 'center' }, // Reducir el tamaño del QR
+//       { text: '------------------------------', alignment: 'center', fontSize: 10 },
+//       { text: '\n' }, // Espacio en blanco
+
+//       // Detalles del Huésped
+//       { text: 'Detalles del Huésped', style: 'subheader', fontSize: 10 },
+//       {
+//         table: {
+//           widths: ['auto', '*'], // Ajustar el ancho de las columnas
+//           body: [
+//             ['Nombre', `${reserva.huesped.nombre} ${reserva.huesped.apellido}`],
+//             ['Documento', reserva.huesped.numero_documento],
+//             ['Correo', reserva.huesped.correo],
+//             ['Teléfono', reserva.huesped.telefono],
+//             ['Dirección', reserva.huesped.direccion],
+//           ],
+//         },
+//         layout: 'noBorders', // Sin bordes para una apariencia limpia
+//         fontSize: 8, // Reducir el tamaño de la fuente de la tabla
+//       },
+//       { text: '------------------------------', alignment: 'center', fontSize: 10 },
+//       { text: '\n' }, // Espacio en blanco
+
+//       // Detalles de la Habitación
+//       { text: 'Detalles de la Habitación', style: 'subheader', fontSize: 10 },
+//       {
+//         table: {
+//           widths: ['auto', '*'], // Ajustar el ancho de las columnas
+//           body: [
+//             ['Número', reserva.habitacion.numero],
+//             ['Piso', reserva.habitacion.numero_piso],
+//             ['Tipo', reserva.habitacion.tipo_habitacion.nombre],
+//             ['Descripción', reserva.habitacion.descripcion],
+//           ],
+//         },
+//         layout: 'noBorders',
+//         fontSize: 8, // Reducir el tamaño de la fuente de la tabla
+//       },
+//       { text: '------------------------------', alignment: 'center', fontSize: 10 },
+//       { text: '\n' }, // Espacio en blanco
+
+//       // Detalles del Pago
+//       { text: 'Detalles del Pago', style: 'subheader', fontSize: 10 },
+//       {
+//         table: {
+//           widths: ['auto', '*'], // Ajustar el ancho de las columnas
+//           body: [
+//             ['Precio por Noche', `Bs. ${reserva.detalles_pago.costo_por_noche}`],
+//             ['Días de Hospedaje', reserva.detalles_pago.dias_hospedaje],
+//             ['Descuento Aplicado', `Bs. ${reserva.detalles_pago.monto_descuento}`],
+//             ['Total a Pagar', `Bs. ${reserva.detalles_pago.total_con_descuento}`],
+//             ['Método de Pago', reserva.pago.metodo_de_pago],
+//           ],
+//         },
+//         layout: 'noBorders',
+//         fontSize: 8, // Reducir el tamaño de la fuente de la tabla
+//       },
+//       { text: '------------------------------', alignment: 'center', fontSize: 10 },
+//       { text: '\n' }, // Espacio en blanco
+
+//       // Tiempo Restante para Checkout
+//       { text: 'Tiempo Restante para el Checkout', style: 'subheader', fontSize: 10 },
+//       { text: reserva.tiempo_restante_checkout.mensaje, style: 'details', fontSize: 8 },
+//       { text: '------------------------------', alignment: 'center', fontSize: 10 },
+//       { text: '\n' }, // Espacio en blanco
+
+//       // Código de Barras
+//       { text: 'Código de Barras', alignment: 'center', style: 'subheader', fontSize: 10 },
+//       { image: barcodeDataUrl, width: 150, alignment: 'center' }, // Reducir el tamaño del código de barras
+//       { text: '\n' }, // Espacio en blanco
+//     ];
+
+//     // Definir estilos
+//     const styles = {
+//       header: {
+//         fontSize: 12,
+//         bold: true,
+//         alignment: 'center' as const,
+//       },
+//       subheader: {
+//         fontSize: 10,
+//         bold: true,
+//         alignment: 'left' as const,
+//       },
+//       details: {
+//         fontSize: 8,
+//         alignment: 'left' as const,
+//       },
+//     };
+
+//     // Crear el documento PDF
+//     const docDefinition = {
+//         content: content,  // contenido del PDF
+//         styles: styles,    // estilos para el contenido
+//         pageSize: 'A5',    // tamaño de la página A5
+//         pageOrientation: 'portrait', // orientación de la página (portrait o landscape)
+//         pageMargins: [5, 5, 5, 5],   // márgenes: [izquierda, arriba, derecha, abajo] (4 elementos)
+//       };
+
+//     // Generar y abrir el PDF
+//     pdfMake.createPdf(docDefinition).open();
+//   });
+// }
+
+generarTicketPDF(reserva: any): void {
+    const qrData = `ID de Reserva: ${reserva.id}\nHabitación: ${reserva.habitacion.numero}\nCliente: ${reserva.huesped.nombre} ${reserva.huesped.apellido}`;
+
+    // Generar el código QR
+    QRCode.toDataURL(qrData, { errorCorrectionLevel: 'H' }, (err, qrUrl) => {
+      if (err) {
+        console.error('Error al generar el código QR:', err);
+        return;
+      }
+
+      // Generar el código de barras
+      const canvas = document.createElement('canvas');
+      JsBarcode(canvas, reserva.id.toString(), {
+        format: 'CODE128',
+        displayValue: true,
+        fontSize: 10,
+        height: 20,
+      });
+
+      const barcodeDataUrl = canvas.toDataURL('image/png');
+
+      // Definir el contenido del PDF
+      const content: any[] = [
+        { text: '*****************************************', alignment: 'left', fontSize: 10 },
+        { text: '********** Emilio Suite **********', alignment: 'left', style: 'header', fontSize: 12 },
+        { text: '*********** NIT: xxxxxxxxxxx ************', alignment: 'left', fontSize: 10 },
+        { text: '*****************************************', alignment: 'left', fontSize: 10 },
+        { text: '\n' }, // Espacio en blanco
+
+        { text: `Código de Reserva: ${reserva.id}`, alignment: 'left', style: 'subheader', fontSize: 10 },
+        { text: `Fecha de Generación: ${new Date().toLocaleDateString('es-BO')}`, alignment: 'left', style: 'subheader', fontSize: 10 },
+        { text: '\n' }, // Espacio en blanco
+
+        { text: '----------------------------------------------------------------------', alignment: 'left', fontSize: 10 },
+        { text: 'Código QR', alignment: 'left', style: 'subheader', fontSize: 10 },
+        { image: qrUrl, width: 80, alignment: 'left' }, // Reducir el tamaño del QR
+        { text: '----------------------------------------------------------------------', alignment: 'left', fontSize: 10 },
+        { text: '\n' }, // Espacio en blanco
+
+        // Detalles del Huésped
+        { text: 'Detalles del Huésped', style: 'subheader', fontSize: 10 },
+        {
+          table: {
+            widths: ['auto', '*'], // Ajustar el ancho de las columnas
+            body: [
+              ['Nombre', `${reserva.huesped.nombre} ${reserva.huesped.apellido}`],
+              ['Documento', reserva.huesped.numero_documento],
+              ['Correo', reserva.huesped.correo],
+              ['Teléfono', reserva.huesped.telefono],
+              ['Dirección', reserva.huesped.direccion],
+            ],
+          },
+          layout: 'noBorders', // Sin bordes para una apariencia limpia
+          fontSize: 8, // Reducir el tamaño de la fuente de la tabla
+        },
+        { text: '----------------------------------------------------------------------', alignment: 'left', fontSize: 10 },
+        { text: '\n' }, // Espacio en blanco
+
+        // Detalles de la Habitación
+        { text: 'Detalles de la Habitación', style: 'subheader', fontSize: 10 },
+        {
+          table: {
+            widths: ['auto', '*'], // Ajustar el ancho de las columnas
+            body: [
+              ['Número', reserva.habitacion.numero],
+              ['Piso', reserva.habitacion.numero_piso],
+              ['Tipo', reserva.habitacion.tipo_habitacion.nombre],
+              ['Descripción', reserva.habitacion.descripcion],
+            ],
+          },
+          layout: 'noBorders',
+          fontSize: 8, // Reducir el tamaño de la fuente de la tabla
+        },
+        { text: '----------------------------------------------------------------------', alignment: 'left', fontSize: 10 },
+        { text: '\n' }, // Espacio en blanco
+
+        // Detalles del Pago
+        { text: 'Detalles del Pago', style: 'subheader', fontSize: 10 },
+        {
+          table: {
+            widths: ['auto', '*'], // Ajustar el ancho de las columnas
+            body: [
+              ['Precio por Noche', `Bs. ${reserva.detalles_pago.costo_por_noche}`],
+              ['Días de Hospedaje', reserva.detalles_pago.dias_hospedaje],
+              ['Descuento Aplicado', `Bs. ${reserva.detalles_pago.monto_descuento}`],
+              ['Total a Pagar', `Bs. ${reserva.detalles_pago.total_con_descuento}`],
+              ['Método de Pago', reserva.pago.metodo_de_pago],
+            ],
+          },
+          layout: 'noBorders',
+          fontSize: 8, // Reducir el tamaño de la fuente de la tabla
+        },
+        { text: '----------------------------------------------------------------------', alignment: 'left', fontSize: 10 },
+        { text: '\n' }, // Espacio en blanco
+
+        // Tiempo Restante para Checkout
+        { text: 'Tiempo Restante para el Checkout', style: 'subheader', fontSize: 10 },
+        { text: reserva.tiempo_restante_checkout.mensaje, style: 'details', fontSize: 8 },
+        { text: '----------------------------------------------------------------------', alignment: 'left', fontSize: 10 },
+        { text: '\n' }, // Espacio en blanco
+
+        // Código de Barras
+        { text: 'Código de Barras', alignment: 'left', style: 'subheader', fontSize: 10 },
+        { image: barcodeDataUrl, width: 100, alignment: 'left' }, // Reducir el tamaño del código de barras
+        { text: '\n' }, // Espacio en blanco
+      ];
+
+      // Definir estilos
+      const styles = {
+        header: {
+          fontSize: 12,
+          bold: true,
+          alignment: 'left' as const,
+        },
+        subheader: {
+          fontSize: 10,
+          bold: true,
+          alignment: 'left' as const,
+        },
+        details: {
+          fontSize: 8,
+          alignment: 'left' as const,
+        },
+      };
+
+      // Crear el documento PDF
+      const docDefinition = {
+        content: content,  // contenido del PDF
+        styles: styles,    // estilos para el contenido
+
+
+      };
+
+      // Generar y abrir el PDF
+      pdfMake.createPdf(docDefinition).open();
+    });
+  }
 
 
 
