@@ -77,6 +77,8 @@
 
   <div class="grid">
     <!-- Mostrar habitaciones filtradas -->
+
+
     <div class="col-12 lg:col-6 xl:col-3" *ngFor="let lista of habitacionesOcupadasFiltradas">
         <!-- Tarjeta de habitación -->
 
@@ -210,7 +212,7 @@
             <div class="flex justify-content-between align-items-center mt-3">
               <p-button
                 label="Check Out"
-                (click)="obtenerDetallesHabitacion(lista.reservas[0].id)"
+                (click)="Checkout(lista.reservas[0].id)"
                 icon="fas fa-sign-out-alt"
                 [rounded]="true"
                 severity="warning"

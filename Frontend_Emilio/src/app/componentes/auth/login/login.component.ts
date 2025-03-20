@@ -9,6 +9,7 @@ import { ToastModule } from 'primeng/toast';
 import { AuthService } from 'src/app/services/auth.service';
 import { MessageService } from 'primeng/api';
 import swall from 'sweetalert2'
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -29,6 +30,8 @@ import swall from 'sweetalert2'
   providers: [MessageService],
 })
 export class LoginComponent {
+
+    img=environment.logo_dark;
 
 
 

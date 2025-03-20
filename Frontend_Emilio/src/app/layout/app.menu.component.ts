@@ -70,7 +70,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Configuracion',
                         icon: 'pi pi-fw pi-cog',
                         items: [
-                            { label: 'Tarifas', icon: 'pi pi-fw pi-dollar', routerLink: ['/modulo/configuracion/tarifas'], permisos: ['editar_tarifas', 'ver_tarifas'] },
+                            // { label: 'Tarifas', icon: 'pi pi-fw pi-dollar', routerLink: ['/modulo/configuracion/tarifas'], permisos: ['editar_tarifas', 'ver_tarifas'] },
                             { label: 'Descuentos', icon: 'pi pi-fw pi-dollar', routerLink: ['/modulo/configuracion/descuentos'], permisos: ['editar_descuentos', 'ver_descuentos'] },
                             { label: 'Tipos de Habitación', icon: 'pi pi-fw pi-home', routerLink: ['/modulo/configuracion/tipos-habitacion'], permisos: ['editar_tipos_habitacion', 'ver_tipos_habitacion'] }
                         ],

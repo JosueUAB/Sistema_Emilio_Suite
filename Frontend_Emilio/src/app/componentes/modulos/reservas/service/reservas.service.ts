@@ -245,18 +245,21 @@ checkin(id: number): Observable<any> {
   checkout(id: number): Observable<any> {
     this.isLoadingSubject.next(true);
     const token = this.authservice.obtenerToken();
+
     if (token) {
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      return this.http.post<any>(`${this.rutaApi}/checkout/${id}`, {}, { headers }).pipe(
-        finalize(() => this.isLoadingSubject.next(false)),
-        catchError((error) => this.manejarError(error, 'Error al realizar el check-out'))
-      );
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        return this.http.post<any>(`${this.rutaApi}/checkout/${id}`, {}, { headers }).pipe(
+            finalize(() => this.isLoadingSubject.next(false)),
+            catchError((error) => this.manejarError(error, 'Error en checkout'))
+        );
     } else {
-      console.log('Token no disponible');
-      this.isLoadingSubject.next(false);
-      return of(null);
+        this.isLoadingSubject.next(false);
+        return throwError(() => ({
+            mensaje: 'No autenticado',
+            codigo: 401
+        }));
     }
-  }
+}
   // En ReservasService
 
 obtenerReservaPendienteHoyPorId(habitacionId: number): Observable<any> {
@@ -436,6 +439,9 @@ obtenerHabitacionOcupadaPorIdReserva(idReserva: number): Observable<any> {
       return of(null);
     }
   }
+
+
+
 
 
 }
